@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/ristretto",
+  "version": "1.0.0",
+  "name": "Ristretto",
+  "summary": "Espresso browns with a warm crema accent.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/ristretto",
+  "tags": [
+    "dark",
+    "warm",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#2c2525",
+        "surface": "#211b1b",
+        "overlay": "#3d2f2a",
+        "border": "#72696a",
+        "foreground": "#e6d9db",
+        "muted": "#72696a",
+        "accent": "#f38d70",
+        "selection": "#403e41",
+        "cursor": "#e6d9db",
+        "currentLine": "#342a28",
+        "search": "#6a573a",
+        "error": "#fd6883",
+        "warning": "#f9cc6c",
+        "success": "#adda78",
+        "info": "#f38d70"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e6d9db",
+        "ansi": {
+          "black": "#2c2525",
+          "red": "#fd6883",
+          "green": "#adda78",
+          "yellow": "#f9cc6c",
+          "blue": "#f38d70",
+          "magenta": "#a8a9eb",
+          "cyan": "#85dacc",
+          "white": "#e6d9db",
+          "brightBlack": "#72696a",
+          "brightRed": "#ff8297",
+          "brightGreen": "#c8e292",
+          "brightYellow": "#fcd675",
+          "brightBlue": "#f8a788",
+          "brightMagenta": "#bebffd",
+          "brightCyan": "#9bf1e1",
+          "brightWhite": "#e6d9db"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#72696a",
+          "italic": true
+        },
+        "keyword": "#bebffd",
+        "operator": "#f8a788",
+        "punctuation": "#72696a",
+        "string": "#adda78",
+        "escape": "#bebffd",
+        "number": "#fb9a77",
+        "constant": "#fb9a77",
+        "function": "#f38d70",
+        "type": "#f9cc6c",
+        "builtin": "#85dacc",
+        "variable": "#e6d9db",
+        "parameter": {
+          "color": "#85dacc",
+          "italic": true
+        },
+        "property": "#85dacc",
+        "tag": "#fd6883",
+        "attribute": {
+          "color": "#85dacc",
+          "italic": true
+        },
+        "added": "#adda78",
+        "removed": "#fd6883",
+        "changed": "#f9cc6c"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-launch.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-color-curves.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-coffee-beans.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-launch.png",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/ristretto/backgrounds/0-launch.png"
+    },
+    {
+      "file": "wallpapers/dark-color-curves.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/ristretto/backgrounds/1-color-curves.jpg"
+    },
+    {
+      "file": "wallpapers/dark-coffee-beans.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/ristretto/backgrounds/2-coffee-beans.jpg"
+    }
+  ]
+}

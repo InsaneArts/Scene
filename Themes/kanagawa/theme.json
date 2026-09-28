@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/kanagawa",
+  "version": "1.0.0",
+  "name": "Kanagawa",
+  "summary": "Ink and wave blues from Hokusai's Great Wave.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/rebelot/kanagawa.nvim",
+  "tags": [
+    "dark",
+    "blue",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#1f1f28",
+        "surface": "#17171e",
+        "overlay": "#223249",
+        "border": "#54546d",
+        "foreground": "#dcd7ba",
+        "muted": "#727169",
+        "accent": "#dcd7ba",
+        "selection": "#363646",
+        "cursor": "#dcd7ba",
+        "currentLine": "#202838",
+        "search": "#4f473d",
+        "error": "#c34043",
+        "warning": "#c0a36e",
+        "success": "#76946a",
+        "info": "#7e9cd8"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#dcd7ba",
+        "ansi": {
+          "black": "#1f1f28",
+          "red": "#c34043",
+          "green": "#76946a",
+          "yellow": "#c0a36e",
+          "blue": "#7e9cd8",
+          "magenta": "#957fb8",
+          "cyan": "#6a9589",
+          "white": "#dcd7ba",
+          "brightBlack": "#54546d",
+          "brightRed": "#e82424",
+          "brightGreen": "#98bb6c",
+          "brightYellow": "#e6c384",
+          "brightBlue": "#7fb4ca",
+          "brightMagenta": "#938aa9",
+          "brightCyan": "#7aa89f",
+          "brightWhite": "#dcd7ba"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#727169",
+          "italic": true
+        },
+        "keyword": "#938aa9",
+        "operator": "#7fb4ca",
+        "punctuation": "#727169",
+        "string": "#76946a",
+        "escape": "#938aa9",
+        "number": "#c17158",
+        "constant": "#c17158",
+        "function": "#7e9cd8",
+        "type": "#c0a36e",
+        "builtin": "#6a9589",
+        "variable": "#dcd7ba",
+        "parameter": {
+          "color": "#6a9589",
+          "italic": true
+        },
+        "property": "#6a9589",
+        "tag": "#c34043",
+        "attribute": {
+          "color": "#6a9589",
+          "italic": true
+        },
+        "added": "#76946a",
+        "removed": "#c34043",
+        "changed": "#c0a36e"
+      },
+      "system": {
+        "accentColor": "blue",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-kanagawa.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-lantern.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-misty-ridges.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "kanagawa"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-kanagawa.jpg",
+      "license": "LicenseRef-PublicDomain",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/kanagawa/backgrounds/1-kanagawa.jpg"
+    },
+    {
+      "file": "wallpapers/dark-lantern.jpg",
+      "license": "LicenseRef-Pexels",
+      "attribution": "unknown (https://www.pexels.com/photo/414144/); linked by u/OkAdministration5454, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1nffc6t/hyprland_dawn_morning/"
+    },
+    {
+      "file": "wallpapers/dark-misty-ridges.jpg",
+      "license": "LicenseRef-Pexels",
+      "attribution": "unknown (https://www.pexels.com/photo/14672545/); linked by u/SmokerrYT, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1mg48hz/sway_my_first_rice_on_sway/"
+    }
+  ]
+}

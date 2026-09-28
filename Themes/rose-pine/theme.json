@@ -1,0 +1,249 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/rose-pine",
+  "version": "1.0.0",
+  "name": "Rosé Pine",
+  "summary": "All natural pine, faux fur, and a bit of soho vibes.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://rosepinetheme.com",
+  "tags": [
+    "muted",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#191724",
+        "surface": "#1f1d2e",
+        "overlay": "#26233a",
+        "border": "#524f67",
+        "foreground": "#e0def4",
+        "muted": "#6e6a86",
+        "accent": "#9ccfd8",
+        "selection": "#403d52",
+        "cursor": "#e0def4",
+        "currentLine": "#201d2f",
+        "search": "#5b4a3d",
+        "error": "#eb6f92",
+        "warning": "#f6c177",
+        "success": "#31748f",
+        "info": "#9ccfd8"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e0def4",
+        "ansi": {
+          "black": "#191724",
+          "red": "#eb6f92",
+          "green": "#31748f",
+          "yellow": "#f6c177",
+          "blue": "#9ccfd8",
+          "magenta": "#c4a7e7",
+          "cyan": "#ebbcba",
+          "white": "#e0def4",
+          "brightBlack": "#524f67",
+          "brightRed": "#eb6f92",
+          "brightGreen": "#31748f",
+          "brightYellow": "#f6c177",
+          "brightBlue": "#9ccfd8",
+          "brightMagenta": "#c4a7e7",
+          "brightCyan": "#ebbcba",
+          "brightWhite": "#e0def4"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6e6a86",
+          "italic": true
+        },
+        "keyword": "#c4a7e7",
+        "operator": "#9ccfd8",
+        "punctuation": "#6e6a86",
+        "string": "#31748f",
+        "escape": "#c4a7e7",
+        "number": "#ebbcba",
+        "constant": "#ebbcba",
+        "function": "#9ccfd8",
+        "type": "#f6c177",
+        "builtin": "#ebbcba",
+        "variable": "#e0def4",
+        "parameter": {
+          "color": "#ebbcba",
+          "italic": true
+        },
+        "property": "#ebbcba",
+        "tag": "#eb6f92",
+        "attribute": {
+          "color": "#ebbcba",
+          "italic": true
+        },
+        "added": "#31748f",
+        "removed": "#eb6f92",
+        "changed": "#f6c177"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-pink-blossoms.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-teal-peaks.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-violet-curves.jpg",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#faf4ed",
+        "surface": "#ede7e1",
+        "overlay": "#f2e9e1",
+        "border": "#cecacd",
+        "foreground": "#575279",
+        "muted": "#9893a5",
+        "accent": "#56949f",
+        "selection": "#dfdad9",
+        "cursor": "#575279",
+        "currentLine": "#f6eee7",
+        "search": "#f5dab5",
+        "error": "#b4637a",
+        "warning": "#ea9d34",
+        "success": "#286983",
+        "info": "#56949f"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#575279",
+        "ansi": {
+          "black": "#faf4ed",
+          "red": "#b4637a",
+          "green": "#286983",
+          "yellow": "#ea9d34",
+          "blue": "#56949f",
+          "magenta": "#907aa9",
+          "cyan": "#d7827e",
+          "white": "#575279",
+          "brightBlack": "#cecacd",
+          "brightRed": "#b4637a",
+          "brightGreen": "#286983",
+          "brightYellow": "#ea9d34",
+          "brightBlue": "#56949f",
+          "brightMagenta": "#907aa9",
+          "brightCyan": "#d7827e",
+          "brightWhite": "#575279"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#9893a5",
+          "italic": true
+        },
+        "keyword": "#907aa9",
+        "operator": "#56949f",
+        "punctuation": "#9893a5",
+        "string": "#286983",
+        "escape": "#907aa9",
+        "number": "#cf8057",
+        "constant": "#cf8057",
+        "function": "#56949f",
+        "type": "#ea9d34",
+        "builtin": "#d7827e",
+        "variable": "#575279",
+        "parameter": {
+          "color": "#d7827e",
+          "italic": true
+        },
+        "property": "#d7827e",
+        "tag": "#b4637a",
+        "attribute": {
+          "color": "#d7827e",
+          "italic": true
+        },
+        "added": "#286983",
+        "removed": "#b4637a",
+        "changed": "#ea9d34"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-funky-shapes.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-dot-map.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-pink-marble.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-pink-blossoms.jpg",
+      "license": "NOASSERTION",
+      "attribution": "u/egerhether, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1k90k10/hyprland_switched_my_desktop_to_nixos/"
+    },
+    {
+      "file": "wallpapers/dark-teal-peaks.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "unknown (Unsplash photo; posted by u/MKochiyama), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1p979at/hyprland_rose_pine_vibes/"
+    },
+    {
+      "file": "wallpapers/dark-violet-curves.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Pawel Czerwinski (https://unsplash.com/photos/FAlYVtV1kRg); linked by u/This-Peach9380, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1v9sfzb/jwm_my_own_neat_little_config_for_my_custom_puppy/"
+    },
+    {
+      "file": "wallpapers/light-funky-shapes.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added by DHH in commit 2235332), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/rose-pine/backgrounds/1-funky-shapes.jpg"
+    },
+    {
+      "file": "wallpapers/light-dot-map.png",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/rose-pine/backgrounds/2-dot-map.png"
+    },
+    {
+      "file": "wallpapers/light-pink-marble.jpg",
+      "license": "LicenseRef-Pexels",
+      "attribution": "DIDSSPH (per the file's XMP creator field) (https://www.pexels.com/photo/3560717/); linked by u/soleful_smak, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1pkpq5d/kde_poor_mans_noctalia/"
+    }
+  ]
+}

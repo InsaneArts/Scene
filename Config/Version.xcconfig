@@ -1,0 +1,2 @@
+#include "../version.env"
+CURRENT_PROJECT_VERSION = $(BUILD_NUMBER)

@@ -1,0 +1,147 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/hackerman",
+  "version": "1.0.0",
+  "name": "Hackerman",
+  "summary": "Neon green on midnight, straight off a synthwave grid.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/hackerman",
+  "tags": [
+    "dark",
+    "green",
+    "neon",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#0b0c16",
+        "surface": "#080910",
+        "overlay": "#151828",
+        "border": "#2d3450",
+        "foreground": "#ddf7ff",
+        "muted": "#6a6e95",
+        "accent": "#82fb9c",
+        "selection": "#1f253a",
+        "cursor": "#ddf7ff",
+        "currentLine": "#10121f",
+        "search": "#20524f",
+        "error": "#50f872",
+        "warning": "#50f7d4",
+        "success": "#4fe88f",
+        "info": "#829dd4"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#ddf7ff",
+        "ansi": {
+          "black": "#0b0c16",
+          "red": "#50f872",
+          "green": "#4fe88f",
+          "yellow": "#50f7d4",
+          "blue": "#829dd4",
+          "magenta": "#86a7df",
+          "cyan": "#7cf8f7",
+          "white": "#ddf7ff",
+          "brightBlack": "#2d3450",
+          "brightRed": "#85ff9d",
+          "brightGreen": "#9cf7c2",
+          "brightYellow": "#a4ffec",
+          "brightBlue": "#c4d2ed",
+          "brightMagenta": "#cddbf4",
+          "brightCyan": "#d1fffe",
+          "brightWhite": "#ddf7ff"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6a6e95",
+          "italic": true
+        },
+        "keyword": "#cddbf4",
+        "operator": "#c4d2ed",
+        "punctuation": "#6a6e95",
+        "string": "#4fe88f",
+        "escape": "#cddbf4",
+        "number": "#50f7a3",
+        "constant": "#50f7a3",
+        "function": "#829dd4",
+        "type": "#50f7d4",
+        "builtin": "#7cf8f7",
+        "variable": "#ddf7ff",
+        "parameter": {
+          "color": "#7cf8f7",
+          "italic": true
+        },
+        "property": "#7cf8f7",
+        "tag": "#50f872",
+        "attribute": {
+          "color": "#7cf8f7",
+          "italic": true
+        },
+        "added": "#4fe88f",
+        "removed": "#50f872",
+        "changed": "#50f7d4"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-synth-scape.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-geometric.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-green-flow.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "hackerman"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-synth-scape.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/hackerman/backgrounds/1-synth-scape.jpg"
+    },
+    {
+      "file": "wallpapers/dark-geometric.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/hackerman/backgrounds/2-geometric.jpg"
+    },
+    {
+      "file": "wallpapers/dark-green-flow.jpg",
+      "license": "NOASSERTION",
+      "attribution": "unknown artist (wallhaven.cc/w/e73dwk lists https://www.artstation.com/artwork/eanyEX as the source); posted by u/Prophet6000, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1pd5tw6/niri_i_like_the_vibes/"
+    }
+  ]
+}

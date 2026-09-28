@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/last-horizon",
+  "version": "1.0.0",
+  "name": "Last Horizon",
+  "summary": "Near-black with soft rose and bone white.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/last-horizon",
+  "tags": [
+    "dark",
+    "minimal",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#0c0b0c",
+        "surface": "#090809",
+        "overlay": "#0c0b0c",
+        "border": "#584e51",
+        "foreground": "#fafcfb",
+        "muted": "#584e51",
+        "accent": "#b59790",
+        "selection": "#584e51",
+        "cursor": "#e2dddc",
+        "currentLine": "#0c0b0c",
+        "search": "#28242b",
+        "error": "#c38b7b",
+        "warning": "#6b5e73",
+        "success": "#87a9b0",
+        "info": "#b59790"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e2dddc",
+        "ansi": {
+          "black": "#0c0b0c",
+          "red": "#c38b7b",
+          "green": "#87a9b0",
+          "yellow": "#6b5e73",
+          "blue": "#b59790",
+          "magenta": "#c4d8e2",
+          "cyan": "#a5a0b6",
+          "white": "#fafcfb",
+          "brightBlack": "#584e51",
+          "brightRed": "#c38b7b",
+          "brightGreen": "#87a9b0",
+          "brightYellow": "#6b5e73",
+          "brightBlue": "#b59790",
+          "brightMagenta": "#c4d8e2",
+          "brightCyan": "#a5a0b6",
+          "brightWhite": "#e2dddc"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#584e51",
+          "italic": true
+        },
+        "keyword": "#c4d8e2",
+        "operator": "#b59790",
+        "punctuation": "#584e51",
+        "string": "#87a9b0",
+        "escape": "#c4d8e2",
+        "number": "#977477",
+        "constant": "#977477",
+        "function": "#b59790",
+        "type": "#6b5e73",
+        "builtin": "#a5a0b6",
+        "variable": "#fafcfb",
+        "parameter": {
+          "color": "#a5a0b6",
+          "italic": true
+        },
+        "property": "#a5a0b6",
+        "tag": "#c38b7b",
+        "attribute": {
+          "color": "#a5a0b6",
+          "italic": true
+        },
+        "added": "#87a9b0",
+        "removed": "#c38b7b",
+        "changed": "#6b5e73"
+      },
+      "system": {
+        "accentColor": "graphite",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-eyes-wide.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-blink.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-bokeh.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-eyes-wide.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/last-horizon/backgrounds/1-eyes-wide.jpg"
+    },
+    {
+      "file": "wallpapers/dark-blink.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added with the Last Horizon theme by HANCORE, commit b2fb238), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/last-horizon/backgrounds/2-blink.jpg"
+    },
+    {
+      "file": "wallpapers/dark-bokeh.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added with the Last Horizon theme by HANCORE, commit b2fb238), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/last-horizon/backgrounds/3-bokeh.jpg"
+    }
+  ]
+}

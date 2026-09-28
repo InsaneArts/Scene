@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/miasma",
+  "version": "1.0.0",
+  "name": "Miasma",
+  "summary": "Smoky grays and moss in low light.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/miasma",
+  "tags": [
+    "dark",
+    "earthy",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#222222",
+        "surface": "#191919",
+        "overlay": "#2c2c2c",
+        "border": "#666666",
+        "foreground": "#c2c2b0",
+        "muted": "#555555",
+        "accent": "#78824b",
+        "selection": "#383838",
+        "cursor": "#c2c2b0",
+        "currentLine": "#272727",
+        "search": "#4e382c",
+        "error": "#685742",
+        "warning": "#b36d43",
+        "success": "#5f875f",
+        "info": "#78824b"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#c2c2b0",
+        "ansi": {
+          "black": "#222222",
+          "red": "#685742",
+          "green": "#5f875f",
+          "yellow": "#b36d43",
+          "blue": "#78824b",
+          "magenta": "#bb7744",
+          "cyan": "#c9a554",
+          "white": "#c2c2b0",
+          "brightBlack": "#666666",
+          "brightRed": "#685742",
+          "brightGreen": "#5f875f",
+          "brightYellow": "#b36d43",
+          "brightBlue": "#78824b",
+          "brightMagenta": "#bb7744",
+          "brightCyan": "#c9a554",
+          "brightWhite": "#c2c2b0"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#555555",
+          "italic": true
+        },
+        "keyword": "#bb7744",
+        "operator": "#78824b",
+        "punctuation": "#555555",
+        "string": "#5f875f",
+        "escape": "#bb7744",
+        "number": "#8d6242",
+        "constant": "#8d6242",
+        "function": "#78824b",
+        "type": "#b36d43",
+        "builtin": "#c9a554",
+        "variable": "#c2c2b0",
+        "parameter": {
+          "color": "#c9a554",
+          "italic": true
+        },
+        "property": "#c9a554",
+        "tag": "#685742",
+        "attribute": {
+          "color": "#c9a554",
+          "italic": true
+        },
+        "added": "#5f875f",
+        "removed": "#685742",
+        "changed": "#b36d43"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-nature-of-fear.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-crowned.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-smoky-forest.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-nature-of-fear.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/miasma/backgrounds/01-nature-of-fear.jpg"
+    },
+    {
+      "file": "wallpapers/dark-crowned.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/miasma/backgrounds/02-crowned.jpg"
+    },
+    {
+      "file": "wallpapers/dark-smoky-forest.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Federico Bottos (https://unsplash.com/photos/GCTeIZMXk-k); linked by u/SillyInstance203, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1t937q9/niri_oc_material_you_inspired/"
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/vantablack",
+  "version": "1.0.0",
+  "name": "Vantablack",
+  "summary": "Pure black, pure white, nothing else.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/vantablack",
+  "tags": [
+    "dark",
+    "minimal",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#000000",
+        "surface": "#090909",
+        "overlay": "#1a1a1a",
+        "border": "#7a7a7a",
+        "foreground": "#ffffff",
+        "muted": "#505050",
+        "accent": "#8d8d8d",
+        "selection": "#1a1a1a",
+        "cursor": "#ffffff",
+        "currentLine": "#0d0d0d",
+        "search": "#3e3e3e",
+        "error": "#a4a4a4",
+        "warning": "#cecece",
+        "success": "#b6b6b6",
+        "info": "#8d8d8d"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#ffffff",
+        "ansi": {
+          "black": "#000000",
+          "red": "#a4a4a4",
+          "green": "#b6b6b6",
+          "yellow": "#cecece",
+          "blue": "#8d8d8d",
+          "magenta": "#9b9b9b",
+          "cyan": "#b0b0b0",
+          "white": "#ffffff",
+          "brightBlack": "#7a7a7a",
+          "brightRed": "#a4a4a4",
+          "brightGreen": "#b6b6b6",
+          "brightYellow": "#cecece",
+          "brightBlue": "#8d8d8d",
+          "brightMagenta": "#9b9b9b",
+          "brightCyan": "#b0b0b0",
+          "brightWhite": "#ffffff"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#505050",
+          "italic": true
+        },
+        "keyword": "#9b9b9b",
+        "operator": "#8d8d8d",
+        "punctuation": "#505050",
+        "string": "#b6b6b6",
+        "escape": "#9b9b9b",
+        "number": "#b9b9b9",
+        "constant": "#b9b9b9",
+        "function": "#8d8d8d",
+        "type": "#cecece",
+        "builtin": "#b0b0b0",
+        "variable": "#ffffff",
+        "parameter": {
+          "color": "#b0b0b0",
+          "italic": true
+        },
+        "property": "#b0b0b0",
+        "tag": "#a4a4a4",
+        "attribute": {
+          "color": "#b0b0b0",
+          "italic": true
+        },
+        "added": "#b6b6b6",
+        "removed": "#a4a4a4",
+        "changed": "#cecece"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-dot-hands.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-twisted-stairs.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-layers-deep.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-dot-hands.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/vantablack/backgrounds/0-dot-hands.jpg"
+    },
+    {
+      "file": "wallpapers/dark-twisted-stairs.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/vantablack/backgrounds/1-twisted-stairs.jpg"
+    },
+    {
+      "file": "wallpapers/dark-layers-deep.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/vantablack/backgrounds/2-layers-deep.jpg"
+    }
+  ]
+}

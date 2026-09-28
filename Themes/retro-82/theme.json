@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/retro-82",
+  "version": "1.0.0",
+  "name": "Retro 82",
+  "summary": "Deep navy and sunset orange, like a vinyl sleeve.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/retro-82",
+  "tags": [
+    "dark",
+    "retro",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#05182e",
+        "surface": "#031222",
+        "overlay": "#0a2540",
+        "border": "#2a6b78",
+        "foreground": "#f6dcac",
+        "muted": "#3f8f8a",
+        "accent": "#faa968",
+        "selection": "#134e5a",
+        "cursor": "#f6dcac",
+        "currentLine": "#081e37",
+        "search": "#493632",
+        "error": "#f85525",
+        "warning": "#e97b3c",
+        "success": "#028391",
+        "info": "#3f8f8a"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f6dcac",
+        "ansi": {
+          "black": "#05182e",
+          "red": "#f85525",
+          "green": "#028391",
+          "yellow": "#e97b3c",
+          "blue": "#3f8f8a",
+          "magenta": "#3f8f8a",
+          "cyan": "#8cbfb8",
+          "white": "#f6dcac",
+          "brightBlack": "#2a6b78",
+          "brightRed": "#f85525",
+          "brightGreen": "#028391",
+          "brightYellow": "#e97b3c",
+          "brightBlue": "#faa968",
+          "brightMagenta": "#3f8f8a",
+          "brightCyan": "#8cbfb8",
+          "brightWhite": "#f6dcac"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#3f8f8a",
+          "italic": true
+        },
+        "keyword": "#3f8f8a",
+        "operator": "#faa968",
+        "punctuation": "#3f8f8a",
+        "string": "#028391",
+        "escape": "#3f8f8a",
+        "number": "#faa968",
+        "constant": "#faa968",
+        "function": "#3f8f8a",
+        "type": "#e97b3c",
+        "builtin": "#8cbfb8",
+        "variable": "#f6dcac",
+        "parameter": {
+          "color": "#8cbfb8",
+          "italic": true
+        },
+        "property": "#8cbfb8",
+        "tag": "#f85525",
+        "attribute": {
+          "color": "#8cbfb8",
+          "italic": true
+        },
+        "added": "#028391",
+        "removed": "#f85525",
+        "changed": "#e97b3c"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-in-the-groove.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-dusk-guardian.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glassy-lines.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "retro-82"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-in-the-groove.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/retro-82/backgrounds/1-in-the-groove.jpg"
+    },
+    {
+      "file": "wallpapers/dark-dusk-guardian.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added with the Retro 82 theme in omacom/omarchy PR #5110), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/retro-82/backgrounds/2-dusk-guardian.jpg"
+    },
+    {
+      "file": "wallpapers/dark-glassy-lines.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added with the Retro 82 theme in omacom/omarchy PR #5110), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/retro-82/backgrounds/3-glassy-lines.jpg"
+    }
+  ]
+}

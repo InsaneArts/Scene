@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/lupine",
+  "version": "1.0.0",
+  "name": "Lupine",
+  "summary": "Bright and clean, with cherry blossoms and cobalt.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/lupine",
+  "tags": [
+    "light",
+    "blue",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#fafafa",
+        "surface": "#ececec",
+        "overlay": "#f5f5f5",
+        "border": "#9e9e9e",
+        "foreground": "#212121",
+        "muted": "#757575",
+        "accent": "#3264eb",
+        "selection": "#d0d0d0",
+        "cursor": "#000000",
+        "currentLine": "#f8f8f8",
+        "search": "#b0d0f2",
+        "error": "#c900c4",
+        "warning": "#026fde",
+        "success": "#4a2fd0",
+        "info": "#3264eb"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#000000",
+        "ansi": {
+          "black": "#fafafa",
+          "red": "#c900c4",
+          "green": "#4a2fd0",
+          "yellow": "#026fde",
+          "blue": "#3264eb",
+          "magenta": "#8a4ad7",
+          "cyan": "#0c67de",
+          "white": "#212121",
+          "brightBlack": "#9e9e9e",
+          "brightRed": "#f930fb",
+          "brightGreen": "#9f85e0",
+          "brightYellow": "#358fff",
+          "brightBlue": "#5482ff",
+          "brightMagenta": "#b363ff",
+          "brightCyan": "#3986ff",
+          "brightWhite": "#000000"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#757575",
+          "italic": true
+        },
+        "keyword": "#b363ff",
+        "operator": "#5482ff",
+        "punctuation": "#757575",
+        "string": "#4a2fd0",
+        "escape": "#b363ff",
+        "number": "#026fde",
+        "constant": "#026fde",
+        "function": "#3264eb",
+        "type": "#026fde",
+        "builtin": "#0c67de",
+        "variable": "#212121",
+        "parameter": {
+          "color": "#0c67de",
+          "italic": true
+        },
+        "property": "#0c67de",
+        "tag": "#c900c4",
+        "attribute": {
+          "color": "#0c67de",
+          "italic": true
+        },
+        "added": "#4a2fd0",
+        "removed": "#c900c4",
+        "changed": "#026fde"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-cherry-blossom-bokeh.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-cherry-blossom-white.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-pastel-clouds.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-cherry-blossom-bokeh.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/lupine/backgrounds/01-cherry-blossom-bokeh.jpg"
+    },
+    {
+      "file": "wallpapers/light-cherry-blossom-white.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/lupine/backgrounds/02-cherry-blossom-white.jpg"
+    },
+    {
+      "file": "wallpapers/light-pastel-clouds.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/lupine/backgrounds/03-pastel-clouds.jpg"
+    }
+  ]
+}

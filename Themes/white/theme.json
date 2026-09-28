@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/white",
+  "version": "1.0.0",
+  "name": "White",
+  "summary": "Pure white with black type.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/white",
+  "tags": [
+    "light",
+    "minimal",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#ffffff",
+        "surface": "#f5f5f5",
+        "overlay": "#c0c0c0",
+        "border": "#808080",
+        "foreground": "#000000",
+        "muted": "#c0c0c0",
+        "accent": "#6e6e6e",
+        "selection": "#c0c0c0",
+        "cursor": "#000000",
+        "currentLine": "#e0e0e0",
+        "search": "#c9c9c9",
+        "error": "#2a2a2a",
+        "warning": "#4a4a4a",
+        "success": "#3a3a3a",
+        "info": "#1a1a1a"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#000000",
+        "ansi": {
+          "black": "#ffffff",
+          "red": "#2a2a2a",
+          "green": "#3a3a3a",
+          "yellow": "#4a4a4a",
+          "blue": "#1a1a1a",
+          "magenta": "#2e2e2e",
+          "cyan": "#3e3e3e",
+          "white": "#000000",
+          "brightBlack": "#808080",
+          "brightRed": "#2a2a2a",
+          "brightGreen": "#3a3a3a",
+          "brightYellow": "#4a4a4a",
+          "brightBlue": "#1a1a1a",
+          "brightMagenta": "#2e2e2e",
+          "brightCyan": "#3e3e3e",
+          "brightWhite": "#000000"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#c0c0c0",
+          "italic": true
+        },
+        "keyword": "#2e2e2e",
+        "operator": "#1a1a1a",
+        "punctuation": "#c0c0c0",
+        "string": "#3a3a3a",
+        "escape": "#2e2e2e",
+        "number": "#3a3a3a",
+        "constant": "#3a3a3a",
+        "function": "#1a1a1a",
+        "type": "#4a4a4a",
+        "builtin": "#3e3e3e",
+        "variable": "#000000",
+        "parameter": {
+          "color": "#3e3e3e",
+          "italic": true
+        },
+        "property": "#3e3e3e",
+        "tag": "#2a2a2a",
+        "attribute": {
+          "color": "#3e3e3e",
+          "italic": true
+        },
+        "added": "#3a3a3a",
+        "removed": "#2a2a2a",
+        "changed": "#4a4a4a"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-white.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-white-chevron.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-white-sheets.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-white.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/white/backgrounds/1-white.jpg"
+    },
+    {
+      "file": "wallpapers/light-white-chevron.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added with the White theme by bjarneo, commit 94d668b), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/white/backgrounds/2-white.jpg"
+    },
+    {
+      "file": "wallpapers/light-white-sheets.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/white/backgrounds/3-white.jpg"
+    }
+  ]
+}

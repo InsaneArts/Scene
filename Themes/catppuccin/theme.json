@@ -1,0 +1,249 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/catppuccin",
+  "version": "1.0.0",
+  "name": "Catppuccin",
+  "summary": "Soothing pastels: Mocha after dark, Latte by day.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://catppuccin.com",
+  "tags": [
+    "pastel",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#1e1e2e",
+        "surface": "#161622",
+        "overlay": "#313244",
+        "border": "#585b70",
+        "foreground": "#cdd6f4",
+        "muted": "#6c7086",
+        "accent": "#89b4fa",
+        "selection": "#45475a",
+        "cursor": "#cdd6f4",
+        "currentLine": "#282839",
+        "search": "#605955",
+        "error": "#f38ba8",
+        "warning": "#f9e2af",
+        "success": "#a6e3a1",
+        "info": "#89b4fa"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#cdd6f4",
+        "ansi": {
+          "black": "#1e1e2e",
+          "red": "#f38ba8",
+          "green": "#a6e3a1",
+          "yellow": "#f9e2af",
+          "blue": "#89b4fa",
+          "magenta": "#f5c2e7",
+          "cyan": "#94e2d5",
+          "white": "#cdd6f4",
+          "brightBlack": "#585b70",
+          "brightRed": "#f38ba8",
+          "brightGreen": "#a6e3a1",
+          "brightYellow": "#f9e2af",
+          "brightBlue": "#89b4fa",
+          "brightMagenta": "#f5c2e7",
+          "brightCyan": "#94e2d5",
+          "brightWhite": "#cdd6f4"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6c7086",
+          "italic": true
+        },
+        "keyword": "#f5c2e7",
+        "operator": "#89b4fa",
+        "punctuation": "#6c7086",
+        "string": "#a6e3a1",
+        "escape": "#f5c2e7",
+        "number": "#f6b6ab",
+        "constant": "#f6b6ab",
+        "function": "#89b4fa",
+        "type": "#f9e2af",
+        "builtin": "#94e2d5",
+        "variable": "#cdd6f4",
+        "parameter": {
+          "color": "#94e2d5",
+          "italic": true
+        },
+        "property": "#94e2d5",
+        "tag": "#f38ba8",
+        "attribute": {
+          "color": "#94e2d5",
+          "italic": true
+        },
+        "added": "#a6e3a1",
+        "removed": "#f38ba8",
+        "changed": "#f9e2af"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-waves.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-blue-eye.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-dusk-fjord.jpg",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#eff1f5",
+        "surface": "#e3e4e8",
+        "overlay": "#dce0e8",
+        "border": "#acb0be",
+        "foreground": "#4c4f69",
+        "muted": "#9ca0b0",
+        "accent": "#1e66f5",
+        "selection": "#ccd0da",
+        "cursor": "#4c4f69",
+        "currentLine": "#e6e8ee",
+        "search": "#ead3b4",
+        "error": "#d20f39",
+        "warning": "#df8e1d",
+        "success": "#40a02b",
+        "info": "#1e66f5"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#4c4f69",
+        "ansi": {
+          "black": "#eff1f5",
+          "red": "#d20f39",
+          "green": "#40a02b",
+          "yellow": "#df8e1d",
+          "blue": "#1e66f5",
+          "magenta": "#ea76cb",
+          "cyan": "#179299",
+          "white": "#4c4f69",
+          "brightBlack": "#acb0be",
+          "brightRed": "#d20f39",
+          "brightGreen": "#40a02b",
+          "brightYellow": "#df8e1d",
+          "brightBlue": "#1e66f5",
+          "brightMagenta": "#ea76cb",
+          "brightCyan": "#179299",
+          "brightWhite": "#4c4f69"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#9ca0b0",
+          "italic": true
+        },
+        "keyword": "#ea76cb",
+        "operator": "#1e66f5",
+        "punctuation": "#9ca0b0",
+        "string": "#40a02b",
+        "escape": "#ea76cb",
+        "number": "#d84e2b",
+        "constant": "#d84e2b",
+        "function": "#1e66f5",
+        "type": "#df8e1d",
+        "builtin": "#179299",
+        "variable": "#4c4f69",
+        "parameter": {
+          "color": "#179299",
+          "italic": true
+        },
+        "property": "#179299",
+        "tag": "#d20f39",
+        "attribute": {
+          "color": "#179299",
+          "italic": true
+        },
+        "added": "#40a02b",
+        "removed": "#d20f39",
+        "changed": "#df8e1d"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-blossom-sky.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-mountain-peak.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-fog-bridge-day.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-waves.png",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (contributed by shawnyeager, omacom/omarchy PR #1008), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/catppuccin/backgrounds/2-waves.png"
+    },
+    {
+      "file": "wallpapers/dark-blue-eye.png",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/catppuccin/backgrounds/3-blue-eye.png"
+    },
+    {
+      "file": "wallpapers/dark-dusk-fjord.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Pascal Debrunner (https://unsplash.com/photos/LKOuYT5_dyw); linked by u/johnzzon (OP), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/16iefuk/awesome_glorious_5k_work_rice/k0j4j6s/"
+    },
+    {
+      "file": "wallpapers/light-blossom-sky.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "u/andre_ange_marcel (photo by Scott Webb, https://unsplash.com/photos/2X6nZA0jmvU), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1tw1uja/i3wm_daily_driver_with_a_noreload_theme_switcher/opl3exq/"
+    },
+    {
+      "file": "wallpapers/light-mountain-peak.png",
+      "license": "NOASSERTION",
+      "attribution": "unknown (posted by u/Afraid-Ad-2937; file from github.com/JoydeepMallick/Wallpapers), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1ok1bru/hyprland_my_nixos_hyprland_eww_rice/"
+    },
+    {
+      "file": "wallpapers/light-fog-bridge-day.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Tom Van Hoogstraten (https://unsplash.com/photos/1JWmFju8vVg); linked by u/_benj (OP), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/5pu7se/i3_recently_switched_to_i3_from_bspwm/"
+    }
+  ]
+}

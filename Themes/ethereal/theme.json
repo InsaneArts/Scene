@@ -1,0 +1,139 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/ethereal",
+  "version": "1.0.0",
+  "name": "Ethereal",
+  "summary": "Nebula violets with a warm peach glow.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/ethereal",
+  "tags": [
+    "dark",
+    "purple",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#060b1e",
+        "surface": "#040816",
+        "overlay": "#131a3a",
+        "border": "#6d7db6",
+        "foreground": "#ffcead",
+        "muted": "#6d7db6",
+        "accent": "#7d82d9",
+        "selection": "#252e56",
+        "cursor": "#ffcead",
+        "currentLine": "#0c122c",
+        "search": "#4a402d",
+        "error": "#ed5b5a",
+        "warning": "#e9bb4f",
+        "success": "#92a593",
+        "info": "#7d82d9"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#ffcead",
+        "ansi": {
+          "black": "#060b1e",
+          "red": "#ed5b5a",
+          "green": "#92a593",
+          "yellow": "#e9bb4f",
+          "blue": "#7d82d9",
+          "magenta": "#c89dc1",
+          "cyan": "#a3bfd1",
+          "white": "#ffcead",
+          "brightBlack": "#6d7db6",
+          "brightRed": "#faaaa9",
+          "brightGreen": "#c4cfc4",
+          "brightYellow": "#f7dc9c",
+          "brightBlue": "#c2c4f0",
+          "brightMagenta": "#ead7e7",
+          "brightCyan": "#dfeaf0",
+          "brightWhite": "#ffcead"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6d7db6",
+          "italic": true
+        },
+        "keyword": "#ead7e7",
+        "operator": "#c2c4f0",
+        "punctuation": "#6d7db6",
+        "string": "#92a593",
+        "escape": "#ead7e7",
+        "number": "#eb8b54",
+        "constant": "#eb8b54",
+        "function": "#7d82d9",
+        "type": "#e9bb4f",
+        "builtin": "#a3bfd1",
+        "variable": "#ffcead",
+        "parameter": {
+          "color": "#a3bfd1",
+          "italic": true
+        },
+        "property": "#a3bfd1",
+        "tag": "#ed5b5a",
+        "attribute": {
+          "color": "#a3bfd1",
+          "italic": true
+        },
+        "added": "#92a593",
+        "removed": "#ed5b5a",
+        "changed": "#e9bb4f"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-cosmic.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-meadow.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-alpenglow.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-cosmic.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/ethereal/backgrounds/1-cosmic.jpg"
+    },
+    {
+      "file": "wallpapers/dark-meadow.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/ethereal/backgrounds/2-meadow.jpg"
+    },
+    {
+      "file": "wallpapers/dark-alpenglow.jpg",
+      "license": "LicenseRef-Pexels",
+      "attribution": "unknown (https://www.pexels.com/photo/933054/); linked by u/-bourgeoisie, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1uviv31/cinnamon_i_love_snowy_vibes/"
+    }
+  ]
+}

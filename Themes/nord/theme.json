@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/nord",
+  "version": "1.0.0",
+  "name": "Nord",
+  "summary": "Arctic blues and frosted grays.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://www.nordtheme.com",
+  "tags": [
+    "dark",
+    "blue",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#2e3440",
+        "surface": "#222730",
+        "overlay": "#3b4252",
+        "border": "#4c566a",
+        "foreground": "#d8dee9",
+        "muted": "#667080",
+        "accent": "#81a1c1",
+        "selection": "#434c5e",
+        "cursor": "#d8dee9",
+        "currentLine": "#343b49",
+        "search": "#676156",
+        "error": "#bf616a",
+        "warning": "#ebcb8b",
+        "success": "#a3be8c",
+        "info": "#81a1c1"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#d8dee9",
+        "ansi": {
+          "black": "#2e3440",
+          "red": "#bf616a",
+          "green": "#a3be8c",
+          "yellow": "#ebcb8b",
+          "blue": "#81a1c1",
+          "magenta": "#b48ead",
+          "cyan": "#88c0d0",
+          "white": "#d8dee9",
+          "brightBlack": "#4c566a",
+          "brightRed": "#bf616a",
+          "brightGreen": "#a3be8c",
+          "brightYellow": "#ebcb8b",
+          "brightBlue": "#81a1c1",
+          "brightMagenta": "#b48ead",
+          "brightCyan": "#8fbcbb",
+          "brightWhite": "#d8dee9"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#667080",
+          "italic": true
+        },
+        "keyword": "#b48ead",
+        "operator": "#81a1c1",
+        "punctuation": "#667080",
+        "string": "#a3be8c",
+        "escape": "#b48ead",
+        "number": "#d5967a",
+        "constant": "#d5967a",
+        "function": "#81a1c1",
+        "type": "#ebcb8b",
+        "builtin": "#88c0d0",
+        "variable": "#d8dee9",
+        "parameter": {
+          "color": "#88c0d0",
+          "italic": true
+        },
+        "property": "#88c0d0",
+        "tag": "#bf616a",
+        "attribute": {
+          "color": "#88c0d0",
+          "italic": true
+        },
+        "added": "#a3be8c",
+        "removed": "#bf616a",
+        "changed": "#ebcb8b"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-black-moon.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-city-view.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-night-lake.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "nordfox"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-black-moon.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/nord/backgrounds/0-black-moon.jpg"
+    },
+    {
+      "file": "wallpapers/dark-city-view.png",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/nord/backgrounds/1-city-view.png"
+    },
+    {
+      "file": "wallpapers/dark-night-lake.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Harald Pliessnig (https://unsplash.com/photos/YSTegVN35Ss); linked by u/andre_ange_marcel (OP), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1tw1uja/i3wm_daily_driver_with_a_noreload_theme_switcher/opl3exq/"
+    }
+  ]
+}

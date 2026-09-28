@@ -1,0 +1,250 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/gruvbox",
+  "version": "1.0.0",
+  "name": "Gruvbox",
+  "summary": "Retro groove colors, softened by Gruvbox Material.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/sainnhe/gruvbox-material",
+  "tags": [
+    "warm",
+    "retro",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#282828",
+        "surface": "#1e1e1e",
+        "overlay": "#3c3836",
+        "border": "#665c54",
+        "foreground": "#d4be98",
+        "muted": "#7c6f64",
+        "accent": "#7daea3",
+        "selection": "#504945",
+        "cursor": "#d4be98",
+        "currentLine": "#32302f",
+        "search": "#5d4e36",
+        "error": "#ea6962",
+        "warning": "#d8a657",
+        "success": "#a9b665",
+        "info": "#7daea3"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#d4be98",
+        "ansi": {
+          "black": "#282828",
+          "red": "#ea6962",
+          "green": "#a9b665",
+          "yellow": "#d8a657",
+          "blue": "#7daea3",
+          "magenta": "#d3869b",
+          "cyan": "#89b482",
+          "white": "#d4be98",
+          "brightBlack": "#665c54",
+          "brightRed": "#ea6962",
+          "brightGreen": "#a9b665",
+          "brightYellow": "#d8a657",
+          "brightBlue": "#7daea3",
+          "brightMagenta": "#d3869b",
+          "brightCyan": "#89b482",
+          "brightWhite": "#d4be98"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7c6f64",
+          "italic": true
+        },
+        "keyword": "#d3869b",
+        "operator": "#7daea3",
+        "punctuation": "#7c6f64",
+        "string": "#a9b665",
+        "escape": "#d3869b",
+        "number": "#e1875c",
+        "constant": "#e1875c",
+        "function": "#7daea3",
+        "type": "#d8a657",
+        "builtin": "#89b482",
+        "variable": "#d4be98",
+        "parameter": {
+          "color": "#89b482",
+          "italic": true
+        },
+        "property": "#89b482",
+        "tag": "#ea6962",
+        "attribute": {
+          "color": "#89b482",
+          "italic": true
+        },
+        "added": "#a9b665",
+        "removed": "#ea6962",
+        "changed": "#d8a657"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-the-backwater.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-flower-basket.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-village-square.jpg",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#fbf1c7",
+        "surface": "#f2e5bc",
+        "overlay": "#f4e8be",
+        "border": "#ddccab",
+        "foreground": "#654735",
+        "muted": "#928374",
+        "accent": "#45707a",
+        "selection": "#dadec0",
+        "cursor": "#4f3829",
+        "currentLine": "#f8ecc2",
+        "search": "#e6cb8e",
+        "error": "#c14a4a",
+        "warning": "#b47109",
+        "success": "#6c782e",
+        "info": "#45707a"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#4f3829",
+        "ansi": {
+          "black": "#fbf1c7",
+          "red": "#c14a4a",
+          "green": "#6c782e",
+          "yellow": "#b47109",
+          "blue": "#45707a",
+          "magenta": "#945e80",
+          "cyan": "#4c7a5d",
+          "white": "#654735",
+          "brightBlack": "#ddccab",
+          "brightRed": "#c14a4a",
+          "brightGreen": "#6c782e",
+          "brightYellow": "#b47109",
+          "brightBlue": "#45707a",
+          "brightMagenta": "#945e80",
+          "brightCyan": "#4c7a5d",
+          "brightWhite": "#4f3829"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#928374",
+          "italic": true
+        },
+        "keyword": "#945e80",
+        "operator": "#45707a",
+        "punctuation": "#928374",
+        "string": "#6c782e",
+        "escape": "#945e80",
+        "number": "#c35e0a",
+        "constant": "#c35e0a",
+        "function": "#45707a",
+        "type": "#b47109",
+        "builtin": "#4c7a5d",
+        "variable": "#654735",
+        "parameter": {
+          "color": "#4c7a5d",
+          "italic": true
+        },
+        "property": "#4c7a5d",
+        "tag": "#c14a4a",
+        "attribute": {
+          "color": "#4c7a5d",
+          "italic": true
+        },
+        "added": "#6c782e",
+        "removed": "#c14a4a",
+        "changed": "#b47109"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-tranquility.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-pale-branch.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-sunlit-room.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-the-backwater.jpg",
+      "license": "LicenseRef-PublicDomain",
+      "attribution": "Charles William Wyllie (painting 'The Backwater', 1903), via Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/gruvbox/backgrounds/1-the-backwater.jpg"
+    },
+    {
+      "file": "wallpapers/dark-flower-basket.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (painter not credited; contributed by @OldJobobo, commit e921ea3), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/gruvbox/backgrounds/2-flower-basket.jpg"
+    },
+    {
+      "file": "wallpapers/dark-village-square.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (painter not credited; contributed by @OldJobobo, commit e921ea3), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/gruvbox/backgrounds/3-village-square.jpg"
+    },
+    {
+      "file": "wallpapers/light-tranquility.png",
+      "license": "NOASSERTION",
+      "attribution": "u/Post_Boote, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1omc5e9/hyprland_gruvbox_light_theme/nmoglkh/"
+    },
+    {
+      "file": "wallpapers/light-pale-branch.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Szabo Viktor (https://unsplash.com/photos/db3vNqieaiU); linked by u/MEI2011, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1vd7tra/sway_monotone/"
+    },
+    {
+      "file": "wallpapers/light-sunlit-room.jpg",
+      "license": "NOASSERTION",
+      "attribution": "unknown (from the wallpaper collection of u/BlueSkyandDarkland (OP), github.com/krishna4a6av/Wallpapers), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1ozt6di/hyprland_flexoki_slatemist_i_think_the_lighters/npdytyn/"
+    }
+  ]
+}

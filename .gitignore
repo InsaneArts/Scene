@@ -1,0 +1,7 @@
+.build/
+.swiftpm/
+**/xcuserdata/
+.DS_Store
+*.profraw
+build/
+dist/

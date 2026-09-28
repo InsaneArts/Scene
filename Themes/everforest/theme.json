@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/everforest",
+  "version": "1.0.0",
+  "name": "Everforest",
+  "summary": "Soft greens and warm sand, easy on the eyes.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/sainnhe/everforest",
+  "tags": [
+    "dark",
+    "green",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#2d353b",
+        "surface": "#21272c",
+        "overlay": "#343f44",
+        "border": "#475258",
+        "foreground": "#d3c6aa",
+        "muted": "#4f585e",
+        "accent": "#7fbbb3",
+        "selection": "#3d484d",
+        "cursor": "#d3c6aa",
+        "currentLine": "#303a40",
+        "search": "#615e4f",
+        "error": "#e67e80",
+        "warning": "#dbbc7f",
+        "success": "#a7c080",
+        "info": "#7fbbb3"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#d3c6aa",
+        "ansi": {
+          "black": "#2d353b",
+          "red": "#e67e80",
+          "green": "#a7c080",
+          "yellow": "#dbbc7f",
+          "blue": "#7fbbb3",
+          "magenta": "#d699b6",
+          "cyan": "#83c092",
+          "white": "#d3c6aa",
+          "brightBlack": "#475258",
+          "brightRed": "#e67e80",
+          "brightGreen": "#a7c080",
+          "brightYellow": "#dbbc7f",
+          "brightBlue": "#7fbbb3",
+          "brightMagenta": "#d699b6",
+          "brightCyan": "#83c092",
+          "brightWhite": "#d3c6aa"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#4f585e",
+          "italic": true
+        },
+        "keyword": "#d699b6",
+        "operator": "#7fbbb3",
+        "punctuation": "#4f585e",
+        "string": "#a7c080",
+        "escape": "#d699b6",
+        "number": "#e09d7f",
+        "constant": "#e09d7f",
+        "function": "#7fbbb3",
+        "type": "#dbbc7f",
+        "builtin": "#83c092",
+        "variable": "#d3c6aa",
+        "parameter": {
+          "color": "#83c092",
+          "italic": true
+        },
+        "property": "#83c092",
+        "tag": "#e67e80",
+        "attribute": {
+          "color": "#83c092",
+          "italic": true
+        },
+        "added": "#a7c080",
+        "removed": "#e67e80",
+        "changed": "#dbbc7f"
+      },
+      "system": {
+        "accentColor": "green",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-tree-tops.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-misty-pines.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-sun-rays.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "everforest"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-tree-tops.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/everforest/backgrounds/1-tree-tops.jpg"
+    },
+    {
+      "file": "wallpapers/dark-misty-pines.jpg",
+      "license": "NOASSERTION",
+      "attribution": "unknown (posted by u/GlaciConCheese; wallhaven.cc/w/zpxx2w uploaded by guifinatto, no source given), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1rt2r7g/cwm_with_tint2_bar_and_bodhi_linux/"
+    },
+    {
+      "file": "wallpapers/dark-sun-rays.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Sebastian Unrau (https://unsplash.com/photos/sp-p7uuT0tw); linked by u/Beltzak, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1p8ckh5/xfce_xfce_with_i3/"
+    }
+  ]
+}

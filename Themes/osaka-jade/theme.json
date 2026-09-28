@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/osaka-jade",
+  "version": "1.0.0",
+  "name": "Osaka Jade",
+  "summary": "Jade greens over a city at night.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/osaka-jade",
+  "tags": [
+    "dark",
+    "green",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#111c18",
+        "surface": "#0c1512",
+        "overlay": "#23372b",
+        "border": "#53685b",
+        "foreground": "#c1c497",
+        "muted": "#81b8a8",
+        "accent": "#509475",
+        "selection": "#32473b",
+        "cursor": "#f7e8b2",
+        "currentLine": "#1a2a22",
+        "search": "#214029",
+        "error": "#ff5345",
+        "warning": "#459451",
+        "success": "#549e6a",
+        "info": "#509475"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f7e8b2",
+        "ansi": {
+          "black": "#111c18",
+          "red": "#ff5345",
+          "green": "#549e6a",
+          "yellow": "#459451",
+          "blue": "#509475",
+          "magenta": "#d2689c",
+          "cyan": "#2dd5b7",
+          "white": "#c1c497",
+          "brightBlack": "#53685b",
+          "brightRed": "#db9f9c",
+          "brightGreen": "#63b07a",
+          "brightYellow": "#e5c736",
+          "brightBlue": "#acd4cf",
+          "brightMagenta": "#75bbb3",
+          "brightCyan": "#8cd3cb",
+          "brightWhite": "#f7e8b2"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#81b8a8",
+          "italic": true
+        },
+        "keyword": "#75bbb3",
+        "operator": "#acd4cf",
+        "punctuation": "#81b8a8",
+        "string": "#549e6a",
+        "escape": "#75bbb3",
+        "number": "#a2734b",
+        "constant": "#a2734b",
+        "function": "#509475",
+        "type": "#459451",
+        "builtin": "#2dd5b7",
+        "variable": "#c1c497",
+        "parameter": {
+          "color": "#2dd5b7",
+          "italic": true
+        },
+        "property": "#2dd5b7",
+        "tag": "#ff5345",
+        "attribute": {
+          "color": "#2dd5b7",
+          "italic": true
+        },
+        "added": "#549e6a",
+        "removed": "#ff5345",
+        "changed": "#459451"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-glowing-city.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-shaded-entrance.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-mountain-moon.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "bamboo"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-glowing-city.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/osaka-jade/backgrounds/1-glowing-city.jpg"
+    },
+    {
+      "file": "wallpapers/dark-shaded-entrance.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/osaka-jade/backgrounds/2-shaded-entrance.jpg"
+    },
+    {
+      "file": "wallpapers/dark-mountain-moon.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/osaka-jade/backgrounds/3-mountain-moon.jpg"
+    }
+  ]
+}

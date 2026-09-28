@@ -1,0 +1,147 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/tokyo-night",
+  "version": "1.0.0",
+  "name": "Tokyo Night",
+  "summary": "Neon city blues after dark. Omarchy's default theme.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/folke/tokyonight.nvim",
+  "tags": [
+    "dark",
+    "blue",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#1a1b26",
+        "surface": "#13141c",
+        "overlay": "#24283b",
+        "border": "#414868",
+        "foreground": "#a9b1d6",
+        "muted": "#565f89",
+        "accent": "#7aa2f7",
+        "selection": "#292e42",
+        "cursor": "#c0caf5",
+        "currentLine": "#1f2230",
+        "search": "#55473a",
+        "error": "#f7768e",
+        "warning": "#e0af68",
+        "success": "#9ece6a",
+        "info": "#7aa2f7"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#c0caf5",
+        "ansi": {
+          "black": "#1a1b26",
+          "red": "#f7768e",
+          "green": "#9ece6a",
+          "yellow": "#e0af68",
+          "blue": "#7aa2f7",
+          "magenta": "#ad8ee6",
+          "cyan": "#449dab",
+          "white": "#a9b1d6",
+          "brightBlack": "#414868",
+          "brightRed": "#ff7a93",
+          "brightGreen": "#b9f27c",
+          "brightYellow": "#ff9e64",
+          "brightBlue": "#7da6ff",
+          "brightMagenta": "#bb9af7",
+          "brightCyan": "#0db9d7",
+          "brightWhite": "#c0caf5"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#565f89",
+          "italic": true
+        },
+        "keyword": "#bb9af7",
+        "operator": "#7da6ff",
+        "punctuation": "#565f89",
+        "string": "#9ece6a",
+        "escape": "#bb9af7",
+        "number": "#eb927b",
+        "constant": "#eb927b",
+        "function": "#7aa2f7",
+        "type": "#e0af68",
+        "builtin": "#449dab",
+        "variable": "#a9b1d6",
+        "parameter": {
+          "color": "#449dab",
+          "italic": true
+        },
+        "property": "#449dab",
+        "tag": "#f7768e",
+        "attribute": {
+          "color": "#449dab",
+          "italic": true
+        },
+        "added": "#9ece6a",
+        "removed": "#f7768e",
+        "changed": "#e0af68"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-winding-road.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-swirl-buck.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-palm-sunset.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "tokyonight-night"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-winding-road.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added by DHH in commit 9c9e082), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/tokyo-night/backgrounds/0-winding-road.jpg"
+    },
+    {
+      "file": "wallpapers/dark-swirl-buck.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added by DHH in commit 9c9e082), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/tokyo-night/backgrounds/2-swirl-buck.jpg"
+    },
+    {
+      "file": "wallpapers/dark-palm-sunset.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added by DHH in commit 9c9e082), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/tokyo-night/backgrounds/4-omakub.jpg"
+    }
+  ]
+}

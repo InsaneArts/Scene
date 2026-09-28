@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/solitude",
+  "version": "1.0.0",
+  "name": "Solitude",
+  "summary": "Quiet grays in ink and paper.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/solitude",
+  "tags": [
+    "dark",
+    "minimal",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#101315",
+        "surface": "#0c0e10",
+        "overlay": "#101315",
+        "border": "#4b4e55",
+        "foreground": "#cacccc",
+        "muted": "#4b4e55",
+        "accent": "#798186",
+        "selection": "#343d41",
+        "cursor": "#a5aeb4",
+        "currentLine": "#101315",
+        "search": "#4c4f51",
+        "error": "#565d60",
+        "warning": "#d9dbdc",
+        "success": "#9fa5a9",
+        "info": "#798186"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#a5aeb4",
+        "ansi": {
+          "black": "#101315",
+          "red": "#565d60",
+          "green": "#9fa5a9",
+          "yellow": "#d9dbdc",
+          "blue": "#798186",
+          "magenta": "#aeaeae",
+          "cyan": "#707070",
+          "white": "#cacccc",
+          "brightBlack": "#4b4e55",
+          "brightRed": "#de6145",
+          "brightGreen": "#343d41",
+          "brightYellow": "#c9c2b4",
+          "brightBlue": "#5d6367",
+          "brightMagenta": "#9a9a9a",
+          "brightCyan": "#707070",
+          "brightWhite": "#a5aeb4"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#4b4e55",
+          "italic": true
+        },
+        "keyword": "#9a9a9a",
+        "operator": "#5d6367",
+        "punctuation": "#4b4e55",
+        "string": "#9fa5a9",
+        "escape": "#9a9a9a",
+        "number": "#989c9e",
+        "constant": "#989c9e",
+        "function": "#798186",
+        "type": "#d9dbdc",
+        "builtin": "#707070",
+        "variable": "#cacccc",
+        "parameter": {
+          "color": "#707070",
+          "italic": true
+        },
+        "property": "#707070",
+        "tag": "#565d60",
+        "attribute": {
+          "color": "#707070",
+          "italic": true
+        },
+        "added": "#9fa5a9",
+        "removed": "#565d60",
+        "changed": "#d9dbdc"
+      },
+      "system": {
+        "accentColor": "graphite",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-on-pole.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-wreakage.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-climb.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "ashen"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-on-pole.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/solitude/backgrounds/1-on-pole.jpg"
+    },
+    {
+      "file": "wallpapers/dark-wreakage.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added with the Solitude theme by HANCORE, commit 47a53a1), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/solitude/backgrounds/2-wreakage.jpg"
+    },
+    {
+      "file": "wallpapers/dark-climb.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited; added with the Solitude theme by HANCORE, commit 47a53a1), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/solitude/backgrounds/3-climb.jpg"
+    }
+  ]
+}

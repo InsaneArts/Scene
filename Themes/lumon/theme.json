@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/lumon",
+  "version": "1.0.0",
+  "name": "Lumon",
+  "summary": "Cold office blues from Severance.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/lumon",
+  "tags": [
+    "dark",
+    "blue",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#16242d",
+        "surface": "#101b21",
+        "overlay": "#1b2d40",
+        "border": "#304860",
+        "foreground": "#d6e2ee",
+        "muted": "#4d86b0",
+        "accent": "#8bc9eb",
+        "selection": "#243d56",
+        "cursor": "#f2fcff",
+        "currentLine": "#182836",
+        "search": "#314a5c",
+        "error": "#4d86b0",
+        "warning": "#6fa4c9",
+        "success": "#5e95bc",
+        "info": "#6fb8e3"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f2fcff",
+        "ansi": {
+          "black": "#16242d",
+          "red": "#4d86b0",
+          "green": "#5e95bc",
+          "yellow": "#6fa4c9",
+          "blue": "#6fb8e3",
+          "magenta": "#8bc9eb",
+          "cyan": "#b4e4f6",
+          "white": "#d6e2ee",
+          "brightBlack": "#304860",
+          "brightRed": "#73a6cb",
+          "brightGreen": "#86b7d8",
+          "brightYellow": "#9dcae5",
+          "brightBlue": "#f2fcff",
+          "brightMagenta": "#b1d8ee",
+          "brightCyan": "#d1eef8",
+          "brightWhite": "#f2fcff"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#4d86b0",
+          "italic": true
+        },
+        "keyword": "#b1d8ee",
+        "operator": "#f2fcff",
+        "punctuation": "#4d86b0",
+        "string": "#5e95bc",
+        "escape": "#b1d8ee",
+        "number": "#8bc9eb",
+        "constant": "#8bc9eb",
+        "function": "#6fb8e3",
+        "type": "#6fa4c9",
+        "builtin": "#b4e4f6",
+        "variable": "#d6e2ee",
+        "parameter": {
+          "color": "#b4e4f6",
+          "italic": true
+        },
+        "property": "#b4e4f6",
+        "tag": "#4d86b0",
+        "attribute": {
+          "color": "#b4e4f6",
+          "italic": true
+        },
+        "added": "#5e95bc",
+        "removed": "#4d86b0",
+        "changed": "#6fa4c9"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-united-in-severance.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glacier.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-fog-bridge.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "lumon"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-united-in-severance.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/lumon/backgrounds/01-united-in-severance.jpg"
+    },
+    {
+      "file": "wallpapers/dark-glacier.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Tobias Keller (https://unsplash.com/photos/HzSLh5zV42s); linked by u/SolidWarea, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1l1fh7d/kde_freebsd/"
+    },
+    {
+      "file": "wallpapers/dark-fog-bridge.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Cedric Letsch (https://unsplash.com/photos/raNGlrn5JRI); linked by u/TheNewl4rrie, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1v6gpvn/xfce_bro_thinks_hes_macos/"
+    }
+  ]
+}

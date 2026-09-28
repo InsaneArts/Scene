@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/flexoki",
+  "version": "1.0.0",
+  "name": "Flexoki",
+  "summary": "Paper and ink colors for prose and code.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://stephango.com/flexoki",
+  "tags": [
+    "light",
+    "ink",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#fffcf0",
+        "surface": "#f2efe4",
+        "overlay": "#e6e4d9",
+        "border": "#b7b5ac",
+        "foreground": "#100f0f",
+        "muted": "#878580",
+        "accent": "#205ea6",
+        "selection": "#cecdc3",
+        "cursor": "#100f0f",
+        "currentLine": "#f2f0e4",
+        "search": "#f1e1ae",
+        "error": "#d14d41",
+        "warning": "#d0a215",
+        "success": "#879a39",
+        "info": "#205ea6"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#100f0f",
+        "ansi": {
+          "black": "#fffcf0",
+          "red": "#d14d41",
+          "green": "#879a39",
+          "yellow": "#d0a215",
+          "blue": "#205ea6",
+          "magenta": "#ce5d97",
+          "cyan": "#3aa99f",
+          "white": "#100f0f",
+          "brightBlack": "#b7b5ac",
+          "brightRed": "#d14d41",
+          "brightGreen": "#879a39",
+          "brightYellow": "#d0a215",
+          "brightBlue": "#4385be",
+          "brightMagenta": "#ce5d97",
+          "brightCyan": "#3aa99f",
+          "brightWhite": "#100f0f"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#878580",
+          "italic": true
+        },
+        "keyword": "#ce5d97",
+        "operator": "#4385be",
+        "punctuation": "#878580",
+        "string": "#879a39",
+        "escape": "#ce5d97",
+        "number": "#d0772b",
+        "constant": "#d0772b",
+        "function": "#205ea6",
+        "type": "#d0a215",
+        "builtin": "#3aa99f",
+        "variable": "#100f0f",
+        "parameter": {
+          "color": "#3aa99f",
+          "italic": true
+        },
+        "property": "#3aa99f",
+        "tag": "#d14d41",
+        "attribute": {
+          "color": "#3aa99f",
+          "italic": true
+        },
+        "added": "#879a39",
+        "removed": "#d14d41",
+        "changed": "#d0a215"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-orb.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-ink-wave.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-cracked-paper.png",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "flexoki-light"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-orb.png",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/flexoki-light/backgrounds/1-orb.png"
+    },
+    {
+      "file": "wallpapers/light-ink-wave.png",
+      "license": "NOASSERTION",
+      "attribution": "unknown (line art after Hokusai; linked by u/_Redstone (OP) from github.com/NathanGros/BigNats-hyprland-dotfiles), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1kxiuo9/hyprland_my_light_rice_is_finished_so_i_thought/muv5wrx/"
+    },
+    {
+      "file": "wallpapers/light-cracked-paper.png",
+      "license": "NOASSERTION",
+      "attribution": "unknown (from the wallpaper collection of u/BlueSkyandDarkland (OP), github.com/krishna4a6av/Wallpapers), via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1ozt6di/hyprland_flexoki_slatemist_i_think_the_lighters/npdytyn/"
+    }
+  ]
+}

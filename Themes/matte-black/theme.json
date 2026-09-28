@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/matte-black",
+  "version": "1.0.0",
+  "name": "Matte Black",
+  "summary": "Flat black with a single amber accent.",
+  "authors": [
+    {
+      "name": "Omarchy contributors",
+      "url": "https://github.com/omacom/omarchy"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/omacom/omarchy/tree/v4.0.4/themes/matte-black",
+  "tags": [
+    "dark",
+    "minimal",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#121212",
+        "surface": "#0d0d0d",
+        "overlay": "#1e1e1e",
+        "border": "#333333",
+        "foreground": "#bebebe",
+        "muted": "#555555",
+        "accent": "#e68e0d",
+        "selection": "#2a2a2a",
+        "cursor": "#bebebe",
+        "currentLine": "#181818",
+        "search": "#441515",
+        "error": "#d35f5f",
+        "warning": "#b91c1c",
+        "success": "#ffc107",
+        "info": "#e68e0d"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#bebebe",
+        "ansi": {
+          "black": "#121212",
+          "red": "#d35f5f",
+          "green": "#ffc107",
+          "yellow": "#b91c1c",
+          "blue": "#e68e0d",
+          "magenta": "#d35f5f",
+          "cyan": "#bebebe",
+          "white": "#bebebe",
+          "brightBlack": "#333333",
+          "brightRed": "#b91c1c",
+          "brightGreen": "#ffc107",
+          "brightYellow": "#b90a0a",
+          "brightBlue": "#f59e0b",
+          "brightMagenta": "#b91c1c",
+          "brightCyan": "#eaeaea",
+          "brightWhite": "#bebebe"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#555555",
+          "italic": true
+        },
+        "keyword": "#b91c1c",
+        "operator": "#f59e0b",
+        "punctuation": "#555555",
+        "string": "#ffc107",
+        "escape": "#b91c1c",
+        "number": "#c63d3d",
+        "constant": "#c63d3d",
+        "function": "#e68e0d",
+        "type": "#b91c1c",
+        "builtin": "#bebebe",
+        "variable": "#bebebe",
+        "parameter": {
+          "color": "#bebebe",
+          "italic": true
+        },
+        "property": "#bebebe",
+        "tag": "#d35f5f",
+        "attribute": {
+          "color": "#bebebe",
+          "italic": true
+        },
+        "added": "#ffc107",
+        "removed": "#d35f5f",
+        "changed": "#b91c1c"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-ship-at-sea.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-dark-waters.jpg",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-orange-lines.jpg",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "apps": {
+    "neovim": {
+      "preferInstalled": {
+        "colorscheme": "matteblack"
+      }
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-ship-at-sea.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy, via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/matte-black/backgrounds/0-ship-at-sea.jpg"
+    },
+    {
+      "file": "wallpapers/dark-dark-waters.jpg",
+      "license": "NOASSERTION",
+      "attribution": "Omarchy (creator not credited), via Omarchy",
+      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/matte-black/backgrounds/1-dark-waters.jpg"
+    },
+    {
+      "file": "wallpapers/dark-orange-lines.jpg",
+      "license": "LicenseRef-Unsplash",
+      "attribution": "Universtock (https://unsplash.com/photos/hdY-jQt57Ds); linked by u/kylejckson, via r/unixporn",
+      "source": "https://www.reddit.com/r/unixporn/comments/1snsajn/kde_first_rice_minimal_liquid_glassorange/"
+    }
+  ]
+}
