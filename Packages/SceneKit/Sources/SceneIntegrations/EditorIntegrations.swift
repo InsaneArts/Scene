@@ -11,7 +11,7 @@ public struct VSCodeFamilyIntegration: Integration {
     public let id: String
     public let displayName: String
     public let kind = IntegrationKind.editor
-    let bundleIDs: [String]
+    public let bundleIDs: [String]
     let cliName: String
     let userFolder: String
 

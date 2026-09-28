@@ -5,55 +5,109 @@ import SwiftUI
 
 // MARK: - Apps
 
-/// What Scene found on this Mac, and what it can do there.
+/// What Scene found on this Mac, which apps a theme changes, and a way to give one back.
+/// The Apply sheet's switches change the same setting.
 struct AppsView: View {
     @Environment(AppModel.self) private var model
 
     var body: some View {
         let integrations = model.engine.integrations
-        List {
-            Section {
-                ForEach(integrations.filter { model.detections[$0.id]?.installed ?? false }, id: \.id) { integration in
-                    let detection = model.detections[integration.id]!
-                    HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: Symbols.integration(integration.id)).frame(width: 22).foregroundStyle(.secondary)
-                        VStack(alignment: .leading, spacing: 3) {
-                            HStack {
-                                Text(integration.displayName).font(.body.weight(.medium))
-                                if let version = detection.version { Text(version).font(.caption).foregroundStyle(.tertiary) }
-                            }
-                            if let detail = detection.detail { Text(detail).font(.caption).foregroundStyle(.secondary) }
-                            if case .blocked(let reason) = detection.setup { Text(reason).font(.caption).foregroundStyle(.orange) }
-                            if case .needsOneTimeSetup(let step) = detection.setup { Text(step).font(.caption).foregroundStyle(.orange) }
-                            ForEach(detection.conflicts, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
-                            if model.changedOutside[integration.id] != nil {
-                                Label("Changed outside Scene since the last theme. Scene leaves it alone until you apply again.", systemImage: "exclamationmark.triangle")
-                                    .font(.caption).foregroundStyle(.orange)
-                            }
-                        }
-                        Spacer()
-                        if model.ledger.contains(where: { $0.integration == integration.id }) {
-                            Button("Stop Managing") {
-                                model.disabledIntegrations.insert(integration.id)
-                                Task { await model.restoreOriginal(only: [integration.id]) }
-                            }
-                                .help("Restore this app's original setup and leave it out of future themes")
+        let installed = integrations.filter { model.detections[$0.id]?.installed ?? false }
+        let missing = integrations.filter { !(model.detections[$0.id]?.installed ?? false) }
+        PageScroll(title: "Apps", subtitle: "What Scene found on this Mac. A theme changes only the apps that are on.") {
+            ForEach([IntegrationKind.system, .terminal, .editor, .experimental], id: \.self) { kind in
+                let items = installed.filter { $0.kind == kind }
+                if !items.isEmpty {
+                    CardSection(title: title(kind)) {
+                        ForEach(Array(items.enumerated()), id: \.element.id) { index, integration in
+                            if index > 0 { Divider().padding(.leading, 58) }
+                            AppRow(integration: integration)
                         }
                     }
-                    .padding(.vertical, 4)
                 }
-            } header: { Text("Detected on this Mac") }
-            let missing = integrations.filter { !(model.detections[$0.id]?.installed ?? false) }
-            if !missing.isEmpty {
-                Section("Not installed") { Text(missing.map(\.displayName).joined(separator: ", ")).foregroundStyle(.secondary) }
             }
-            Section("Follows Light/Dark only") {
-                Text("Slack, Discord, Safari, and Chrome cannot be themed by other apps. Set their appearance to follow the system and they switch with macOS.")
-                    .foregroundStyle(.secondary)
+            CardSection(title: "Other apps") {
+                VStack(alignment: .leading, spacing: 12) {
+                    if !missing.isEmpty {
+                        HStack(spacing: 14) {
+                            Text("Not installed").foregroundStyle(.secondary)
+                            ForEach(missing, id: \.id) { integration in
+                                Label { Text(integration.displayName) } icon: { AppIcon(id: integration.id, size: 18) }
+                            }
+                        }
+                        .opacity(0.8)
+                        Divider()
+                    }
+                    Text("Slack, Discord, Safari, and Chrome cannot be themed by other apps. Set their appearance to follow the system, and they switch with Light/Dark.")
+                        .foregroundStyle(.secondary)
+                }
+                .font(.callout)
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .navigationTitle("Apps")
         .toolbar { Button { Task { await model.refreshSystemState() } } label: { Label("Check Again", systemImage: "arrow.clockwise") } }
+        .task { if model.detections.isEmpty { await model.refreshSystemState() } }
+    }
+
+    func title(_ kind: IntegrationKind) -> String {
+        switch kind {
+        case .system: "Desktop"
+        case .terminal: "Terminals"
+        case .editor: "Editors"
+        case .experimental: "macOS look · experimental"
+        }
+    }
+}
+
+struct AppRow: View {
+    @Environment(AppModel.self) private var model
+    let integration: any Integration
+
+    var body: some View {
+        let id = integration.id
+        let detection = model.detections[id]
+        HStack(alignment: .top, spacing: 12) {
+            AppIcon(id: id, size: 34)
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(integration.displayName).font(.body.weight(.medium))
+                    if let version = detection?.version { Text(version).font(.caption).foregroundStyle(.tertiary) }
+                }
+                if let detail = detection?.detail { Text(detail).font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle) }
+                ForEach(warnings(detection), id: \.self) { warning in
+                    Label(warning, systemImage: "exclamationmark.triangle.fill").font(.caption).foregroundStyle(.orange)
+                }
+                ForEach(detection?.conflicts ?? [], id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
+            }
+            Spacer(minLength: 8)
+            if model.ledger.contains(where: { $0.integration == id }) {
+                Menu {
+                    Button("Stop Managing") {
+                        model.disabledIntegrations.insert(id)
+                        Task { await model.restoreOriginal(only: [id]) }
+                    }
+                } label: { Image(systemName: "ellipsis.circle") }
+                    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+                    .help("Stop Managing restores this app's original setup and leaves it out of future themes")
+            }
+            Toggle("Change \(integration.displayName) with themes", isOn: Binding(get: { !model.disabledIntegrations.contains(id) }, set: { on in
+                if on { model.disabledIntegrations.remove(id) } else { model.disabledIntegrations.insert(id) }
+            }))
+            .labelsHidden().toggleStyle(.switch).controlSize(.small)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+    }
+
+    func warnings(_ detection: Detection?) -> [String] {
+        var warnings: [String] = []
+        if case .blocked(let reason)? = detection?.setup { warnings.append(reason) }
+        if case .needsOneTimeSetup(let step)? = detection?.setup { warnings.append(step) }
+        if model.changedOutside[integration.id] != nil {
+            warnings.append("Changed outside Scene since the last theme. Scene leaves it alone until you apply again.")
+        }
+        return warnings
     }
 }
 
@@ -64,63 +118,134 @@ struct HistoryView: View {
     @State private var confirmRestore = false
 
     var body: some View {
-        List {
-            Section {
-                if model.history.isEmpty { Text("No theme applied yet.").foregroundStyle(.secondary) }
-                ForEach(model.history.reversed()) { entry in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.themeName).font(.body.weight(.medium))
-                            Text("\(entry.integrations.count) apps · \(entry.mode == .system ? "Matches macOS" : entry.mode.rawValue.capitalized)")
-                                .font(.caption).foregroundStyle(.secondary)
+        PageScroll(title: "History", subtitle: "Undo goes back one theme. Restore puts back everything Scene changed and keeps the changes you made yourself.") {
+            if let current = model.history.last {
+                currentCard(current)
+            } else {
+                CardSection {
+                    ContentUnavailableView("No Theme Applied Yet", systemImage: "clock",
+                                           description: Text("Themes you apply show up here, with a way back."))
+                        .padding(.vertical, 20)
+                }
+            }
+            if model.history.count > 1 {
+                CardSection(title: "Earlier") {
+                    ForEach(Array(model.history.dropLast().reversed().enumerated()), id: \.element.id) { index, entry in
+                        if index > 0 { Divider().padding(.leading, 90) }
+                        HStack(spacing: 12) {
+                            HistoryThumbnail(entry: entry).frame(width: 64, height: 40)
+                                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(entry.themeName).font(.body.weight(.medium))
+                                Text(details(entry)).font(.caption).foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(entry.date, format: .dateTime.month().day().hour().minute()).font(.caption).foregroundStyle(.secondary)
                         }
-                        Spacer()
-                        Text(entry.date, format: .dateTime.day().month().hour().minute()).font(.caption).foregroundStyle(.secondary)
-                    }
-                }
-            } header: { Text("Applied themes") }
-
-            Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Restore puts back everything Scene changed: files, settings, the wallpaper, and macOS appearance. Anything you changed yourself after Scene stays as you left it.")
-                        .foregroundStyle(.secondary)
-                    HStack {
-                        Button("Undo Last Theme") { Task { await model.undo() } }.disabled(model.history.isEmpty)
-                        Button("Restore Original Setup…") { confirmRestore = true }.disabled(model.ledger.isEmpty)
-                    }
-                }
-                .padding(.vertical, 4)
-                if let results = model.lastRestore, !results.isEmpty {
-                    ForEach(results) { item in
-                        Label("\(item.integration): \(item.result)", systemImage: item.keptUserChange ? "person.crop.circle.badge.checkmark" : "arrow.uturn.backward.circle")
-                            .font(.caption)
-                    }
-                }
-            } header: { Text("Restore") }
-
-            if !model.ledger.isEmpty {
-                Section("What Scene manages now") {
-                    ForEach(model.ledger, id: \.resource) { entry in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.operation.summary).font(.callout)
-                            Text(entry.integration).font(.caption).foregroundStyle(.secondary)
-                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
                     }
                 }
             }
+            if let results = model.lastRestore, !results.isEmpty {
+                CardSection(title: "Last restore") {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(results) { item in
+                            Label("\(item.integration): \(item.result)",
+                                  systemImage: item.keptUserChange ? "person.crop.circle.badge.checkmark" : "arrow.uturn.backward.circle")
+                        }
+                    }
+                    .font(.caption)
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            if !model.ledger.isEmpty { ManagedItems(ledger: model.ledger) }
         }
-        .navigationTitle("History")
         .confirmationDialog("Restore your original setup?", isPresented: $confirmRestore) {
             Button("Restore Original Setup", role: .destructive) { Task { await model.restoreOriginal() } }
         } message: {
             Text("Scene restores \(model.ledger.count) items it changed, in \(Set(model.ledger.map(\.integration)).count) apps. Your own later changes stay.")
         }
     }
+
+    func currentCard(_ entry: HistoryEntry) -> some View {
+        CardSection {
+            HStack(spacing: 18) {
+                HistoryThumbnail(entry: entry).frame(width: 184, height: 115)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Current theme").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(entry.themeName).font(.title2.weight(.semibold))
+                    Text(entry.date, format: .dateTime.month().day().hour().minute()).font(.callout).foregroundStyle(.secondary)
+                        + Text(" · " + details(entry)).font(.callout).foregroundStyle(.secondary)
+                    HStack {
+                        Button("Undo Last Theme") { Task { await model.undo() } }
+                        Button("Restore Original Setup…") { confirmRestore = true }.disabled(model.ledger.isEmpty)
+                    }
+                    .padding(.top, 6)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(16)
+        }
+    }
+
+    func details(_ entry: HistoryEntry) -> String {
+        "\(entry.integrations.count) apps · " + (entry.mode == .system ? "Matches macOS" : entry.mode.rawValue.capitalized)
+    }
+}
+
+/// The wallpaper a history entry showed, or a placeholder when its theme is gone.
+struct HistoryThumbnail: View {
+    @Environment(AppModel.self) private var model
+    let entry: HistoryEntry
+
+    var body: some View {
+        if let theme = model.themes.first(where: { $0.id == entry.themeID }) {
+            let variant = ApplyRequest(theme: theme, mode: entry.mode, systemIsDark: model.systemIsDark).current
+            WallpaperView(variant: variant, url: variant.wallpaper(named: entry.wallpaper)?.url, pixels: 480)
+        } else {
+            Rectangle().fill(.quaternary).overlay(Image(systemName: "paintpalette").foregroundStyle(.secondary))
+        }
+    }
+}
+
+/// Every file and setting Scene manages, by app. Restore puts each one back.
+struct ManagedItems: View {
+    let ledger: [LedgerEntry]
+    @State private var expanded = false
+
+    var body: some View {
+        let apps = Dictionary(grouping: ledger, by: \.integration).sorted { $0.key < $1.key }
+        CardSection {
+            DisclosureGroup(isExpanded: $expanded) {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(apps, id: \.key) { app, entries in
+                        HStack(alignment: .top, spacing: 10) {
+                            AppIcon(id: app, size: 20)
+                            VStack(alignment: .leading, spacing: 3) {
+                                ForEach(entries, id: \.resource) { Text($0.operation.summary) }
+                            }
+                            .font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
+                        }
+                    }
+                }
+                .padding(.top, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } label: {
+                Text("What Scene manages now").font(.body.weight(.medium))
+                    + Text("  \(ledger.count) items").foregroundStyle(.secondary)
+            }
+            .padding(14)
+        }
+    }
 }
 
 // MARK: - Settings
 
-enum SettingsTab: Hashable { case general, shortcuts, apps, experimental }
+enum SettingsTab: Hashable { case general, shortcuts, experimental }
 
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
@@ -129,10 +254,9 @@ struct SettingsView: View {
         @Bindable var model = model
         // The window takes each tab's size, so each tab fits its content without scrolling.
         TabView(selection: $model.settingsTab) {
-            GeneralSettings().frame(width: 560, height: 150).tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
-            ShortcutSettings().frame(width: 560, height: 420).tabItem { Label("Shortcuts", systemImage: "keyboard") }.tag(SettingsTab.shortcuts)
-            AppSettings().frame(width: 560, height: 680).tabItem { Label("Apps", systemImage: "square.grid.2x2") }.tag(SettingsTab.apps)
-            ExperimentalSettings().frame(width: 560, height: 270).tabItem { Label("Experimental", systemImage: "flask") }.tag(SettingsTab.experimental)
+            GeneralSettings().frame(width: 540, height: 190).tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
+            ShortcutSettings().frame(width: 540, height: 440).tabItem { Label("Shortcuts", systemImage: "keyboard") }.tag(SettingsTab.shortcuts)
+            ExperimentalSettings().frame(width: 540, height: 330).tabItem { Label("Experimental", systemImage: "flask") }.tag(SettingsTab.experimental)
         }
     }
 }
@@ -147,7 +271,7 @@ struct GeneralSettings: View {
                 Toggle("Open Scene at login", isOn: Binding(get: { _ = model.loginItemVersion; return model.openAtLogin }, set: { model.openAtLogin = $0 }))
                 Toggle("Show Scene in the menu bar", isOn: $model.showMenuBarExtra)
             } footer: {
-                Text("The shortcuts work while Scene runs. Scene keeps running after you close its window.")
+                Text("The shortcuts work while Scene runs. Scene keeps running after you close its window. Choose which apps a theme changes on the Apps page of the main window.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
@@ -161,8 +285,8 @@ struct ShortcutSettings: View {
     var body: some View {
         Form {
             Section {
-                LabeledContent("Switch theme") { ShortcutRecorder(shortcut: \.switcherShortcut, standard: .omarchyDefault) }
-                LabeledContent("Next background") { ShortcutRecorder(shortcut: \.nextBackgroundShortcut, standard: .nextBackgroundDefault) }
+                HStack { Text("Switch theme"); Spacer(); ShortcutRecorder(shortcut: \.switcherShortcut, standard: .omarchyDefault) }
+                HStack { Text("Next background"); Spacer(); ShortcutRecorder(shortcut: \.nextBackgroundShortcut, standard: .nextBackgroundDefault) }
                 if let error = model.shortcutError { Text(error).font(.caption).foregroundStyle(.red) }
             } header: {
                 Text("Anywhere on your Mac")
@@ -171,63 +295,24 @@ struct ShortcutSettings: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("In the theme switcher") {
-                keys("Choose a theme", "← →", "h l")
-                keys("Jump to a theme", "1 – 9")
-                keys("Light or Dark", "↑ ↓", "Tab")
-                keys("Apply", "↩")
-                keys("Close", "Esc")
+                keys("Choose a theme", ["←", "→"], or: ["H", "L"])
+                keys("Jump to a theme", ["1"], through: ["9"])
+                keys("Light or Dark", ["↑", "↓"], or: ["⇥"])
+                keys("Apply", ["↩"])
+                keys("Close", ["esc"])
             }
         }
         .formStyle(.grouped)
     }
 
-    func keys(_ action: String, _ keys: String, _ alternative: String? = nil) -> some View {
+    func keys(_ action: String, _ keys: [String], or alternative: [String] = [], through last: [String] = []) -> some View {
         LabeledContent(action) {
-            (Text(keys).monospaced() + Text(alternative == nil ? "" : " or ") + Text(alternative ?? "").monospaced())
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
-/// Which apps a theme changes. The Apply sheet's toggles change the same setting.
-struct AppSettings: View {
-    @Environment(AppModel.self) private var model
-
-    var body: some View {
-        Form {
-            ForEach([IntegrationKind.system, .experimental, .terminal, .editor], id: \.self) { kind in
-                Section {
-                    ForEach(model.engine.integrations.filter { $0.kind == kind }, id: \.id) { integration in
-                        Toggle(isOn: Binding(get: { !model.disabledIntegrations.contains(integration.id) }, set: { on in
-                            if on { model.disabledIntegrations.remove(integration.id) } else { model.disabledIntegrations.insert(integration.id) }
-                        })) {
-                            HStack {
-                                Image(systemName: Symbols.integration(integration.id)).frame(width: 20).foregroundStyle(.secondary)
-                                Text(integration.displayName)
-                                if model.detections[integration.id]?.installed == false { Text("Not installed").font(.caption).foregroundStyle(.tertiary) }
-                            }
-                        }
-                    }
-                } header: {
-                    Text(title(kind))
-                } footer: {
-                    if kind == .editor {
-                        Text("Apply and the theme switcher change only the apps that are on here. Turning an app off in the Apply sheet turns it off here too.")
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                }
+            HStack(spacing: 4) {
+                ForEach(keys, id: \.self) { Keycap(key: $0) }
+                if !alternative.isEmpty { Text("or").foregroundStyle(.secondary).padding(.horizontal, 3) }
+                if !last.isEmpty { Text("to").foregroundStyle(.secondary).padding(.horizontal, 3) }
+                ForEach(alternative + last, id: \.self) { Keycap(key: $0) }
             }
-        }
-        .formStyle(.grouped)
-        .task { if model.detections.isEmpty { await model.refreshSystemState() } }
-    }
-
-    func title(_ kind: IntegrationKind) -> String {
-        switch kind {
-        case .system: "Desktop"
-        case .experimental: "macOS look (experimental)"
-        case .terminal: "Terminals"
-        case .editor: "Editors"
         }
     }
 }
@@ -242,18 +327,21 @@ struct ExperimentalSettings: View {
                 Toggle("Change accent color, icon style, and Light/Dark with private macOS calls", isOn: $model.experimentalEnabled)
                 Toggle("Allow on macOS versions Scene has not tested", isOn: $model.allowUntested)
                     .disabled(!model.experimentalEnabled)
-                ForEach(["appearance", "accent", "iconStyle"], id: \.self) { id in
-                    LabeledContent(label(id)) {
-                        switch model.tweaks.availability(id) {
-                        case .available: Text("On").foregroundStyle(.green)
-                        case .disabled(let reason): Text(reason).foregroundStyle(.secondary)
-                        }
-                    }
-                    .font(.caption)
-                }
             } footer: {
                 Text("These calls are what System Settings uses. They run in a separate helper, are checked before each use, and are read back after. Any macOS update can turn them off until Scene is updated.")
                     .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Status") {
+                ForEach(["appearance", "accent", "iconStyle"], id: \.self) { id in
+                    LabeledContent {
+                        switch model.tweaks.availability(id) {
+                        case .available: Label("Available", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
+                        case .disabled(let reason): Text(reason).foregroundStyle(.secondary)
+                        }
+                    } label: {
+                        Label { Text(label(id)) } icon: { AppIcon(id: id, size: 20) }
+                    }
+                }
             }
         }
         .formStyle(.grouped)
@@ -280,8 +368,20 @@ struct ShortcutRecorder: View {
     var body: some View {
         let current = model[keyPath: shortcut]
         HStack(spacing: 6) {
-            Button(recording ? "Type a shortcut…" : current?.display ?? "Off") { recording ? stop() : start() }
-                .monospaced()
+            Button { recording ? stop() : start() } label: {
+                HStack(spacing: 3) {
+                    if recording { Text("Type a shortcut…").foregroundStyle(.secondary) }
+                    else if let current { ForEach(current.keys, id: \.self) { Keycap(key: $0) } }
+                    else { Text("Off").foregroundStyle(.secondary) }
+                }
+                .padding(3)
+                .frame(minWidth: 96, minHeight: 28)
+                .background(.primary.opacity(recording ? 0.1 : 0.04), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(recording ? Color.accentColor : .clear, lineWidth: 1.5))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(recording ? "Press the new keys. Esc cancels." : "Click, then press the new keys")
             Button { model[keyPath: shortcut] = standard } label: { Image(systemName: "arrow.counterclockwise") }
                 .buttonStyle(.borderless).help("Use the default, \(standard.display)").disabled(current == standard)
             Button { model[keyPath: shortcut] = nil } label: { Image(systemName: "xmark.circle.fill") }
@@ -338,30 +438,119 @@ struct ShortcutRecorder: View {
 
 // MARK: - Menu bar
 
+/// The menu bar panel: the current theme, every theme to apply in one click, and the usual commands.
 struct MenuBarView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openSettings) private var openSettings
 
     var body: some View {
-        ForEach(model.themes) { theme in
-            Button { Task { await model.quickApply(theme) } } label: {
-                Text(theme.id == model.currentThemeID ? "✓ \(theme.manifest.name)" : theme.manifest.name)
+        VStack(alignment: .leading, spacing: 10) {
+            current
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 12) {
+                    ForEach(model.themes) { theme in tile(theme) }
+                }
+                .padding(4)
+            }
+            .frame(height: 262)
+            Divider()
+            VStack(spacing: 0) {
+                row("Switch Theme…", model.switcherShortcut) { ThemeSwitcher.shared.show() }
+                row("Next Background", model.nextBackgroundShortcut) { Task { await model.nextBackground() } }
+                    .disabled(model.history.isEmpty)
+                row("Undo Last Theme", nil) { Task { await model.undo() } }
+                    .disabled(model.history.isEmpty)
+            }
+            Divider()
+            VStack(spacing: 0) {
+                row("Open Scene", nil) {
+                    openWindow(id: "main")
+                    NSApp.activate(ignoringOtherApps: true)
+                }
+                row("Settings…", nil) {
+                    NSApp.activate(ignoringOtherApps: true)
+                    openSettings()
+                }
+                row("Quit Scene", nil) { NSApp.terminate(nil) }
             }
         }
-        Divider()
-        Button("Switch Theme…" + model.switcherShortcut.menuSuffix) { ThemeSwitcher.shared.show() }
-        Button("Next Background" + model.nextBackgroundShortcut.menuSuffix) { Task { await model.nextBackground() } }.disabled(model.history.isEmpty)
-        Button("Undo Last Theme") { Task { await model.undo() } }.disabled(model.history.isEmpty)
-        Button("Open Scene") {
-            openWindow(id: "main")
-            NSApp.activate(ignoringOtherApps: true)
+        .padding(12)
+        .frame(width: 340)
+    }
+
+    @ViewBuilder
+    var current: some View {
+        ZStack(alignment: .bottomLeading) {
+            if let entry = model.history.last { HistoryThumbnail(entry: entry) } else { Rectangle().fill(.quaternary) }
+            LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+            HStack(alignment: .bottom) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(model.history.isEmpty ? "No theme yet" : "Current theme").font(.caption).opacity(0.8)
+                    Text(model.history.last?.themeName ?? "Pick one below").font(.title3.weight(.semibold))
+                }
+                Spacer()
+                if model.isWorking { ProgressView().controlSize(.small).environment(\.colorScheme, .dark) }
+            }
+            .foregroundStyle(.white)
+            .padding(12)
         }
-        Button("Settings…") {
-            NSApp.activate(ignoringOtherApps: true)
-            openSettings()
+        .frame(height: 92)
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    func tile(_ theme: Theme) -> some View {
+        let variant = model.variant(for: theme)
+        let isCurrent = theme.id == model.currentThemeID
+        return Button { Task { await model.quickApply(theme) } } label: {
+            VStack(spacing: 5) {
+                WallpaperView(variant: variant, url: model.wallpaper(for: variant)?.url, pixels: 240)
+                    .frame(height: 56)
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 7, style: .continuous).strokeBorder(.primary.opacity(0.12), lineWidth: 0.5))
+                    .padding(3)
+                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(isCurrent ? Color.accentColor : .clear, lineWidth: 2))
+                Text(theme.manifest.name).font(.caption).lineLimit(1)
+            }
+            .contentShape(Rectangle())
         }
-        Divider()
-        Button("Quit Scene") { NSApp.terminate(nil) }
+        .buttonStyle(.plain)
+        .disabled(model.isWorking)
+        .help("Apply \(theme.manifest.name)")
+    }
+
+    func row(_ title: String, _ shortcut: HotKeySpec?, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(title)
+                Spacer()
+                if let shortcut { Text(shortcut.display).foregroundStyle(.secondary) }
+            }
+        }
+        .buttonStyle(MenuRowStyle())
+    }
+}
+
+/// A menu item look: the row lights up under the pointer.
+struct MenuRowStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View { Row(configuration: configuration) }
+
+    struct Row: View {
+        let configuration: ButtonStyleConfiguration
+        @Environment(\.isEnabled) private var isEnabled
+        @State private var hovering = false
+
+        var body: some View {
+            let lit = hovering && isEnabled
+            configuration.label
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(lit ? Color.white : .primary)
+                .background(lit ? Color.accentColor : .clear, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .opacity(isEnabled ? 1 : 0.4)
+                .contentShape(Rectangle())
+                .onHover { hovering = $0 }
+        }
     }
 }

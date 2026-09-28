@@ -8,16 +8,16 @@ extension RGBA {
 
 // MARK: - Wallpaper thumbnails
 
-/// Downsampled wallpaper images, decoded off the main thread through ImageIO thumbnails.
+/// Downsampled wallpaper images, decoded off the main thread through ImageIO thumbnails. Each size is cached on its own.
 @MainActor
 final class Thumbnails {
     static let shared = Thumbnails()
-    private let cache = NSCache<NSURL, NSImage>()
+    private let cache = NSCache<NSString, NSImage>()
 
-    func cached(_ url: URL) -> NSImage? { cache.object(forKey: url as NSURL) }
+    func cached(_ url: URL, maxPixels: Int) -> NSImage? { cache.object(forKey: "\(maxPixels)|\(url.path)" as NSString) }
 
-    func load(_ url: URL, maxPixels: Int = 1600) async -> NSImage? {
-        if let hit = cached(url) { return hit }
+    func load(_ url: URL, maxPixels: Int) async -> NSImage? {
+        if let hit = cached(url, maxPixels: maxPixels) { return hit }
         let image = await Task.detached(priority: .userInitiated) { () -> CGImage? in
             guard let source = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary) else { return nil }
             let options: [CFString: Any] = [kCGImageSourceCreateThumbnailFromImageAlways: true, kCGImageSourceCreateThumbnailWithTransform: true,
@@ -26,7 +26,7 @@ final class Thumbnails {
         }.value
         guard let image else { return nil }
         let result = NSImage(cgImage: image, size: NSSize(width: image.width, height: image.height))
-        cache.setObject(result, forKey: url as NSURL)
+        cache.setObject(result, forKey: "\(maxPixels)|\(url.path)" as NSString)
         return result
     }
 }
@@ -34,23 +34,34 @@ final class Thumbnails {
 struct WallpaperView: View {
     let variant: ResolvedVariant
     let url: URL?
+    /// The long side to decode. Small views and blurred backgrounds need few pixels.
+    let pixels: Int
     @State private var image: NSImage?
 
+    init(variant: ResolvedVariant, url: URL?, pixels: Int = 1600) {
+        self.variant = variant
+        self.url = url
+        self.pixels = pixels
+        // A cached image shows in the first frame, so a change of wallpaper does not flash the gradient.
+        _image = State(initialValue: url.flatMap { Thumbnails.shared.cached($0, maxPixels: pixels) })
+    }
+
     var body: some View {
-        ZStack {
-            LinearGradient(colors: [variant.interface.surface.color, variant.interface.background.color, variant.interface.accent.color.opacity(0.35)],
-                           startPoint: .topLeading, endPoint: .bottomTrailing)
-            if let image {
-                Image(nsImage: image).resizable().aspectRatio(contentMode: .fill).transition(.opacity)
+        LinearGradient(colors: [variant.interface.surface.color, variant.interface.background.color, variant.interface.accent.color.opacity(0.35)],
+                       startPoint: .topLeading, endPoint: .bottomTrailing)
+            // An overlay takes the gradient's size, so an image that fills never makes the view larger than offered.
+            .overlay {
+                if let image {
+                    Image(nsImage: image).resizable().aspectRatio(contentMode: .fill).transition(.opacity)
+                }
             }
-        }
-        .clipped()
-        .task(id: url) {
-            guard let url else { image = nil; return }
-            if let hit = Thumbnails.shared.cached(url) { image = hit; return }
-            let loaded = await Thumbnails.shared.load(url)
-            withAnimation(.easeOut(duration: 0.2)) { image = loaded }
-        }
+            .clipped()
+            .task(id: url) {
+                guard let url else { image = nil; return }
+                if let hit = Thumbnails.shared.cached(url, maxPixels: pixels) { image = hit; return }
+                let loaded = await Thumbnails.shared.load(url, maxPixels: pixels)
+                withAnimation(.easeOut(duration: 0.2)) { image = loaded }
+            }
     }
 }
 
@@ -213,12 +224,11 @@ enum Highlighter {
 struct DesktopPreview: View {
     let variant: ResolvedVariant
     let wallpaper: URL?
-    var compact = false
 
     var body: some View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
-            let font = max(5, w / (compact ? 70 : 62))
+            let font = max(5, w / 62)
             ZStack(alignment: .topLeading) {
                 WallpaperView(variant: variant, url: wallpaper)
                 // Menu bar.
@@ -229,6 +239,7 @@ struct DesktopPreview: View {
                     Spacer()
                     Circle().fill(variant.interface.accent.color).frame(width: font * 0.9, height: font * 0.9)
                     Image(systemName: variant.appearance == .dark ? "moon.fill" : "sun.max.fill")
+                    Text("9:41")
                 }
                 .font(.system(size: font))
                 .foregroundStyle(variant.appearance == .dark ? Color.white.opacity(0.9) : Color.black.opacity(0.85))
@@ -243,7 +254,7 @@ struct DesktopPreview: View {
             }
         }
         .aspectRatio(16 / 10, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: compact ? 10 : 14, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     func window<Content: View>(title: String, w: CGFloat, h: CGFloat, @ViewBuilder content: () -> Content) -> some View {
@@ -269,18 +280,5 @@ struct DesktopPreview: View {
         .clipShape(RoundedRectangle(cornerRadius: w * 0.025, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: w * 0.025, style: .continuous).strokeBorder(ui.border.color.opacity(0.6), lineWidth: 0.5))
         .shadow(color: .black.opacity(0.35), radius: w * 0.03, y: h * 0.02)
-    }
-}
-
-// MARK: - Palette strip
-
-struct PaletteStrip: View {
-    let variant: ResolvedVariant
-    var body: some View {
-        HStack(spacing: 3) {
-            ForEach(Array(variant.terminal.ansi.prefix(8).enumerated()), id: \.offset) { _, color in
-                RoundedRectangle(cornerRadius: 3).fill(color.color).frame(height: 10)
-            }
-        }
     }
 }

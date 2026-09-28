@@ -56,7 +56,7 @@ These change the real Mac, so run them only when the user agrees:
 
 ## Checking UI
 
-`screencapture` needs the Screen Recording permission, which the terminal doesn't have. Snapshot mode needs none: the app renders its own windows to PNG files and quits. It never applies anything.
+`screencapture` needs the Screen Recording permission, which the terminal doesn't have. Snapshot mode needs none: the app captures its own windows through the window server (`CGWindowListCreateImageFromArray`, which a process may use on its own windows without the permission), writes PNG files, and quits. It never applies anything.
 
 ```sh
 open -W -n -g -a "$PWD/.build/Xcode/Build/Products/Debug/Scene.app" \
@@ -66,11 +66,13 @@ open -W -n -g -a "$PWD/.build/Xcode/Build/Products/Debug/Scene.app" \
 
 - `open -n -g` starts a new copy in the background, so it doesn't take focus from the user.
 - `SCENE_SNAPSHOT_SWITCHER=0` skips the real switcher. The switcher takes keyboard focus over every screen, and ↩ in it applies a theme to the real Mac. Always set it when the user may be at the Mac.
-- `SCENE_SNAPSHOT_THEME=<theme id>` picks the theme for the theme page and the carousel.
+- `SCENE_SNAPSHOT_THEME=<theme id>` (for example `scene/tokyo-night`) picks the theme for the theme page, the Apply sheet, and the carousel.
+- `SCENE_SNAPSHOT_APPEARANCE=light` or `dark` renders Scene in that look, whatever macOS uses.
 - `-ApplePersistenceIgnoreState YES` makes the main window open even when it was closed last time.
 - The snapshot copy shares the user's settings. To render a default value, pass it in the argument domain instead of writing it, for example `-switcherShortcut "<hex of the JSON>"`.
+- The main window keeps the user's saved size. If macOS tiled it, it keeps the tile's size too.
 
-Files are named `<step>-<window index>.png`. The main window's split views render blank, and some buttons render as blank capsules. That's why the theme page, the carousel (`11-carousel`), and Settings (`10-settings-<tab>`) also render in windows of their own. The images in `.github/assets` come from these renders.
+Files are named `<step>-<window index>.png`: `1-theme`, `2-other-look` (the theme's other variant), `3-background-picked`, `4-apply-plan` (the window with its sheet), `5-apps`, `6-history`, `7-carousel`, `8-menu-bar`, and `9-settings-<tab>`, then `10-switcher` and `11-switcher-moved` when the real switcher runs. The carousel and the menu bar panel render in windows of their own. Scene runs in the background, so windows show their inactive look: gray sidebar text and gray standard buttons. The images in `.github/assets` come from these renders.
 
 ## Bundled themes
 

@@ -99,15 +99,18 @@ The flow is detect, plan, apply, verify, and later undo or restore.
 
 | File | What it holds |
 |---|---|
-| `SceneApp.swift` | The `@main` app: the main window, menu commands (Switch Theme…, Next Background, Undo Last Theme ⌥⌘Z), the Settings scene, and the menu bar extra. `AppDelegate` keeps Scene running when its window closes and registers the shortcuts at launch |
+| `SceneApp.swift` | The `@main` app: the main window, menu commands (Switch Theme…, Next Background, Undo Last Theme ⌥⌘Z), the Settings scene, and the menu bar panel (a `.window` style menu bar extra). `AppDelegate` keeps Scene running when its window closes and registers the shortcuts at launch |
 | `AppModel.swift` | `@Observable` state and actions: themes, detections, history, ledger, settings, background picks, plan, apply, quick apply, undo, restore, Next Background, shortcut registration, and `Locations` (bundled themes, helper) |
-| `ContentView.swift` | The main window: sidebar (Themes, Apps, History), theme gallery, theme page with the background picker, import, and a toolbar with import, undo, and Settings |
-| `ApplySheet.swift` | The plan for each app with toggles, the appearance mode, and the results |
-| `OtherViews.swift` | The Apps and History pages, Settings (General, Shortcuts, Apps, Experimental), `ShortcutRecorder`, and the menu bar menu |
-| `ThemeSwitcher.swift` | The full-screen carousel: an `NSPanel` per screen (non-activating, `.screenSaver` level), key handling, and the status HUD |
+| `ContentView.swift` | The main window: a sidebar with Apps, History, and every theme (wallpaper thumbnail and palette), the theme page with the background picker and Apply, import, and a toolbar with the switcher, import, undo, and Settings |
+| `ApplySheet.swift` | The plan: a wallpaper header, the appearance mode, each app with its icon, a switch, and its changes, and the results |
+| `OtherViews.swift` | The Apps page (a switch per app, and Stop Managing), the History page, Settings (General, Shortcuts, Experimental), `ShortcutRecorder`, and the menu bar panel |
+| `ThemeSwitcher.swift` | The full-screen carousel: an `NSPanel` per screen (non-activating, `.screenSaver` level), key handling, and the status HUD. Every screen shows the selected theme's wallpaper, blurred |
 | `HotKey.swift` | Global shortcuts through Carbon `RegisterEventHotKey`, which needs no permission. Id 1 is the switcher, id 2 is Next Background |
-| `Previews.swift` | Desktop, terminal, and code previews in a theme's colors, and the thumbnail cache |
-| `Snapshot.swift` | `SCENE_SNAPSHOT` mode, which renders windows to PNG files without screen recording |
+| `Previews.swift` | Desktop, terminal, and code previews in a theme's colors, and the thumbnail cache (one entry per image and size) |
+| `Design.swift` | Shared parts of the look: the blurred wallpaper backdrop, palette dots, keycaps, pills, cards, the capsule button, app icons, and a Liquid Glass helper |
+| `Snapshot.swift` | `SCENE_SNAPSHOT` mode, which renders the windows to PNG files through the window server, without screen recording |
+
+**Look.** A theme's page shows the theme in its own light or dark look (`colorScheme`) on its own wallpaper, blurred (`AmbientBackground`), and its Apply button takes the theme's accent color. The switcher, always dark, shows the selected theme's wallpaper, blurred, on every screen. The Apply sheet has the wallpaper as its header and the accent color on its Apply button. The sidebar, the sheet's list, Apps, History, and Settings follow macOS. `AppIcon` shows an app's own icon, found by bundle id, or a System Settings–style tile for macOS settings, Neovim, and apps that are not installed. `View.glass(in:)` uses Liquid Glass on macOS 26 and a material before.
 
 Settings and state live in `UserDefaults` (`com.insanearts.scene`):
 
@@ -116,7 +119,7 @@ Settings and state live in `UserDefaults` (`com.insanearts.scene`):
 | `experimentalEnabled` | Private calls are on (default: on) |
 | `allowUntested` | Private calls may run on untested macOS builds |
 | `showMenuBarExtra` | Show the menu bar icon |
-| `disabledIntegrations` | Apps a theme leaves alone. Set in Settings → Apps, in the Apply sheet, and by Stop Managing |
+| `disabledIntegrations` | Apps a theme leaves alone. Set on the Apps page, in the Apply sheet, and by Stop Managing |
 | `backgroundChoices` | The picked wallpaper file per `"<theme id>#<appearance>"` |
 | `switcherShortcut`, `nextBackgroundShortcut` | `HotKeySpec` as JSON. No value means the default, empty data means off |
 

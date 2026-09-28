@@ -15,15 +15,15 @@ Press ⌃⇧⌘Space to show your themes over every screen. It is Omarchy's them
 ## Three backgrounds for every look
 
 <p align="center">
-  <img src=".github/assets/film-backgrounds.png" width="100%" alt="Tokyo Night's page: a desktop preview and three backgrounds to pick from" />
+  <img src=".github/assets/film-backgrounds.png" width="100%" alt="Scene's window: the themes in the sidebar, and Tokyo Night's page with a desktop preview, three backgrounds to pick from, and Apply" />
 </p>
 
-Each theme has three backgrounds for its dark look and three for its light look. Pick one on the theme's page. Press ⌃⌥⌘Space to show the next one, like Omarchy's Super + Ctrl + Space. It changes only the wallpaper, and Undo brings the last one back.
+Each theme has three backgrounds for its dark look and three for its light look. Pick one on the theme's page, which shows the theme on its own wallpaper, in its own light or dark look. Press ⌃⌥⌘Space to show the next one, like Omarchy's Super + Ctrl + Space. It changes only the wallpaper, and Undo brings the last one back.
 
 ## See every change first
 
 <p align="center">
-  <img src=".github/assets/film-apply.png" width="100%" alt="The Apply sheet for Catppuccin, listing each app and what changes in it" />
+  <img src=".github/assets/film-apply.png" width="100%" alt="The Apply sheet for Tokyo Night, listing each app with its icon, a switch, and what changes in it" />
 </p>
 
 Before a theme touches anything, Scene lists each app and every file and setting it will change. Turn an app off to leave it alone. Undo goes back to the previous theme. Restore Original Setup puts back everything Scene changed and keeps the changes you made yourself.
@@ -71,17 +71,17 @@ defaults delete com.insanearts.scene
 
 ## Using it
 
-- Double-click a theme, or select it and click Apply…, to see the plan and apply it.
+- Pick a theme in the sidebar to see its page. Click Apply…, double-click the theme, or press ↩ to see the plan and apply it.
 - ⌥⌘Z undoes the last theme.
-- The Apps page shows what Scene found on your Mac. Stop Managing restores one app and leaves it out of later themes.
-- Import a `.scenetheme` file, a theme folder, or an Omarchy theme folder with the import button in the toolbar.
-- Turn on the menu bar icon in Settings to switch themes from the menu bar.
+- The Apps page shows what Scene found on your Mac. Its switches choose which apps a theme changes. Stop Managing, in an app's ⋯ menu, restores that app and leaves it out of later themes.
+- Import a `.scenetheme` file, a theme folder, or an Omarchy theme folder with the import button in the toolbar. The toolbar also opens the switcher.
+- Turn on the menu bar icon in Settings to pick a theme from a panel of wallpapers in the menu bar.
 
 ## Settings
 
 <img src=".github/assets/settings.png" width="330" align="right" alt="Scene's Shortcuts settings: Switch theme and Next background, and the switcher's keys" />
 
-Open Settings with ⌘, or the gear in the toolbar. Record, reset, or turn off each shortcut. The Shortcuts tab also lists the switcher's keys. Apps chooses which apps a theme changes. Open at login and the menu bar icon are under General. The private macOS calls for accent color, icon style, and Light/Dark are under Experimental.
+Open Settings with ⌘, or the gear in the toolbar. Record, reset, or turn off each shortcut. The Shortcuts tab also lists the switcher's keys. Open at login and the menu bar icon are under General. The private macOS calls for accent color, icon style, and Light/Dark are under Experimental.
 
 <br clear="right" />
 

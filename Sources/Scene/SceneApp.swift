@@ -32,9 +32,10 @@ struct SceneApp: App {
         Window("Scene", id: "main") {
             ContentView()
                 .environment(model)
-                .frame(minWidth: 980, minHeight: 640)
+                .frame(minWidth: 900, minHeight: 600)
         }
-        .windowToolbarStyle(.unified)
+        .defaultSize(width: 1180, height: 800)
+        .windowToolbarStyle(.unified(showsTitle: false))
         .commands {
             CommandGroup(after: .newItem) {
                 Button("Switch Theme…" + model.switcherShortcut.menuSuffix) { ThemeSwitcher.shared.show() }
@@ -53,5 +54,6 @@ struct SceneApp: App {
         MenuBarExtra("Scene", systemImage: "paintpalette", isInserted: $model.showMenuBarExtra) {
             MenuBarView().environment(model)
         }
+        .menuBarExtraStyle(.window)
     }
 }

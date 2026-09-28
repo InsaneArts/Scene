@@ -133,6 +133,11 @@ final class AppModel {
         return theme.variants[preferred] != nil ? preferred : (theme.availableAppearances.first ?? .dark)
     }
 
+    /// The variant Scene shows for a theme: the one you picked, or the one that matches macOS.
+    func variant(for theme: Theme) -> ResolvedVariant {
+        theme.variants[appearance(for: theme)] ?? theme.variants.values.first!
+    }
+
     var currentThemeID: String? { history.last?.themeID }
 
     // MARK: Loading

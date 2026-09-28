@@ -9,13 +9,14 @@ Last updated: 2026-09-28. Version 0.1.0, build 4 (`version.env`).
 - On macOS 26.6.2 (25G83), the live test applied a theme to the real Mac and restored it byte for byte. The private-call check passed 7 of 7. See [DEVELOPMENT.md](DEVELOPMENT.md).
 - Builds 1 to 3 were signed with Developer ID and notarized. Build 3's zip was in `dist/`, which is not in git.
 - Build 4 was built by Xcode and signed with Developer ID (hardened runtime, secure timestamps, universal, SDK 26.5). It passed every release check except notarization, which was not run.
-- UI checked in snapshot mode: the switcher carousel, the theme page with the background picker, the Apply sheet, and all four Settings tabs.
+- The redesigned UI (branch `ui-redesign`), checked in snapshot mode in the light and the dark look, with several themes: the main window (sidebar, theme page, background picker, Apps, History), the Apply sheet, the switcher carousel, the menu bar panel, and the three Settings tabs.
 
 ## Not verified
 
 - Pressing the global shortcuts on the real desktop: the switcher (⌃⇧⌘Space), and Next Background (⌃⌥⌘Space) changing the real wallpaper, followed by Undo.
-- Recording a shortcut in Settings, and clicking Stop Managing (it now also turns the app off in Settings → Apps).
-- The theme gallery in the main window. Snapshot mode renders it blank.
+- Recording a shortcut in Settings, and clicking Stop Managing (it also turns the app's switch off on the Apps page).
+- The redesigned UI on macOS 14 and 15. Liquid Glass falls back to a material there, and without the macOS 26 toolbar spacer the toolbar buttons may sit next to the sidebar.
+- In the redesigned UI: applying from the Apply sheet and its results page, the menu bar panel in the real menu bar, the switcher's backdrop on a second screen, and the status HUD. Snapshot mode never applies, and it renders the menu bar panel and the carousel in plain windows.
 - iTerm2 on a real Mac. It is not installed on the test Mac.
 - Notarizing an Xcode-built release. From the agent session, the preflight could not read the `camus-notary` profile.
 

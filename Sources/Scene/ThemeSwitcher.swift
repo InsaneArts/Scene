@@ -93,7 +93,7 @@ final class ThemeSwitcher {
                 panel.contentView = NSHostingView(rootView: ThemeCarouselView(state: state, onApply: { [weak self] in self?.applySelected() },
                                                                                 onClose: { [weak self] in self?.hide() }))
             } else {
-                panel.contentView = NSHostingView(rootView: BackdropView(onClose: { [weak self] in self?.hide() }))
+                panel.contentView = NSHostingView(rootView: SwitcherBackdrop(state: state, onClose: { [weak self] in self?.hide() }))
             }
             panel.setFrame(screen.frame, display: false)
             panel.orderFrontRegardless()
@@ -210,15 +210,16 @@ struct ThemeCarouselView: View {
     let onApply: () -> Void
     let onClose: () -> Void
     @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         GeometryReader { screen in
-            let width = min(screen.size.width * 0.42, 720)
+            let width = min(screen.size.width * 0.44, 760)
             ZStack {
-                BackdropView(onClose: onClose)
-                VStack(spacing: 34) {
+                SwitcherBackdrop(state: state, onClose: onClose)
+                VStack(spacing: 36) {
                     Spacer(minLength: 0)
-                    carousel(cardWidth: width).frame(height: width * 10 / 16 + 24)
+                    carousel(cardWidth: width).frame(height: width * 10 / 16 + 40)
                     info
                     Spacer(minLength: 0)
                     hints.padding(.bottom, 44)
@@ -228,110 +229,128 @@ struct ThemeCarouselView: View {
             }
         }
         .environment(\.colorScheme, .dark)
-        .onAppear { withAnimation(.easeOut(duration: 0.18)) { appeared = true } }
+        .onAppear { withAnimation(.easeOut(duration: 0.2)) { appeared = true } }
     }
 
     func carousel(cardWidth width: CGFloat) -> some View {
         GeometryReader { geo in
             let height = width * 10 / 16
-            let step = width * 0.66 + 28
+            let step = width * 0.7 + 24
             ZStack {
                 ForEach(Array(state.themes.enumerated()), id: \.element.id) { index, theme in
                     let distance = index - state.selection.index
                     let variant = theme.variants[state.appearance(theme)] ?? theme.variants.values.first!
                     card(theme: theme, variant: variant, selected: distance == 0)
                         .frame(width: width, height: height)
+                        // Side cards turn toward the middle, like pages of a book.
+                        .rotation3DEffect(.degrees(distance == 0 || reduceMotion ? 0 : distance < 0 ? 24 : -24), axis: (x: 0, y: 1, z: 0), perspective: 0.5)
                         .scaleEffect(distance == 0 ? 1 : 0.8)
-                        .opacity(distance == 0 ? 1 : max(0, 0.62 - Double(abs(distance) - 1) * 0.3))
-                        .blur(radius: distance == 0 ? 0 : 1.2)
+                        .opacity(distance == 0 ? 1 : max(0, 0.7 - Double(abs(distance) - 1) * 0.35))
                         .offset(x: CGFloat(distance) * step)
                         .zIndex(-Double(abs(distance)))
                         .onTapGesture { distance == 0 ? onApply() : state.selection.select(index) }
                 }
             }
             .frame(width: geo.size.width, height: geo.size.height)
-            .animation(.spring(response: 0.36, dampingFraction: 0.86), value: state.selection.index)
-            .animation(.easeInOut(duration: 0.22), value: state.previewed)
+            .animation(.spring(response: 0.38, dampingFraction: 0.86), value: state.selection.index)
+            .animation(.easeInOut(duration: 0.25), value: state.previewed)
         }
     }
 
     func card(theme: Theme, variant: ResolvedVariant, selected: Bool) -> some View {
         DesktopPreview(variant: variant, wallpaper: state.wallpaper(variant))
             .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(selected ? Color.white.opacity(0.9) : Color.white.opacity(0.12), lineWidth: selected ? 3 : 1))
+                .strokeBorder(.white.opacity(selected ? 0.35 : 0.12), lineWidth: 1))
             .overlay(alignment: .topTrailing) {
                 if theme.id == state.currentID {
-                    Text("Current").font(.caption.weight(.semibold)).padding(.horizontal, 9).padding(.vertical, 4)
-                        .background(.ultraThinMaterial, in: Capsule()).padding(12)
+                    Label("Current", systemImage: "checkmark").font(.caption.weight(.semibold))
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .glass(in: Capsule())
+                        .padding(14)
                 }
             }
-            .shadow(color: .black.opacity(selected ? 0.5 : 0.25), radius: selected ? 30 : 12, y: selected ? 18 : 8)
+            .shadow(color: .black.opacity(selected ? 0.55 : 0.3), radius: selected ? 44 : 16, y: selected ? 26 : 10)
     }
 
     var info: some View {
         let theme = state.selected
         let appearance = state.appearance(theme)
-        return VStack(spacing: 10) {
-            Text(theme.manifest.name).font(.system(size: 34, weight: .semibold))
+        let variant = theme.variants[appearance] ?? theme.variants.values.first!
+        return VStack(spacing: 12) {
+            Text(theme.manifest.name).font(.system(size: 42, weight: .bold))
             if let summary = theme.manifest.summary { Text(summary).font(.title3).foregroundStyle(.secondary) }
-            HStack(spacing: 14) {
-                if let variant = theme.variants[appearance] { PaletteStrip(variant: variant).frame(width: 170) }
-                ForEach(theme.availableAppearances.reversed(), id: \.self) { a in
-                    Label(a == .dark ? "Dark" : "Light", systemImage: a == .dark ? "moon.fill" : "sun.max.fill")
-                        .font(.callout.weight(a == appearance ? .semibold : .regular))
-                        .padding(.horizontal, 10).padding(.vertical, 5)
-                        .background(a == appearance ? Color.white.opacity(0.18) : .clear, in: Capsule())
-                        .foregroundStyle(a == appearance ? .primary : .secondary)
+            HStack(spacing: 18) {
+                PaletteDots(colors: variant.hues, size: 13)
+                HStack(spacing: 2) {
+                    ForEach(theme.availableAppearances.reversed(), id: \.self) { look in
+                        Label(look == .dark ? "Dark" : "Light", systemImage: look == .dark ? "moon.fill" : "sun.max.fill")
+                            .font(.callout.weight(.medium))
+                            .padding(.horizontal, 12).padding(.vertical, 6)
+                            .background(look == appearance ? Color.white.opacity(0.2) : .clear, in: Capsule())
+                            .foregroundStyle(look == appearance ? .primary : .secondary)
+                    }
                 }
+                .padding(3)
+                .glass(in: Capsule())
             }
-            Text("\(state.selection.index + 1) of \(state.themes.count)").font(.caption).foregroundStyle(.tertiary)
+            .padding(.top, 4)
+            PageDots(count: state.themes.count, index: state.selection.index).padding(.top, 10)
         }
-        .animation(.easeInOut(duration: 0.15), value: state.selection.index)
+        .animation(.easeInOut(duration: 0.18), value: state.selection.index)
     }
 
     var hints: some View {
-        HStack(spacing: 22) {
-            hint("← →", "Choose")
-            if state.themes.contains(where: { $0.availableAppearances.count == 2 }) { hint("↑ ↓", "Light / Dark") }
-            hint("↩", "Apply")
-            hint("esc", "Close")
+        HStack(spacing: 24) {
+            hint(["←", "→"], "Choose")
+            if state.themes.contains(where: { $0.availableAppearances.count == 2 }) { hint(["↑", "↓"], "Light / Dark") }
+            hint(["↩"], "Apply")
+            hint(["esc"], "Close")
         }
         .font(.callout)
         .foregroundStyle(.secondary)
+        .padding(.horizontal, 18).padding(.vertical, 10)
+        .glass(in: Capsule())
     }
 
-    func hint(_ key: String, _ label: String) -> some View {
-        HStack(spacing: 7) {
-            Text(key).font(.callout.monospaced().weight(.medium)).padding(.horizontal, 8).padding(.vertical, 3)
-                .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
-            Text(label)
+    func hint(_ keys: [String], _ label: String) -> some View {
+        HStack(spacing: 6) {
+            ForEach(keys, id: \.self) { Keycap(key: $0) }
+            Text(label).padding(.leading, 2)
         }
     }
 }
 
-/// The dimmed, blurred desktop behind the carousel. A click closes it.
-struct BackdropView: View {
-    let onClose: () -> Void
+/// Where the carousel is: one dot per theme. Too many themes for dots show "7 of 40".
+struct PageDots: View {
+    let count: Int
+    let index: Int
+
     var body: some View {
-        ZStack {
-            VisualEffect(material: .fullScreenUI).ignoresSafeArea()
-            Color.black.opacity(0.32).ignoresSafeArea()
+        if count <= 30 {
+            HStack(spacing: 6) {
+                ForEach(0..<count, id: \.self) { i in
+                    Capsule().fill(i == index ? Color.white : Color.white.opacity(0.3))
+                        .frame(width: i == index ? 18 : 6, height: 6)
+                }
+            }
+        } else {
+            Text("\(index + 1) of \(count)").font(.caption).foregroundStyle(.tertiary)
         }
-        .contentShape(Rectangle())
-        .onTapGesture(perform: onClose)
     }
 }
 
-struct VisualEffect: NSViewRepresentable {
-    let material: NSVisualEffectView.Material
-    func makeNSView(context: Context) -> NSVisualEffectView {
-        let view = NSVisualEffectView()
-        view.material = material
-        view.blendingMode = .behindWindow
-        view.state = .active
-        return view
+/// The selected theme's wallpaper, blurred, over a whole screen. It follows the selection. A click closes the switcher.
+struct SwitcherBackdrop: View {
+    let state: CarouselState
+    let onClose: () -> Void
+
+    var body: some View {
+        let theme = state.selected
+        let variant = theme.variants[state.appearance(theme)] ?? theme.variants.values.first!
+        AmbientBackground(variant: variant, url: state.wallpaper(variant), scheme: .dark)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: onClose)
     }
-    func updateNSView(_ view: NSVisualEffectView, context: Context) {}
 }
 
 struct HUDView: View {
@@ -348,8 +367,8 @@ struct HUDView: View {
                 if let detail { Text(detail).font(.callout).foregroundStyle(.secondary) }
             }
         }
-        .padding(.horizontal, 20).padding(.vertical, 14)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .padding(.horizontal, 22).padding(.vertical, 14)
+        .glass(in: Capsule())
         .environment(\.colorScheme, .dark)
         .padding(20)
     }
