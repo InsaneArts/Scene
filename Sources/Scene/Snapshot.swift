@@ -43,8 +43,10 @@ enum Snapshot {
         try? await Task.sleep(for: .seconds(1))
         capture("5-history")
         // The theme page in a window of its own: the main window's split views capture blank.
-        if let theme = model.themes.first(where: { $0.variants.values.contains { $0.wallpapers.count > 1 } }),
-           let variant = theme.variants[model.appearance(for: theme)] {
+        // SCENE_SNAPSHOT_THEME=<theme id> chooses the theme for this page and the carousel.
+        let chosen = model.themes.first { $0.id == ProcessInfo.processInfo.environment["SCENE_SNAPSHOT_THEME"] }
+            ?? model.themes.first { $0.variants.values.contains { $0.wallpapers.count > 1 } }
+        if let theme = chosen, let variant = theme.variants[model.appearance(for: theme)] {
             let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 620, height: 1000), styleMask: [.titled], backing: .buffered, defer: false)
             window.contentView = NSHostingView(rootView: ThemeDetailView(theme: theme, applying: .constant(nil)).environment(model))
             window.orderFront(nil)
@@ -58,6 +60,15 @@ enum Snapshot {
             model.backgroundChoices = saved
             window.orderOut(nil)
         }
+        // The switcher's carousel in a plain window, in dark mode. The real switcher takes keyboard focus.
+        let state = CarouselState(themes: model.themes, currentID: model.currentThemeID, systemIsDark: true, wallpaper: { model.wallpaper(for: $0)?.url })
+        if let index = model.themes.firstIndex(where: { $0.id == chosen?.id }) { state.selection.select(index) }
+        let carousel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1600, height: 900), styleMask: [.borderless], backing: .buffered, defer: false)
+        carousel.contentView = NSHostingView(rootView: ThemeCarouselView(state: state, onApply: {}, onClose: {}))
+        carousel.orderFront(nil)
+        try? await Task.sleep(for: .seconds(2))
+        capture("11-carousel")
+        carousel.orderOut(nil)
         // The Settings window, one tab at a time.
         openSettings()
         for tab in [SettingsTab.general, .shortcuts, .apps, .experimental] {

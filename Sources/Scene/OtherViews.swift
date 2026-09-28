@@ -33,7 +33,10 @@ struct AppsView: View {
                         }
                         Spacer()
                         if model.ledger.contains(where: { $0.integration == integration.id }) {
-                            Button("Stop Managing") { Task { await model.restoreOriginal(only: [integration.id]) } }
+                            Button("Stop Managing") {
+                                model.disabledIntegrations.insert(integration.id)
+                                Task { await model.restoreOriginal(only: [integration.id]) }
+                            }
                                 .help("Restore this app's original setup and leave it out of future themes")
                         }
                     }
