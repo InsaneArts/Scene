@@ -1,5 +1,7 @@
 # Scene: research, scope, and architecture
 
+> This is the research and plan written before the MVP. The code has moved on since: for example, the core is now the `SceneKit` package with six modules, not `SceneCore`. [ARCHITECTURE.md](ARCHITECTURE.md) describes the code as it is, and [STATUS.md](STATUS.md) the current state.
+
 Research date: 2026-09-28. Test Mac: macOS 26.6.2 (25G83), Apple silicon. macOS 27 shipped on 2026-09-14 ([Comm](https://9to5mac.com/2026/09/22/macos-27-gives-you-more-control-over-liquid-glass/)). This document notes where 27 changes something. "Scene" is a working name taken from the project folder. The folder is empty apart from a stray `default.profraw`, so there is no existing structure to follow.
 
 Every capability claim has one evidence label. The label is a link when a source exists.
