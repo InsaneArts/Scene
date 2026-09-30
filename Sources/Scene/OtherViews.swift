@@ -256,7 +256,7 @@ struct SettingsView: View {
         // The window takes each tab's size, so each tab fits its content without scrolling.
         TabView(selection: $model.settingsTab) {
             GeneralSettings().frame(width: 540, height: 440).tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
-            ShortcutSettings().frame(width: 540, height: 440).tabItem { Label("Shortcuts", systemImage: "keyboard") }.tag(SettingsTab.shortcuts)
+            ShortcutSettings().frame(width: 540, height: 500).tabItem { Label("Shortcuts", systemImage: "keyboard") }.tag(SettingsTab.shortcuts)
             ExperimentalSettings().frame(width: 540, height: 330).tabItem { Label("Experimental", systemImage: "flask") }.tag(SettingsTab.experimental)
         }
     }
@@ -274,6 +274,14 @@ struct GeneralSettings: View {
                 Toggle("Show Scene in the menu bar", isOn: $model.showMenuBarExtra)
             } footer: {
                 Text("The shortcuts work while Scene runs. Scene keeps running after you close its window. Choose which apps a theme changes on the Apps page of the main window.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Section {
+                Toggle("Switch the theme's look with macOS Light/Dark", isOn: $model.followSystemAppearance)
+            } header: {
+                Text("Light and Dark")
+            } footer: {
+                Text("When macOS switches, for example at sunset, the current theme applies its other look. Themes with one look stay as they are.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("Updates") {
@@ -307,11 +315,12 @@ struct ShortcutSettings: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("In the theme switcher") {
-                keys("Choose a theme", ["←", "→"], or: ["H", "L"])
+                keys("Choose a theme", ["←", "→"])
                 keys("Jump to a theme", ["1"], through: ["9"])
                 keys("Light or Dark", ["↑", "↓"], or: ["⇥"])
+                LabeledContent("Search", value: "Type a name")
                 keys("Apply", ["↩"])
-                keys("Close", ["esc"])
+                keys("Clear the search, then close", ["esc"])
             }
         }
         .formStyle(.grouped)
@@ -455,15 +464,30 @@ struct MenuBarView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openSettings) private var openSettings
+    @State private var query = ""
 
     var body: some View {
+        let themes = ThemeSearch.ordered(model.themes, favorites: model.favoriteThemes, query: query)
         VStack(alignment: .leading, spacing: 10) {
             current
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                TextField("Search themes", text: $query).textFieldStyle(.plain)
+                if !query.isEmpty {
+                    Button { query = "" } label: { Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary) }
+                        .buttonStyle(.plain).help("Clear the search")
+                }
+            }
+            .padding(.horizontal, 8).padding(.vertical, 5)
+            .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
             ScrollView {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 12) {
-                    ForEach(model.themes) { theme in tile(theme) }
+                    ForEach(themes) { theme in tile(theme) }
                 }
                 .padding(4)
+                if themes.isEmpty {
+                    Text("No themes match “\(query)”").font(.callout).foregroundStyle(.secondary).padding(.top, 40)
+                }
             }
             .frame(height: 262)
             Divider()
@@ -522,6 +546,12 @@ struct MenuBarView: View {
                     .overlay(RoundedRectangle(cornerRadius: 7, style: .continuous).strokeBorder(.primary.opacity(0.12), lineWidth: 0.5))
                     .padding(3)
                     .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(isCurrent ? Color.accentColor : .clear, lineWidth: 2))
+                    .overlay(alignment: .topTrailing) {
+                        if model.favoriteThemes.contains(theme.id) {
+                            Image(systemName: "star.fill").font(.system(size: 9)).foregroundStyle(.white)
+                                .shadow(color: .black.opacity(0.5), radius: 2).padding(7).accessibilityLabel("Favorite")
+                        }
+                    }
                 Text(theme.manifest.name).font(.caption).lineLimit(1)
             }
             .contentShape(Rectangle())

@@ -42,6 +42,22 @@ final class AppModel {
     var disabledIntegrations: Set<String> {
         didSet { UserDefaults.standard.set(Array(disabledIntegrations), forKey: "disabledIntegrations") }
     }
+    /// Themes you starred. They come first in the sidebar, the switcher, and the menu bar panel.
+    var favoriteThemes: Set<String> {
+        didSet { UserDefaults.standard.set(Array(favoriteThemes), forKey: "favoriteThemes") }
+    }
+    /// The GitHub repository of each theme installed from one, by theme id. Update downloads it again.
+    var themeSources: [String: String] {
+        didSet { UserDefaults.standard.set(themeSources, forKey: "themeSources") }
+    }
+    /// When macOS switches Light/Dark, the current theme switches to its other look.
+    var followSystemAppearance: Bool {
+        didSet { UserDefaults.standard.set(followSystemAppearance, forKey: "followSystemAppearance") }
+    }
+    /// The sidebar's search text.
+    var searchText = ""
+    /// The Install from GitHub sheet is open.
+    var installingFromGitHub = false
     /// The wallpaper you picked for each theme and appearance, by file name. Keys are "<theme id>#<appearance>".
     var backgroundChoices: [String: String] {
         didSet { UserDefaults.standard.set(backgroundChoices, forKey: "backgroundChoices") }
@@ -98,11 +114,14 @@ final class AppModel {
 
     init() {
         let defaults = UserDefaults.standard
-        defaults.register(defaults: ["experimentalEnabled": true, "allowUntested": false, "showMenuBarExtra": false])
+        defaults.register(defaults: ["experimentalEnabled": true, "allowUntested": false, "showMenuBarExtra": false, "followSystemAppearance": false])
         experimentalEnabled = defaults.bool(forKey: "experimentalEnabled")
         allowUntested = defaults.bool(forKey: "allowUntested")
         showMenuBarExtra = defaults.bool(forKey: "showMenuBarExtra")
         disabledIntegrations = Set(defaults.stringArray(forKey: "disabledIntegrations") ?? [])
+        favoriteThemes = Set(defaults.stringArray(forKey: "favoriteThemes") ?? [])
+        themeSources = defaults.dictionary(forKey: "themeSources") as? [String: String] ?? [:]
+        followSystemAppearance = defaults.bool(forKey: "followSystemAppearance")
         backgroundChoices = defaults.dictionary(forKey: "backgroundChoices") as? [String: String] ?? [:]
         switcherShortcut = Self.loadShortcut("switcherShortcut", default: .omarchyDefault)
         nextBackgroundShortcut = Self.loadShortcut("nextBackgroundShortcut", default: .nextBackgroundDefault)
@@ -124,6 +143,13 @@ final class AppModel {
     }
 
     var selectedTheme: Theme? { themes.first { $0.id == selectedThemeID } }
+
+    /// Every theme, favorites first.
+    var orderedThemes: [Theme] { ThemeSearch.ordered(themes, favorites: favoriteThemes) }
+
+    func toggleFavorite(_ theme: Theme) {
+        if favoriteThemes.contains(theme.id) { favoriteThemes.remove(theme.id) } else { favoriteThemes.insert(theme.id) }
+    }
 
     var systemIsDark: Bool {
         NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
@@ -170,20 +196,54 @@ final class AppModel {
         return (request, await engine.plan(request, detections: detections))
     }
 
-    func apply(_ request: ApplyRequest, planned: [PlannedIntegration], selected: Set<String>) async {
+    func apply(_ request: ApplyRequest, planned: [PlannedIntegration], selected: Set<String>, replacingLastHistory: Bool = false) async {
         isWorking = true
         defer { isWorking = false; progress = "" }
-        lastReport = await engine.apply(request, planned: planned, selected: selected) { message in
+        lastReport = await engine.apply(request, planned: planned, selected: selected, replacingLastHistory: replacingLastHistory) { message in
             Task { @MainActor in self.progress = message }
         }
         await refreshSystemState()
     }
 
     /// Applies a theme with the remembered app choices. Used by the theme switcher and the menu bar extra.
-    func quickApply(_ theme: Theme, mode: AppearanceMode = .system) async {
+    func quickApply(_ theme: Theme, mode: AppearanceMode = .system, replacingLastHistory: Bool = false) async {
         let (request, planned) = await plan(theme, mode: mode)
         let selected = Set(planned.filter { $0.plan != nil && !disabledIntegrations.contains($0.id) }.map(\.id))
-        await apply(request, planned: planned, selected: selected)
+        await apply(request, planned: planned, selected: selected, replacingLastHistory: replacingLastHistory)
+    }
+
+    // MARK: Following macOS Light/Dark
+
+    @ObservationIgnored private var appearanceObservation: NSKeyValueObservation?
+    @ObservationIgnored private var followTask: Task<Void, Never>?
+
+    /// Watches macOS Light/Dark while Scene runs. Snapshot mode never applies, so it does not watch.
+    func startFollowingAppearance() {
+        guard appearanceObservation == nil, Snapshot.folder == nil else { return }
+        appearanceObservation = NSApp.observe(\.effectiveAppearance) { [weak self] _, _ in
+            Task { @MainActor in self?.appearanceChanged() }
+        }
+    }
+
+    private func appearanceChanged() {
+        followTask?.cancel()
+        followTask = Task { @MainActor in
+            // Wait until macOS has finished switching, and until Scene is idle.
+            try? await Task.sleep(for: .seconds(1))
+            while isWorking, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(500)) }
+            guard !Task.isCancelled else { return }
+            await followAppearance()
+        }
+    }
+
+    /// Applies the current theme's other look when macOS shows the other appearance. It replaces the newest
+    /// history entry, so Undo goes back to the theme before. A theme with one look never switches macOS back.
+    func followAppearance() async {
+        guard followSystemAppearance else { return }
+        if themes.isEmpty { await reload() }
+        guard let entry = history.last, let theme = themes.first(where: { $0.id == entry.themeID }),
+              entry.needsOtherLook(available: theme.availableAppearances, systemIsDark: systemIsDark) else { return }
+        await quickApply(theme, mode: .system, replacingLastHistory: true)
     }
 
     func undo() async {
@@ -259,7 +319,39 @@ final class AppModel {
     }
 
     func remove(_ theme: Theme) async {
-        do { try library.remove(theme); await reload() } catch { alert = "\(error)" }
+        do {
+            try library.remove(theme)
+            themeSources[theme.id] = nil
+            await reload()
+        } catch { alert = "\(error)" }
+    }
+
+    /// Downloads a theme from a GitHub repository and installs it. Returns nil when it worked, otherwise the reason.
+    func installFromGitHub(_ text: String) async -> String? {
+        guard let repository = GitHubRepository(text) else { return "Enter a GitHub repository, such as https://github.com/owner/theme." }
+        do {
+            let archive = try await repository.download()
+            let theme = try library.installRepository(archive: archive, repository: repository)
+            themeSources[theme.id] = repository.url.absoluteString
+            await reload()
+            selectedThemeID = theme.id
+            return nil
+        } catch let error as ThemeLoadError {
+            return error.errors.prefix(8).joined(separator: "\n")
+        } catch let error as URLError {
+            return error.localizedDescription
+        } catch {
+            return "\(error)"
+        }
+    }
+
+    /// Downloads a theme installed from GitHub again.
+    func updateFromGitHub(_ theme: Theme) async {
+        guard let source = themeSources[theme.id] else { return }
+        isWorking = true
+        progress = "Updating \(theme.manifest.name)…"
+        defer { isWorking = false; progress = "" }
+        if let error = await installFromGitHub(source) { alert = "Scene could not update \(theme.manifest.name):\n\n\(error)" }
     }
 }
 

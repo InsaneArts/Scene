@@ -39,8 +39,11 @@ struct ContentView: View {
                 ToolbarItemGroup {
                     Button { ThemeSwitcher.shared.show() } label: { Label("Switch Theme", systemImage: "rectangle.on.rectangle.angled") }
                         .help("Show every theme over the screen" + model.switcherShortcut.menuSuffix)
-                    Button { importing = true } label: { Label("Import Theme", systemImage: "square.and.arrow.down") }
-                        .help("Import a .scenetheme file, a theme folder, or an Omarchy theme folder")
+                    Menu {
+                        Button("Import File or Folder…") { importing = true }
+                        Button("Install from GitHub…") { model.installingFromGitHub = true }
+                    } label: { Label("Add Theme", systemImage: "square.and.arrow.down") }
+                        .help("Import a .scenetheme file, a theme folder, or an Omarchy theme folder, or install a theme from GitHub")
                     Button { Task { await model.undo() } } label: { Label("Undo Theme", systemImage: "arrow.uturn.backward") }
                         .disabled(model.history.isEmpty || model.isWorking)
                         .help("Go back to the previous theme")
@@ -50,6 +53,7 @@ struct ContentView: View {
             }
         }
         .sheet(item: $applying) { theme in ApplySheet(theme: theme) }
+        .sheet(isPresented: Binding(get: { model.installingFromGitHub }, set: { model.installingFromGitHub = $0 })) { GitHubInstallSheet() }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.folder, UTType(filenameExtension: "scenetheme") ?? .zip, .zip]) { result in
             if case .success(let url) = result { Task { await model.importTheme(from: url) } }
         }
@@ -100,20 +104,30 @@ struct Sidebar: View {
     @Binding var applying: Theme?
 
     var body: some View {
+        @Bindable var model = model
         // Apps that need setup, or that changed outside Scene.
         let attention = model.detections.filter { $0.value.installed && ($0.value.setup != .ready || model.changedOutside[$0.key] != nil) }.count
+        let matching = model.themes.filter { ThemeSearch.matches($0, model.searchText) }
+        let favorites = matching.filter { model.favoriteThemes.contains($0.id) }
         List(selection: selection) {
             Section {
                 Label("Apps", systemImage: "square.grid.2x2").badge(attention).tag(Page.apps)
                 Label("History", systemImage: "clock.arrow.circlepath").tag(Page.history)
             }
+            if !favorites.isEmpty {
+                Section("Favorites") {
+                    ForEach(favorites) { theme in ThemeRow(theme: theme).tag(Page.theme(theme.id)) }
+                }
+            }
             Section("Themes") {
-                ForEach(model.themes) { theme in
+                ForEach(matching.filter { !model.favoriteThemes.contains($0.id) }) { theme in
                     ThemeRow(theme: theme).tag(Page.theme(theme.id))
                 }
+                if matching.isEmpty { Text("No themes match “\(model.searchText)”").foregroundStyle(.secondary) }
                 if !model.problems.isEmpty { ProblemsRow(problems: model.problems) }
             }
         }
+        .searchable(text: $model.searchText, placement: .sidebar, prompt: "Search themes")
         // Double-click or ↩ on a theme opens its plan.
         .contextMenu(forSelectionType: Page.self) { pages in
             if case .theme(let id)? = pages.first, let theme = model.themes.first(where: { $0.id == id }) {
@@ -157,7 +171,13 @@ struct ThemeActions: View {
 
     var body: some View {
         Button("Apply…") { applying = theme }
+        Button(model.favoriteThemes.contains(theme.id) ? "Remove from Favorites" : "Add to Favorites") { model.toggleFavorite(theme) }
         Button("Export…") { export() }
+        if let source = model.themeSources[theme.id], let url = URL(string: source) {
+            Divider()
+            Button("Update from GitHub") { Task { await model.updateFromGitHub(theme) } }
+            Link("Open on GitHub", destination: url)
+        }
         if !theme.isBundled {
             Divider()
             Button("Remove", role: .destructive) { Task { await model.remove(theme) } }
@@ -233,6 +253,14 @@ struct ThemePage: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
                     Text(theme.manifest.name).font(.system(size: 32, weight: .bold))
+                    let favorite = model.favoriteThemes.contains(theme.id)
+                    Button { model.toggleFavorite(theme) } label: {
+                        Image(systemName: favorite ? "star.fill" : "star").font(.title2)
+                            .foregroundStyle(favorite ? variant.interface.accent.color : .secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help(favorite ? "Remove from Favorites" : "Add to Favorites")
+                    .accessibilityLabel(favorite ? "Remove from Favorites" : "Add to Favorites")
                     if theme.id == model.currentThemeID { Pill(text: "Current", color: variant.interface.accent.color) }
                 }
                 if let summary = theme.manifest.summary { Text(summary).font(.title3).foregroundStyle(.secondary) }
@@ -287,6 +315,7 @@ struct BackgroundPicker: View {
 
 /// Who made the theme and its wallpaper, and what it changes in macOS.
 struct ThemeCredits: View {
+    @Environment(AppModel.self) private var model
     let theme: Theme
     let variant: ResolvedVariant
     let wallpaper: Wallpaper?
@@ -297,6 +326,13 @@ struct ThemeCredits: View {
         VStack(alignment: .leading, spacing: 8) {
             Label("By \(m.authors.map(\.name).joined(separator: ", ")) · \(Self.license(m.license)) · Version \(m.version)" + (theme.isBundled ? "" : " · Installed"),
                   systemImage: "person.2")
+            if let source = model.themeSources[theme.id], let url = URL(string: source) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Label("From \(url.host() ?? "")\(url.path())", systemImage: "arrow.down.circle")
+                    Link("Open", destination: url)
+                    Button("Update") { Task { await model.updateFromGitHub(theme) } }.buttonStyle(.link).disabled(model.isWorking)
+                }
+            }
             if let accent = variant.system.accent {
                 Label("macOS: \(accent.name.capitalized) accent" + (variant.system.iconStyle.map { ", \($0.rawValue) icons" } ?? "") + " (experimental)",
                       systemImage: "macwindow")
@@ -344,5 +380,57 @@ struct InterruptedBanner: View {
         .glass(in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .padding(.horizontal, 20)
         .padding(.top, 8)
+    }
+}
+
+// MARK: - Install from GitHub
+
+/// Installs a theme from a GitHub repository: an Omarchy theme or a Scene theme.
+struct GitHubInstallSheet: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.dismiss) private var dismiss
+    @State private var text = ""
+    @State private var working = false
+    @State private var error: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Install from GitHub").font(.title2.weight(.semibold))
+            Text("Paste the address of an Omarchy theme or a Scene theme. Scene reads only its colors and images, and never runs code from it.")
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            TextField("https://github.com/owner/theme", text: $text)
+                .textFieldStyle(.roundedBorder)
+                .onSubmit(install)
+                .disabled(working)
+            if let error {
+                Label(error, systemImage: "exclamationmark.triangle.fill")
+                    .font(.callout).foregroundStyle(.orange)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack {
+                Link("Browse Omarchy's community themes", destination: URL(string: "https://omarchy.org/themes/")!)
+                    .font(.callout)
+                Spacer()
+                if working { ProgressView().controlSize(.small).padding(.trailing, 6) }
+                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction)
+                Button("Install") { install() }
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(working || GitHubRepository(text) == nil)
+            }
+        }
+        .padding(24)
+        .frame(width: 480)
+    }
+
+    func install() {
+        guard !working, GitHubRepository(text) != nil else { return }
+        working = true
+        error = nil
+        Task {
+            error = await model.installFromGitHub(text)
+            working = false
+            if error == nil { dismiss() }
+        }
     }
 }

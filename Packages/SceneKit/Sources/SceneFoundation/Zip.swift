@@ -62,11 +62,13 @@ public enum ZipArchive {
     }
 
     /// Returns the decompressed bytes of every file entry, keyed by path, after full validation and CRC checks.
-    public static func read(_ data: Data, limits: ZipLimits = .init()) throws -> [String: Data] {
+    /// With `include`, only entries whose raw path it accepts are validated, counted against the limits, and read.
+    /// The others are skipped, so an archive of a whole repository can yield just the files a theme needs.
+    public static func read(_ data: Data, limits: ZipLimits = .init(), include: (String) -> Bool = { _ in true }) throws -> [String: Data] {
         try data.withUnsafeBytes { buffer in
             let archive = Reader(buffer: buffer)
             var files: [String: Data] = [:]
-            for record in try parse(archive, limits: limits) where !record.entry.isDirectory {
+            for record in try parse(archive, limits: limits, include: include) where !record.entry.isDirectory {
                 files[record.entry.path] = try extract(record, from: archive)
             }
             return files
@@ -201,7 +203,7 @@ private struct Reader {
 }
 
 extension ZipArchive {
-    private static func parse(_ archive: Reader, limits: ZipLimits) throws -> [Record] {
+    private static func parse(_ archive: Reader, limits: ZipLimits, include: (String) -> Bool = { _ in true }) throws -> [Record] {
         guard let end = endOfCentralDirectory(in: archive) else {
             // A local header at the start without an end record means the file was cut short.
             throw (try? archive.u32(0)) == Signature.localHeader ? ZipError.truncated : ZipError.notAZip
@@ -256,6 +258,7 @@ extension ZipArchive {
             }
             guard startDisk == 0 else { throw ZipError.multiDisk }
 
+            guard include(String(decoding: name, as: UTF8.self)) else { continue }
             let path = try validatedPath(name)
             guard flags & 1 == 0 else { throw ZipError.encrypted }
             guard method == 0 || method == 8 else { throw ZipError.unsupportedMethod(method) }

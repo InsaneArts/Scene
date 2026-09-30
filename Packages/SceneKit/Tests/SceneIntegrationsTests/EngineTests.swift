@@ -214,6 +214,28 @@ struct EngineTests {
         #expect(!FileManager.default.fileExists(atPath: s.home.path("Library/Application Support/Code/User/settings.json").path))
     }
 
+    @Test func followingMacOSReplacesTheNewestHistoryEntry() async throws {
+        let s = try setup()
+        let theme = try Fixtures.theme("catppuccin")
+        func apply(systemIsDark: Bool, replacing: Bool) async {
+            let request = ApplyRequest(theme: theme, mode: .system, systemIsDark: systemIsDark)
+            let planned = await s.engine.plan(request, detections: await s.engine.detectAll())
+            _ = await s.engine.apply(request, planned: planned, selected: ["ghostty"], replacingLastHistory: replacing)
+        }
+        _ = try await self.apply(s, "gruvbox", mode: .dark)
+        await apply(systemIsDark: false, replacing: false)
+        #expect(await s.engine.history().last?.appearance == .light)
+        let entry = try #require(await s.engine.history().last)
+        #expect(entry.needsOtherLook(available: theme.availableAppearances, systemIsDark: true))
+        #expect(!entry.needsOtherLook(available: theme.availableAppearances, systemIsDark: false))
+        #expect(!entry.needsOtherLook(available: [.dark], systemIsDark: false))
+        // macOS turned Dark: the theme shows its dark look, and Undo still goes back to Gruvbox.
+        await apply(systemIsDark: true, replacing: true)
+        let history = await s.engine.history()
+        #expect(history.map(\.themeName) == ["Gruvbox", "Catppuccin"])
+        #expect(history.last?.appearance == .dark)
+    }
+
     @Test func autoAppearanceIsRestored() async throws {
         let s = try setup()
         s.services.appearanceState = AppearanceState(dark: false, auto: true)

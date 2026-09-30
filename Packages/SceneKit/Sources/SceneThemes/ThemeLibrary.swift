@@ -50,11 +50,12 @@ public final class ThemeLibrary: @unchecked Sendable {
         let staging = FileManager.default.temporaryDirectory.appendingPathComponent("scene-import-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: staging) }
         if isDirectory.boolValue {
-            if FileManager.default.fileExists(atPath: url.appendingPathComponent("colors.toml").path),
+            if OmarchyImporter.colorFiles.contains(where: { FileManager.default.fileExists(atPath: url.appendingPathComponent($0).path) }),
                !FileManager.default.fileExists(atPath: url.appendingPathComponent("theme.json").path) {
                 return try importOmarchy(folder: url)
             }
-            _ = try ThemeLoader.load(folder: url)
+            // Only the theme's own files are copied, and install() validates the copy. Other files, such as
+            // a repository's .git folder or LICENSE, stay behind.
             try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
             for relative in try Self.allowedFiles(in: url) {
                 try FileOps.write(Data(contentsOf: url.appendingPathComponent(relative)), to: staging.appendingPathComponent(relative))
@@ -105,12 +106,19 @@ public final class ThemeLibrary: @unchecked Sendable {
 
     // MARK: Omarchy
 
-    /// Converts an Omarchy theme folder (colors.toml and backgrounds/) into a Scene theme.
-    /// Only colors and images are read. Config files and Lua in the folder are ignored and never run.
+    /// Converts an Omarchy theme folder (colors.toml and backgrounds/) into a Scene theme. A theme without
+    /// colors.toml gives its colors through alacritty.toml. Only colors and images are read.
+    /// Config files and Lua in the folder are ignored and never run.
     @discardableResult
     public func importOmarchy(folder: URL) throws -> Theme {
-        let text = try String(contentsOf: folder.appendingPathComponent("colors.toml"), encoding: .utf8)
-        let colors = OmarchyImporter.parse(text)
+        let colors: [String: String]
+        if let text = try? String(contentsOf: folder.appendingPathComponent("colors.toml"), encoding: .utf8) {
+            colors = OmarchyImporter.parse(text)
+        } else if let text = try? String(contentsOf: folder.appendingPathComponent("alacritty.toml"), encoding: .utf8) {
+            colors = OmarchyImporter.parseAlacritty(text)
+        } else {
+            throw SceneError.invalid("\(folder.lastPathComponent) has no colors.toml or alacritty.toml")
+        }
         let staging = FileManager.default.temporaryDirectory.appendingPathComponent("scene-import-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: staging) }
         try FileManager.default.createDirectory(at: staging.appendingPathComponent("wallpapers"), withIntermediateDirectories: true)
@@ -137,7 +145,31 @@ public final class ThemeLibrary: @unchecked Sendable {
 }
 
 /// Maps Omarchy's colors.toml keys to Scene roles, following Omarchy's own templates.
+/// Omarchy 4 uses named keys (`red`, `bright_red`, `muted`). Older themes use `color0` to `color15`,
+/// which map as Omarchy maps them: 8 is muted, 9 to 14 the bright colors, 15 the bright foreground.
 public enum OmarchyImporter {
+    /// The files an Omarchy theme can give its colors in, in the order Scene reads them.
+    public static let colorFiles = ["colors.toml", "alacritty.toml"]
+
+    /// Colors from an Alacritty config, under the keys `parse` returns for an older colors.toml.
+    public static func parseAlacritty(_ text: String) -> [String: String] {
+        let doc = KeyValueDocument(text: text)
+        func value(_ key: String) -> String? {
+            guard var raw = doc.value(forKey: key)?.trimmingCharacters(in: CharacterSet(charactersIn: "\"' ")) else { return nil }
+            if raw.lowercased().hasPrefix("0x") { raw = "#" + raw.dropFirst(2) }
+            return raw
+        }
+        var out: [String: String] = [:]
+        out["background"] = value("colors.primary.background")
+        out["foreground"] = value("colors.primary.foreground")
+        out["selection_background"] = value("colors.selection.background")
+        for (index, name) in ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"].enumerated() {
+            out["color\(index)"] = value("colors.normal.\(name)")
+            out["color\(index + 8)"] = value("colors.bright.\(name)")
+        }
+        return out.compactMapValues { $0 }
+    }
+
     /// Reads `key = "value"` lines. Anything else is ignored.
     public static func parse(_ text: String) -> [String: String] {
         var out: [String: String] = [:]
@@ -159,7 +191,10 @@ public enum OmarchyImporter {
         return String(String(cleaned).split(separator: "-").joined(separator: "-").prefix(60))
     }
 
-    public static func manifest(name: String, colors c: [String: String], wallpapers: [String]) throws -> Data {
+    /// One theme.json variant from Omarchy-style colors, with the role mapping of Omarchy's own templates.
+    /// Missing shades are mixed from the other colors. Scene's own themes and theme drafts use the same mapping.
+    public static func variant(colors c: [String: String], system: [String: String] = ["accentColor": "auto"],
+                               wallpapers: [String]) throws -> [String: Any] {
         func color(_ key: String, _ fallbacks: String...) throws -> String {
             for k in [key] + fallbacks { if let v = c[k], RGBA(hex: v) != nil { return v } }
             throw SceneError.invalid("colors.toml has no valid \(key)")
@@ -167,22 +202,18 @@ public enum OmarchyImporter {
         func mix(_ a: String, _ b: String, _ amount: Double) -> String {
             RGBA(hex: a)!.mixed(over: RGBA(hex: b)!, amount: amount).hex
         }
-        let bg = try color("background"), fg = try color("foreground")
-        let bright = (try? color("bright_foreground")) ?? fg
-        let darkFg = (try? color("dark_foreground", "muted")) ?? mix(fg, bg, 0.5)
-        let muted = (try? color("muted", "dark_foreground")) ?? mix(fg, bg, 0.3)
-        let darkBg = (try? color("dark_background")) ?? mix("#000000", bg, 0.2)
-        let lighterBg = (try? color("lighter_background")) ?? mix(fg, bg, 0.08)
+        let bg = try color("background", "bg"), fg = try color("foreground", "fg")
+        let bright = (try? color("bright_foreground", "bright_fg", "color15")) ?? fg
+        let darkFg = (try? color("dark_foreground", "dark_fg", "muted", "color8")) ?? mix(fg, bg, 0.5)
+        let muted = (try? color("muted", "color8", "dark_foreground", "dark_fg")) ?? mix(fg, bg, 0.3)
+        let darkBg = (try? color("dark_background", "dark_bg")) ?? mix("#000000", bg, 0.2)
+        let lighterBg = (try? color("lighter_background", "lighter_bg")) ?? mix(fg, bg, 0.08)
         let red = try color("red", "color1"), green = try color("green", "color2"), yellow = try color("yellow", "color3")
-        let blue = try color("blue", "color4"), magenta = try color("magenta", "color5"), cyan = try color("cyan", "color6")
+        let blue = try color("blue", "color4"), magenta = try color("magenta", "purple", "color5"), cyan = try color("cyan", "color6")
         let orange = (try? color("orange")) ?? yellow
-        func b(_ key: String, _ normal: String) -> String { (try? color(key)) ?? normal }
+        func b(_ key: String, _ legacy: String, _ normal: String) -> String { (try? color(key, legacy)) ?? normal }
         let accent = (try? color("accent")) ?? blue
         let selection = (try? color("selection", "selection_background")) ?? mix(accent, bg, 0.3)
-        let mode: String = {
-            if let m = c["mode"], ["light", "dark"].contains(m) { return m }
-            return RGBA(hex: bg)!.isDark ? "dark" : "light"
-        }()
         var variant: [String: Any] = [
             "palette": ["background": bg, "surface": darkBg, "overlay": lighterBg, "border": muted, "foreground": fg, "muted": darkFg,
                         "accent": accent, "selection": selection, "cursor": bright, "currentLine": mix(lighterBg, bg, 0.5),
@@ -190,16 +221,30 @@ public enum OmarchyImporter {
             "terminal": ["background": "@background", "foreground": "@foreground", "cursor": "@cursor", "cursorText": "@background",
                          "selectionBackground": "@selection", "selectionForeground": bright,
                          "ansi": ["black": bg, "red": red, "green": green, "yellow": yellow, "blue": blue, "magenta": magenta, "cyan": cyan, "white": fg,
-                                  "brightBlack": muted, "brightRed": b("bright_red", red), "brightGreen": b("bright_green", green),
-                                  "brightYellow": b("bright_yellow", yellow), "brightBlue": b("bright_blue", blue),
-                                  "brightMagenta": b("bright_magenta", magenta), "brightCyan": b("bright_cyan", cyan), "brightWhite": bright]],
-            "syntax": ["comment": ["color": darkFg, "italic": true], "keyword": b("bright_magenta", magenta), "operator": b("bright_blue", blue),
-                       "punctuation": darkFg, "string": green, "escape": b("bright_magenta", magenta), "number": orange, "constant": orange,
+                                  "brightBlack": muted, "brightRed": b("bright_red", "color9", red), "brightGreen": b("bright_green", "color10", green),
+                                  "brightYellow": b("bright_yellow", "color11", yellow), "brightBlue": b("bright_blue", "color12", blue),
+                                  "brightMagenta": b("bright_magenta", "color13", magenta), "brightCyan": b("bright_cyan", "color14", cyan),
+                                  "brightWhite": bright]],
+            "syntax": ["comment": ["color": darkFg, "italic": true], "keyword": b("bright_magenta", "color13", magenta),
+                       "operator": b("bright_blue", "color12", blue),
+                       "punctuation": darkFg, "string": green, "escape": b("bright_magenta", "color13", magenta), "number": orange, "constant": orange,
                        "function": blue, "type": yellow, "builtin": cyan, "variable": fg, "parameter": ["color": cyan, "italic": true],
-                       "property": cyan, "tag": red, "attribute": cyan, "added": green, "removed": red, "changed": yellow],
-            "system": ["accentColor": "auto"],
+                       "property": cyan, "tag": red, "attribute": ["color": cyan, "italic": true], "added": green, "removed": red, "changed": yellow],
+            "system": system,
         ]
         if !wallpapers.isEmpty { variant["wallpapers"] = wallpapers.map { ["file": $0, "fit": "fill"] } }
+        return variant
+    }
+
+    /// "dark" or "light": the `mode` key, or else how dark the background is.
+    public static func mode(colors c: [String: String]) -> String {
+        if let m = c["mode"], ["light", "dark"].contains(m) { return m }
+        return (RGBA(hex: c["background"] ?? c["bg"] ?? "") ?? RGBA(r: 0, g: 0, b: 0)).isDark ? "dark" : "light"
+    }
+
+    public static func manifest(name: String, colors c: [String: String], wallpapers: [String]) throws -> Data {
+        let variant = try variant(colors: c, wallpapers: wallpapers)
+        let mode = mode(colors: c)
         let assets = wallpapers.map { ["file": $0, "license": "NOASSERTION", "attribution": "From the Omarchy theme \(ThemeLoader.sanitized(name))"] }
         let displayName = name.split(separator: "-").map { $0.prefix(1).uppercased() + $0.dropFirst() }.joined(separator: " ")
         var manifest: [String: Any] = [

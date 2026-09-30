@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         MainActor.assumeIsolated {
             ThemeSwitcher.shared.model?.registerShortcuts()
+            ThemeSwitcher.shared.model?.startFollowingAppearance()
             Updater.shared.start()
         }
     }
@@ -45,6 +46,8 @@ struct SceneApp: App {
                     .disabled(!Updater.shared.canCheckForUpdates)
             }
             CommandGroup(after: .newItem) {
+                Button("Install Theme from GitHub…") { model.installingFromGitHub = true }
+                Divider()
                 Button("Switch Theme…" + model.switcherShortcut.menuSuffix) { ThemeSwitcher.shared.show() }
                 Button("Next Background" + model.nextBackgroundShortcut.menuSuffix) { Task { await model.nextBackground() } }
                     .disabled(model.history.isEmpty)

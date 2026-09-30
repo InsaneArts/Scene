@@ -41,6 +41,14 @@ public struct HistoryEntry: Codable, Sendable, Identifiable {
     public var date: Date
     /// The file name of the wallpaper this apply showed. Undo shows it again.
     public var wallpaper: String?
+    /// The look this apply showed. Nil in entries from before Scene recorded it.
+    public var appearance: Appearance?
+
+    /// Following macOS Light/Dark applies the theme again when it has both looks and shows the other one.
+    /// A theme with one look never changes macOS back.
+    public func needsOtherLook(available: [Appearance], systemIsDark: Bool) -> Bool {
+        available.count == 2 && appearance != (systemIsDark ? .dark : .light)
+    }
 }
 
 /// Persistence under ~/Library/Application Support/Scene. Every write is atomic.

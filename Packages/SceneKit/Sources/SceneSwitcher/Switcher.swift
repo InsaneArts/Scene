@@ -56,3 +56,18 @@ public struct HotKeySpec: Codable, Sendable, Equatable {
     /// Scene also asks for Command or Control, so a shortcut never swallows ordinary typing.
     public var isAllowed: Bool { command || control }
 }
+
+/// Typing in the switcher searches. Digits jump to a card instead, and arrows, Tab, Return, and Esc keep their jobs.
+public enum SwitcherSearch {
+    /// The text a key adds to the search, or nil when the key does something else.
+    public static func text(for characters: String) -> String? {
+        guard !characters.isEmpty else { return nil }
+        for scalar in characters.unicodeScalars {
+            // Arrow and function keys arrive as private-use characters (NSUpArrowFunctionKey and the rest).
+            if CharacterSet.controlCharacters.contains(scalar) || CharacterSet.decimalDigits.contains(scalar) || (0xF700...0xF8FF).contains(scalar.value) {
+                return nil
+            }
+        }
+        return characters
+    }
+}

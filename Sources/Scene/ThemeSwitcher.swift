@@ -8,8 +8,16 @@ import SwiftUI
 /// State of one carousel session.
 @MainActor @Observable
 final class CarouselState {
-    let themes: [Theme]
+    /// Every theme, favorites first. `themes` holds the ones that match the search.
+    let allThemes: [Theme]
+    private(set) var themes: [Theme]
     var selection: CarouselSelection
+    /// What you typed. Each change selects the first match. Clearing it keeps the selected theme.
+    var query = "" {
+        didSet { if query != oldValue { refilter() } }
+    }
+    /// The theme shown before the search found nothing, so the backdrop stays.
+    private(set) var lastShown: Theme
     var previewed: [Theme.ID: Appearance] = [:]
     let currentID: String?
     let systemIsDark: Bool
@@ -17,14 +25,24 @@ final class CarouselState {
     let wallpaper: (ResolvedVariant) -> URL?
 
     init(themes: [Theme], currentID: String?, systemIsDark: Bool, wallpaper: @escaping (ResolvedVariant) -> URL?) {
+        allThemes = themes
         self.themes = themes
         self.currentID = currentID
         self.systemIsDark = systemIsDark
         self.wallpaper = wallpaper
-        selection = CarouselSelection(count: themes.count, index: themes.firstIndex { $0.id == currentID } ?? 0)
+        let index = themes.firstIndex { $0.id == currentID } ?? 0
+        selection = CarouselSelection(count: themes.count, index: index)
+        lastShown = themes[index]
     }
 
-    var selected: Theme { themes[selection.index] }
+    var selected: Theme? { themes.indices.contains(selection.index) ? themes[selection.index] : nil }
+    var backdrop: Theme { selected ?? lastShown }
+
+    private func refilter() {
+        if let selected { lastShown = selected }
+        themes = allThemes.filter { ThemeSearch.matches($0, query) }
+        selection = CarouselSelection(count: themes.count, index: query.isEmpty ? themes.firstIndex { $0.id == lastShown.id } ?? 0 : 0)
+    }
 
     func appearance(_ theme: Theme) -> Appearance {
         if let chosen = previewed[theme.id] { return chosen }
@@ -33,8 +51,7 @@ final class CarouselState {
     }
 
     func toggleVariant() {
-        let theme = selected
-        guard theme.availableAppearances.count == 2 else { return }
+        guard let theme = selected, theme.availableAppearances.count == 2 else { return }
         previewed[theme.id] = appearance(theme) == .dark ? .light : .dark
     }
 
@@ -73,7 +90,7 @@ final class ThemeSwitcher {
     }
 
     private func present(_ model: AppModel) {
-        let state = CarouselState(themes: model.themes, currentID: model.currentThemeID, systemIsDark: model.systemIsDark,
+        let state = CarouselState(themes: model.orderedThemes, currentID: model.currentThemeID, systemIsDark: model.systemIsDark,
                                   wallpaper: { model.wallpaper(for: $0)?.url })
         self.state = state
         let mouse = NSEvent.mouseLocation
@@ -119,35 +136,35 @@ final class ThemeSwitcher {
         state = nil
     }
 
-    /// Keys: ← → (or h l) move, ↑ ↓ or Tab switch Light/Dark, 1–9 jump, ↩ apply, Esc close.
+    /// Keys: ← → move, ↑ ↓ or Tab switch Light/Dark, 1–9 jump, typing searches, ⌫ deletes, ↩ applies.
+    /// Esc clears the search, then closes.
     func handle(_ event: NSEvent) -> Bool {
         guard let state else { return false }
-        let characters = event.charactersIgnoringModifiers ?? ""
+        let characters = event.characters ?? ""
         switch event.keyCode {
         case 123: state.selection.move(-1)
         case 124: state.selection.move(1)
         case 125, 126, 48: state.toggleVariant()
         case 36, 76: applySelected()
-        case 53: hide()
+        case 53: if state.query.isEmpty { hide() } else { state.query = "" }
+        case 51: if !state.query.isEmpty { state.query.removeLast() }
         case 115: state.selection.select(0)
         case 119: state.selection.select(state.themes.count - 1)
         default:
-            switch characters {
-            case "h": state.selection.move(-1)
-            case "l": state.selection.move(1)
-            case "j", "k": state.toggleVariant()
-            case "q": hide()
-            default:
-                guard let number = Int(characters) else { return false }
+            guard event.modifierFlags.intersection([.command, .control]).isEmpty else { return false }
+            if let text = SwitcherSearch.text(for: characters) {
+                state.query += text
+            } else if let number = Int(characters) {
                 state.selection.jump(toNumber: number)
+            } else {
+                return false
             }
         }
         return true
     }
 
     func applySelected() {
-        guard let state, let model else { return }
-        let theme = state.selected
+        guard let state, let model, let theme = state.selected else { NSSound.beep(); return }
         let mode = state.mode(for: theme)
         let screen = activeScreen
         hide()
@@ -217,9 +234,12 @@ struct ThemeCarouselView: View {
             let width = min(screen.size.width * 0.44, 760)
             ZStack {
                 SwitcherBackdrop(state: state, onClose: onClose)
-                VStack(spacing: 36) {
+                VStack(spacing: 28) {
                     Spacer(minLength: 0)
+                    // The search keeps its place when empty, so the cards stay put when you start typing.
+                    search.opacity(state.query.isEmpty ? 0 : 1)
                     carousel(cardWidth: width).frame(height: width * 10 / 16 + 40)
+                        .overlay { if state.themes.isEmpty { noMatch } }
                     info
                     Spacer(minLength: 0)
                     hints.padding(.bottom, 44)
@@ -272,8 +292,30 @@ struct ThemeCarouselView: View {
             .shadow(color: .black.opacity(selected ? 0.55 : 0.3), radius: selected ? 44 : 16, y: selected ? 26 : 10)
     }
 
+    /// What you typed, over the cards.
+    var search: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+            Text(state.query).font(.title3.weight(.medium))
+            Text("\(state.themes.count) of \(state.allThemes.count)").font(.callout).foregroundStyle(.tertiary)
+        }
+        .padding(.horizontal, 18).padding(.vertical, 10)
+        .glass(in: Capsule())
+    }
+
+    var noMatch: some View {
+        VStack(spacing: 8) {
+            Text("No themes match “\(state.query)”").font(.title2.weight(.semibold))
+            Text("⌫ deletes a letter. Esc clears the search.").foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder
     var info: some View {
-        let theme = state.selected
+        if let theme = state.selected { info(theme) }
+    }
+
+    func info(_ theme: Theme) -> some View {
         let appearance = state.appearance(theme)
         let variant = theme.variants[appearance] ?? theme.variants.values.first!
         return VStack(spacing: 12) {
@@ -303,8 +345,9 @@ struct ThemeCarouselView: View {
         HStack(spacing: 24) {
             hint(["←", "→"], "Choose")
             if state.themes.contains(where: { $0.availableAppearances.count == 2 }) { hint(["↑", "↓"], "Light / Dark") }
+            Text("Type to search").padding(.leading, 2)
             hint(["↩"], "Apply")
-            hint(["esc"], "Close")
+            hint(["esc"], state.query.isEmpty ? "Close" : "Clear")
         }
         .font(.callout)
         .foregroundStyle(.secondary)
@@ -345,7 +388,7 @@ struct SwitcherBackdrop: View {
     let onClose: () -> Void
 
     var body: some View {
-        let theme = state.selected
+        let theme = state.backdrop
         let variant = theme.variants[state.appearance(theme)] ?? theme.variants.values.first!
         AmbientBackground(variant: variant, url: state.wallpaper(variant), scheme: .dark)
             .contentShape(Rectangle())

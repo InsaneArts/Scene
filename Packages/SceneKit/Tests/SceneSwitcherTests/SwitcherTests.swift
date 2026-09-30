@@ -52,3 +52,16 @@ struct SwitcherTests {
         #expect(decoded == spec)
     }
 }
+
+@Suite("Switcher search")
+struct SwitcherSearchTests {
+    @Test func lettersTypeAndOtherKeysKeepTheirJobs() {
+        #expect(SwitcherSearch.text(for: "n") == "n")
+        #expect(SwitcherSearch.text(for: "É") == "É")
+        #expect(SwitcherSearch.text(for: " ") == " ")
+        #expect(SwitcherSearch.text(for: "-") == "-")
+        for key in ["1", "9", "\t", "\r", "\u{1b}", "\u{7f}", "\u{F700}", "\u{F703}", ""] {
+            #expect(SwitcherSearch.text(for: key) == nil, "\(key.debugDescription)")
+        }
+    }
+}
