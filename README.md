@@ -78,24 +78,6 @@ rm -rf ~/Library/Application\ Support/Scene
 defaults delete com.insanearts.scene
 ```
 
-## Using it
-
-- Pick a theme in the sidebar to see its page. Click Apply…, double-click the theme, or press ↩ to see the plan and apply it.
-- ⌥⌘Z undoes the last theme.
-- The Apps page shows what Scene found on your Mac. Its switches choose which apps a theme changes. Stop Managing, in an app's ⋯ menu, restores that app and leaves it out of later themes.
-- Make your own theme in the Theme Maker: Add Theme → New Theme…, or right-click a theme → Open in Theme Maker. A few sliders move the background, the text's contrast, the accent, and the code colors, and a large preview of the desktop, a terminal, and an editor on your wallpaper follows every move. From Wallpaper takes the colors from the picture, Shuffle tries new ones, and a click on the palette strip sets one color by hand. Scene keeps the text readable wherever the sliders are. The preview also shows the macOS accent color in an open menu and the icon style in the Dock. Add three wallpapers per look; the checklist says what is missing. Save to Scene adds the theme; Export Folder… writes a folder that is ready to put on GitHub as it is.
-- Search your themes in the sidebar. Star a theme on its page, and it comes first in the sidebar, the switcher, and the menu bar.
-- Add Theme in the toolbar imports a `.scenetheme` file, a theme folder, or an Omarchy theme folder, or installs a theme from GitHub. Paste the address of one of [Omarchy's community themes](https://omarchy.org/themes/) or of a Scene theme. Update, on the theme's page, downloads its newest version. The toolbar also opens the switcher.
-- Turn on the menu bar icon in Settings to pick a theme from a panel of wallpapers in the menu bar.
-
-## Settings
-
-<img src=".github/assets/settings.png" width="330" align="right" alt="Scene's Shortcuts settings: Switch theme and Next background, and the switcher's keys" />
-
-Open Settings with ⌘, or the gear in the toolbar. Record, reset, or turn off each shortcut. The Shortcuts tab also lists the switcher's keys. Open at login, the menu bar icon, following macOS Light/Dark, and updates are under General. With that switch on, the current theme changes to its other look when macOS switches, for example at sunset. For updates, Check for Updates… asks now, and Scene also checks once a day. Updates come from this repository's releases, and Scene installs one only if its signature checks out. The private macOS calls for accent color, icon style, and Light/Dark are under Experimental.
-
-<br clear="right" />
-
 ## Make a theme with an AI agent
 
 A skill is a folder of instructions that an AI coding agent loads when a task needs it. Scene's skill, [`create-scene-theme`](skills/create-scene-theme), teaches Claude Code, Codex, and other agents that read `SKILL.md` files to make a complete Scene theme: a palette for each look, three wallpapers per look, and the macOS accent and icon style.
@@ -123,15 +105,15 @@ The theme shows in Scene's sidebar. The agent uses the same draft and checks as 
   <img src=".github/assets/themes.jpg" width="100%" alt="A wall of Scene's themes, captioned 75 themes." />
 </p>
 
-Scene comes with 75 themes. 21 are built from Omarchy's palettes, from Tokyo Night to Catppuccin, Gruvbox, and Rosé Pine. The other 54 are Scene's own, drawn from computing, science, and design: Phosphor, Amber, Mainframe, Teletext, Blueprint, Deep Field, Primary, Safelight, and more, 19 of them with a light look. Four remix old painting styles with computing, and take their colors from their paintings: Cold Aisle (a data center under a swirling starry sky), Deprecated (a Dutch still life of floppy disks and a guttering candle), Rain Bridge (a woodblock rain scene), and Marginalia (bugs in the margins of a manuscript). A theme is a folder or a `.scenetheme` zip with `theme.json`, `wallpapers/`, and optional `apps/` overrides. Themes are data only: Scene never runs code from a theme. Importing an Omarchy theme, from a folder or from GitHub, takes its colors and backgrounds and ignores everything else.
+Scene comes with 75 themes. 21 are built from Omarchy's palettes, from Tokyo Night to Catppuccin, Gruvbox, and Rosé Pine. The other 54 are Scene's own, drawn from computing, science, and design: Phosphor, Amber, Mainframe, Teletext, Blueprint, Deep Field, Primary, Safelight, and more, 19 of them with a light look. Four remix old painting styles with computing, and take their colors from their paintings: Cold Aisle (a data center under a swirling starry sky), Deprecated (a Dutch still life of floppy disks and a guttering candle), Rain Bridge (a woodblock rain scene), and Marginalia (bugs in the margins of a manuscript).
 
-`Themes/WALLPAPER_SOURCES.json` lists where each background comes from and what is known about its license. The backgrounds of the Omarchy themes come from Omarchy and r/unixporn, and most of their licenses are unknown, so check image rights before you distribute the app. The backgrounds of Scene's own themes were generated for Scene with OpenAI's GPT Image, with the prompt recorded, or drawn with code from the theme's palette, with the command recorded.
+The 75 are only a start. Open any theme in the Theme Maker to make your own version, or start a new one with Add Theme → New Theme…, and make as many as you want. If you make something beautiful and want others to install it, make it with the [agent skill](#make-a-theme-with-an-ai-agent) and put its folder on GitHub. Anyone can then install it with Add Theme → Install from GitHub.
 
 ## Development
 
 ```sh
 open Scene.xcodeproj    # ⌘R runs the app, ⌘U runs the tests
-./Scripts/test.sh       # the same 120 tests from the command line
+./Scripts/test.sh       # the same 174 tests from the command line
 ```
 
 To make a theme, use the `scene-theme` skill in `.claude/skills/`. The core is a local package, `Packages/SceneKit`. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains how the code is written, [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) how to build, test, and release it, and [docs/STATUS.md](docs/STATUS.md) what is done and what is open. Agents start at [AGENTS.md](AGENTS.md).
