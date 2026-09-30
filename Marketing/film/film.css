@@ -1,0 +1,237 @@
+/* Scene's product film. The frame is 1920 x 1080 CSS pixels, captured at 2x for 4K. Nothing here animates:
+   film.js sets every moving property from the time, so each frame renders the same way every time. */
+:root {
+  --white: #f5f5f7;
+  --gray: #86868b;
+  --display: -apple-system, "SF Pro Display", system-ui, sans-serif;
+  --text: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --blue: #326bff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; background: #000; overflow: hidden; }
+body { font-family: var(--text); -webkit-font-smoothing: antialiased; color: var(--white); }
+#frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.layer { position: absolute; inset: 0; pointer-events: none; }
+svg { display: block; }
+
+/* MARK: Stage, wall, and screen */
+#stage { perspective: 2600px; perspective-origin: 960px 540px; }
+#plane { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; }
+#tiles { position: absolute; left: 0; top: 0; transform: scale(3); transform-origin: 0 0; transform-style: preserve-3d; }
+.tile { position: absolute; width: 480px; height: 300px; border-radius: 7.5px; overflow: hidden; background: #111; box-shadow: 0 0 0 0.75px rgba(255, 255, 255, 0.1); }
+.tile img { width: 100%; height: 100%; display: block; }
+
+#screen {
+  position: absolute; width: 1440px; height: 900px; border-radius: 22px; overflow: hidden; background: #000;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.10);
+}
+.screen-glow { position: absolute; width: 1440px; height: 900px; border-radius: 60px; filter: blur(110px); opacity: 0; }
+/* Inside the screen, back to front: two desktops (the one being revealed on top), the wave's rim, Scene's window,
+   the menu bar panel, the switcher, the card that moves between them, and the pointer. */
+.desk { position: absolute; inset: 0; isolation: isolate; }
+.desk .wp { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.desk .menubar, .desk .win { z-index: 10; }
+#rim { position: absolute; inset: 0; z-index: 3; opacity: 0; }
+.app { z-index: 10; }
+.panel { z-index: 20; }
+.switcher { z-index: 30; }
+#morph { z-index: 40; }
+#pointer { z-index: 50; }
+
+.menubar {
+  position: absolute; left: 0; right: 0; top: 0; height: 32px; display: flex; align-items: center;
+  padding: 0 20px; font: 500 14px/1 var(--text); text-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+}
+.menubar .left, .menubar .right { display: flex; align-items: center; gap: 21px; }
+.menubar .right { margin-left: auto; gap: 18px; }
+.menubar .apple { font-size: 17px; margin-right: 1px; }
+.menubar b { font-weight: 700; }
+.menubar .extra { margin: 0 -7px; padding: 4px 7px; border-radius: 6px; }
+
+.win {
+  position: absolute; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 0 0 1px var(--edge, rgba(0, 0, 0, 0.12)), 0 34px 90px rgba(0, 0, 0, 0.42), 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+.titlebar { position: absolute; left: 0; right: 0; top: 0; height: 40px; display: flex; align-items: center; }
+.lights { display: flex; gap: 8px; padding-left: 17px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.titlebar .title { position: absolute; left: 0; right: 0; text-align: center; font: 600 13px/1 var(--text); }
+.term .body { position: absolute; left: 0; right: 0; top: 40px; bottom: 0; padding: 14px 20px; font: 400 14.5px/24px var(--mono); white-space: pre; }
+.term .row { height: 24px; }
+.swatch { display: inline-block; width: 30px; height: 15px; border-radius: 4px; margin-right: 7px; vertical-align: -2px; }
+.cursor-block { display: inline-block; width: 9px; height: 18px; vertical-align: -3px; border-radius: 1.5px; }
+.editor .tabs { position: absolute; left: 88px; top: 0; height: 40px; display: flex; }
+.editor .tab { position: relative; height: 40px; padding: 0 18px; display: flex; align-items: center; gap: 8px; font: 500 13px/1 var(--text); }
+.editor .tab .bar { position: absolute; left: 0; right: 0; top: 0; height: 2px; }
+.editor .side { position: absolute; left: 0; top: 40px; bottom: 28px; width: 196px; padding: 14px 0; font: 400 13px/26px var(--text); }
+.editor .side .head { padding: 0 18px; font: 700 11px/26px var(--text); letter-spacing: 0.08em; }
+.editor .side .item { padding: 0 18px; display: flex; align-items: center; gap: 8px; height: 26px; }
+.editor .side .dot { width: 7px; height: 7px; border-radius: 50%; }
+.editor .code { position: absolute; left: 196px; right: 0; top: 40px; bottom: 28px; padding: 12px 0; font: 400 14.5px/24px var(--mono); white-space: pre; }
+.editor .line { position: relative; height: 24px; display: flex; }
+.editor .num { position: relative; width: 54px; padding-right: 16px; text-align: right; flex: none; }
+.editor .current { position: absolute; left: 0; right: 0; top: 0; height: 24px; }
+.editor .caret { position: absolute; width: 2px; height: 19px; top: 2.5px; border-radius: 1px; }
+.editor .status { position: absolute; left: 0; right: 0; bottom: 0; height: 28px; display: flex; align-items: center; gap: 18px; padding: 0 14px; font: 500 12px/1 var(--text); }
+.editor .status .spacer { margin-left: auto; }
+
+/* MARK: The pointer */
+#pointer { position: absolute; left: 0; top: 0; width: 22px; height: 30px; transform-origin: 3px 2px; opacity: 0;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35)); }
+
+/* MARK: Menu bar panel (MenuBarView) */
+.panel {
+  position: absolute; top: 37px; width: 340px; padding: 12px; border-radius: 12px; opacity: 0; transform-origin: 50% 0;
+  background: rgba(36, 36, 35, 0.9); color: var(--white); font: 400 13px/16px var(--text);
+  backdrop-filter: blur(40px) saturate(1.6); -webkit-backdrop-filter: blur(40px) saturate(1.6);
+  box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.16), 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+.panel .current { position: relative; height: 92px; border-radius: 10px; overflow: hidden; background: rgba(255, 255, 255, 0.09); }
+.panel .current img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.panel .current .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)); }
+.panel .current .text { position: absolute; left: 12px; bottom: 12px; right: 12px; color: #fff; }
+.panel .current .text > div { position: absolute; left: 0; bottom: 0; white-space: nowrap; }
+.panel .current .small { font-size: 10px; line-height: 13px; opacity: 0.8; }
+.panel .current .big { font: 600 15px/19px var(--text); margin-top: 1px; }
+.panel .grid { position: relative; height: 262px; margin-top: 10px; overflow: hidden; }
+.panel .cell { position: absolute; width: 96px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.panel .cell .thumb { position: relative; width: 96px; height: 62px; padding: 3px; border-radius: 10px; }
+.panel .cell img { display: block; width: 90px; height: 56px; object-fit: cover; border-radius: 7px; box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12); }
+.panel .cell .ring { position: absolute; inset: 0; border-radius: 10px; box-shadow: inset 0 0 0 2px var(--blue); opacity: 0; }
+.panel .cell span { font-size: 10px; line-height: 13px; }
+.panel hr { border: 0; height: 0.5px; background: rgba(255, 255, 255, 0.14); margin: 10px 0; }
+.panel .row { display: flex; padding: 4px 8px; border-radius: 6px; }
+.panel .row .key { margin-left: auto; color: rgba(235, 235, 245, 0.55); }
+.panel .row.off { opacity: 0.4; }
+
+/* MARK: Scene's window (ContentView: the sidebar and a theme page) */
+.app {
+  position: absolute; left: 130px; top: 50px; width: 1180px; height: 820px; border-radius: 16px; overflow: hidden;
+  opacity: 0; transform-origin: 50% 50%; color: var(--white);
+  box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.16), 0 44px 120px rgba(0, 0, 0, 0.55), 0 12px 34px rgba(0, 0, 0, 0.3);
+}
+.app .ambient { position: absolute; inset: 0; overflow: hidden; background: #0a0b0d; }
+.app .ambient div { position: absolute; inset: 0; opacity: 0; }
+.app .ambient img { position: absolute; left: -90px; top: -90px; width: calc(100% + 180px); height: calc(100% + 180px); object-fit: cover; filter: blur(40px); }
+.app .ambient i { position: absolute; inset: 0; }
+.app .side {
+  position: absolute; left: 8px; top: 8px; bottom: 8px; width: 236px; border-radius: 18px; overflow: hidden;
+  background: rgba(30, 32, 34, 0.7); backdrop-filter: blur(30px) saturate(1.5); -webkit-backdrop-filter: blur(30px) saturate(1.5);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.11);
+}
+.app .side .lights { position: absolute; left: 20px; top: 20px; padding: 0; }
+.app .side .toggle { position: absolute; right: 16px; top: 16px; color: rgba(235, 235, 245, 0.6); }
+.app .list { position: absolute; left: 0; right: 0; top: 50px; bottom: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16px); mask-image: linear-gradient(180deg, transparent 0, #000 16px); }
+.app .selection { position: absolute; left: 8px; right: 8px; height: 44px; border-radius: 10px; background: rgb(64, 98, 209); }
+.app .trow { position: absolute; left: 0; right: 0; height: 48px; }
+.app .trow img { position: absolute; left: 16px; top: 7px; width: 52px; height: 34px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12); }
+.app .trow .n { position: absolute; left: 78px; top: 8px; font: 400 13px/16px var(--text); white-space: nowrap; }
+.app .trow .d { position: absolute; left: 78px; top: 28px; }
+.app .trow .check { position: absolute; right: 16px; top: 15px; }
+.app .tools {
+  position: absolute; right: 12px; top: 9px; width: 152px; height: 36px; border-radius: 18px; display: flex; align-items: center;
+  justify-content: space-around; padding: 0 6px; color: rgba(245, 245, 247, 0.86);
+  background: rgba(34, 34, 36, 0.42) !important;
+}
+.app .tools span { position: relative; width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 14px; }
+.page { position: absolute; left: 244px; top: 0; right: 0; bottom: 0; opacity: 0; }
+.page.light { color: #1d1d1f; }
+.page .preview { position: absolute; left: 99px; top: 64px; width: 737px; height: 461px; border-radius: 14px; overflow: hidden; box-shadow: 0 16px 30px rgba(0, 0, 0, 0.3); }
+.page .preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.page .picker { position: absolute; top: 547px; left: 273px; display: flex; gap: 12px; }
+.page .pick { position: relative; width: 122px; height: 80px; border-radius: 14px; }
+.page .pick img { position: absolute; left: 5px; top: 5px; width: 112px; height: 70px; border-radius: 9px; object-fit: cover; box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.15); }
+.page.light .pick img { box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.15); }
+.page .pick .ring { position: absolute; inset: 0; border-radius: 14px; }
+.page .head { position: absolute; left: 36px; right: 36px; top: 649px; height: 88px; }
+.page .name { display: flex; align-items: baseline; gap: 10px; font: 700 32px/38px var(--display); letter-spacing: -0.01em; }
+.page .pill { font: 600 10px/1 var(--text); padding: 3px 7px; border-radius: 9px; transform: translateY(-5px); }
+.page .summary { margin-top: 6px; font: 400 15px/20px var(--text); color: rgba(235, 235, 245, 0.6); }
+.page.light .summary { color: rgba(60, 60, 67, 0.6); }
+.page .head .dots { margin-top: 12px; }
+.page .right { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 20px; }
+.page .only { display: flex; align-items: center; gap: 6px; font: 400 12px/1 var(--text); color: rgba(235, 235, 245, 0.6); }
+.page .seg { position: relative; display: flex; height: 30px; padding: 2px; border-radius: 15px; font: 500 13px/1 var(--text); }
+.page .seg span { position: relative; z-index: 1; display: flex; align-items: center; padding: 0 14px; border-radius: 13px; }
+.page .seg .knob { position: absolute; z-index: 0; top: 2px; height: 26px; border-radius: 13px; }
+.page .apply { height: 32px; padding: 0 18px; border-radius: 16px; display: flex; align-items: center; font: 600 13px/1 var(--text); box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.14); }
+.page .rule { position: absolute; left: 36px; right: 36px; top: 759px; height: 0.5px; background: rgba(255, 255, 255, 0.12); }
+.page.light .rule { background: rgba(0, 0, 0, 0.12); }
+.page .credits { position: absolute; left: 36px; top: 781px; font: 400 12px/20px var(--text); color: rgba(235, 235, 245, 0.6); }
+.page.light .credits { color: rgba(60, 60, 67, 0.6); }
+.page .credits div { display: flex; align-items: center; gap: 8px; }
+.dots { display: flex; gap: 5px; }
+.dots i { width: 13px; height: 13px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.2); }
+
+/* MARK: Switcher (ThemeCarouselView) */
+.switcher { position: absolute; inset: 0; opacity: 0; }
+.switcher .back { position: absolute; inset: -80px; background-size: cover; background-position: center; filter: blur(46px) saturate(1.1); opacity: 0; }
+.switcher .dim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
+.switcher .card { position: absolute; left: 0; top: 0; width: 634px; height: 396px; border-radius: 14px; overflow: hidden; }
+.switcher .card img { width: 100%; height: 100%; display: block; }
+.switcher .card .ring { position: absolute; inset: 0; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14); }
+.glass {
+  background: rgba(255, 255, 255, 0.10); border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+.switcher .info { position: absolute; left: 0; right: 0; top: 560px; text-align: center; }
+.switcher .name { font: 700 42px/1.1 var(--display); letter-spacing: -0.01em; }
+.switcher .summary { margin-top: 10px; font: 400 20px/1.3 var(--text); color: rgba(235, 235, 245, 0.6); }
+.switcher .meta { margin-top: 18px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+.switcher .count { margin-top: 18px; font: 400 12px/1 var(--text); color: rgba(235, 235, 245, 0.32); }
+.looks { display: flex; gap: 2px; padding: 3px; border-radius: 20px; }
+.looks span { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 16px; font: 500 15px/1 var(--text); color: rgba(235, 235, 245, 0.6); }
+.looks span.on { background: rgba(255, 255, 255, 0.2); color: var(--white); }
+.switcher .hints {
+  position: absolute; left: 50%; top: 782px; transform: translateX(-50%); height: 44px; padding: 0 18px; border-radius: 22px;
+  display: flex; align-items: center; gap: 24px; font: 400 15px/1 var(--text); color: rgba(235, 235, 245, 0.6); white-space: nowrap;
+}
+.hint { display: flex; align-items: center; gap: 6px; }
+.cap {
+  min-width: 24px; height: 24px; padding: 0 6px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
+  font: 500 13px/1 var(--display); color: var(--white); background: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.18);
+}
+#morph { position: absolute; left: 0; top: 0; overflow: hidden; display: none; }
+#morph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* MARK: DesktopPreview, drawn at 1440 x 900 for the switcher's cards, the window's preview, and the wall */
+.dp { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; overflow: hidden; background: #000; }
+.dp .wpi { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dp .mb {
+  position: absolute; left: 0; right: 0; top: 0; height: 49.5px; display: flex; align-items: center; gap: 28.8px; padding: 0 28.8px;
+  font: 400 23.2px/1 var(--text); backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8);
+}
+.dp .mb b { font-weight: 600; }
+.dp .mb .fill { flex: 1; }
+.dp .w { position: absolute; border-radius: 18px; overflow: hidden; }
+.dp .tb { position: relative; display: flex; align-items: center; }
+.dp .tb i { display: block; border-radius: 50%; flex: none; }
+.dp .tb .tt { position: absolute; left: 0; right: 0; text-align: center; }
+.dp .tp { position: absolute; left: 0; right: 0; bottom: 0; padding: 23.2px; font: 400 23.2px/33.9px var(--mono); letter-spacing: 0.42px; white-space: pre; }
+.dp .tp div, .dp .cp .c div { overflow: hidden; text-overflow: ellipsis; }
+.dp .cp { position: absolute; left: 0; right: 0; bottom: 0; display: flex; padding: 23.2px 0; font: 400 23.2px/33.9px var(--mono); letter-spacing: 0.42px; white-space: pre; }
+.dp .cp .n { padding: 0 18.56px; text-align: right; flex: none; }
+.dp .cp .c { flex: 1; min-width: 0; }
+
+/* MARK: Captions and end card */
+.caption {
+  position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap;
+  font: 600 46px/1.1 var(--display); letter-spacing: -0.015em; color: var(--white);
+}
+.big { font-size: 112px; letter-spacing: -0.03em; }
+.spectrum {
+  background: linear-gradient(90deg, #ffd166, #ff8a5c, #ff6fa9, #b98cff, #6ec3ff, #5fe0b8, #ffd166);
+  background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+#shade { background: linear-gradient(180deg, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.72) 100%); opacity: 0; }
+#vignette { background: radial-gradient(ellipse 58% 46% at 50% 50%, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0) 100%); opacity: 0; }
+#endcard .aura { position: absolute; left: 630px; top: 150px; width: 660px; height: 560px; border-radius: 50%; filter: blur(130px); opacity: 0;
+  background: radial-gradient(circle at 50% 45%, #8b8ff5 0%, #c18ad8 40%, rgba(0, 0, 0, 0) 70%); }
+#endcard .word { position: absolute; left: 0; right: 0; top: 614px; text-align: center; font: 600 100px/1 var(--display); letter-spacing: -0.03em; opacity: 0; }
+#endcard .tag { position: absolute; left: 0; right: 0; top: 742px; text-align: center; font: 500 38px/1.2 var(--display); color: var(--gray); letter-spacing: -0.01em; opacity: 0; }
+#grain { background-image: url("../../build/film/assets/grain.png"); background-size: 256px 256px; opacity: 0.045; mix-blend-mode: overlay; }
+#fade { background: #000; opacity: 0; }

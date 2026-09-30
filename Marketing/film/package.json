@@ -1,0 +1,9 @@
+{
+  "name": "scene-film",
+  "private": true,
+  "type": "module",
+  "description": "Renders Scene's 20-second product film from film.html with headless Chrome, frame by frame.",
+  "dependencies": {
+    "puppeteer-core": "25.12.0"
+  }
+}

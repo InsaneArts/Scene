@@ -1,0 +1,151 @@
+/* Scene's product film. The frame is 1920 x 1080 CSS pixels, captured at 2x for 4K. Nothing here animates:
+   film.js sets every moving property from the time, so each frame renders the same way every time. */
+:root {
+  --white: #f5f5f7;
+  --gray: #86868b;
+  --dim: #5f5f64;
+  --display: -apple-system, "SF Pro Display", system-ui, sans-serif;
+  --text: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; background: #000; overflow: hidden; }
+body { font-family: var(--text); -webkit-font-smoothing: antialiased; color: var(--white); }
+#frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.layer { position: absolute; inset: 0; pointer-events: none; }
+
+/* MARK: Keycaps */
+#keys-light { opacity: 0; }
+#keys-light i { position: absolute; border-radius: 50%; filter: blur(90px); }
+.key {
+  position: absolute; height: 168px; border-radius: 34px; overflow: hidden;
+  background: linear-gradient(180deg, #2e2e31 0%, #1d1d1f 55%, #19191b 100%);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.16), inset 0 -3px 6px rgba(0, 0, 0, 0.45),
+              0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 0 #0b0b0c, 0 24px 48px rgba(0, 0, 0, 0.75);
+}
+.key .tint { position: absolute; inset: 0; border-radius: inherit; mix-blend-mode: screen; opacity: 0.0; }
+.key .glyph {
+  position: absolute; left: 0; right: 0; top: 38px; text-align: center;
+  font: 600 62px/1 var(--display); color: var(--white);
+}
+.key .label {
+  position: absolute; left: 0; right: 0; bottom: 26px; text-align: center;
+  font: 500 20px/1 var(--text); color: #8e8e93; letter-spacing: 0.01em;
+}
+.key .sheen { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(105deg, rgba(255,255,255,0) 42%, rgba(255,255,255,0.13) 50%, rgba(255,255,255,0) 58%); background-size: 1400px 100%; background-repeat: no-repeat; }
+
+#morph { position: absolute; left: 0; top: 0; overflow: hidden; opacity: 0; transform-origin: 0 0; }
+#morph .face { position: absolute; inset: 0; background: linear-gradient(180deg, #2e2e31 0%, #1d1d1f 60%, #19191b 100%); }
+#morph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+
+/* MARK: Stage, wall, and screen */
+#stage { perspective: 2600px; perspective-origin: 960px 540px; }
+#plane { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; }
+#tiles { position: absolute; left: 0; top: 0; transform: scale(3); transform-origin: 0 0; transform-style: preserve-3d; }
+.tile { position: absolute; width: 480px; height: 300px; border-radius: 7.5px; overflow: hidden; background: #111; box-shadow: 0 0 0 0.75px rgba(255, 255, 255, 0.1); }
+.tile img { width: 100%; height: 100%; display: block; }
+
+#screen {
+  position: absolute; width: 1440px; height: 900px; border-radius: 22px; overflow: hidden; background: #000;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.10);
+}
+.screen-glow { position: absolute; width: 1440px; height: 900px; border-radius: 60px; filter: blur(110px); opacity: 0; }
+#screen .wp { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+/* Wallpapers stack at 0 to 3; the desktop's contents and the switcher sit above them. */
+#screen .menubar, #screen .win { z-index: 10; }
+#screen .switcher { z-index: 20; }
+
+.menubar {
+  position: absolute; left: 0; right: 0; top: 0; height: 32px; display: flex; align-items: center;
+  padding: 0 20px; font: 500 14px/1 var(--text); text-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+}
+.menubar .left, .menubar .right { display: flex; align-items: center; gap: 21px; }
+.menubar .right { margin-left: auto; gap: 18px; }
+.menubar .apple { font-size: 17px; margin-right: 1px; }
+.menubar b { font-weight: 700; }
+.menubar svg { display: block; }
+
+.win {
+  position: absolute; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 0 0 1px var(--edge, rgba(0, 0, 0, 0.12)), 0 34px 90px rgba(0, 0, 0, 0.42), 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+.titlebar { position: absolute; left: 0; right: 0; top: 0; height: 40px; display: flex; align-items: center; }
+.lights { display: flex; gap: 8px; padding-left: 17px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.titlebar .title { position: absolute; left: 0; right: 0; text-align: center; font: 600 13px/1 var(--text); }
+.term .body { position: absolute; left: 0; right: 0; top: 40px; bottom: 0; padding: 14px 20px; font: 400 14.5px/24px var(--mono); white-space: pre; }
+.term .row { height: 24px; }
+.swatch { display: inline-block; width: 30px; height: 15px; border-radius: 4px; margin-right: 7px; vertical-align: -2px; }
+.cursor-block { display: inline-block; width: 9px; height: 18px; vertical-align: -3px; border-radius: 1.5px; }
+
+.editor .tabs { position: absolute; left: 88px; top: 0; height: 40px; display: flex; }
+.editor .tab { position: relative; height: 40px; padding: 0 18px; display: flex; align-items: center; gap: 8px; font: 500 13px/1 var(--text); }
+.editor .tab .bar { position: absolute; left: 0; right: 0; top: 0; height: 2px; }
+.editor .side { position: absolute; left: 0; top: 40px; bottom: 28px; width: 196px; padding: 14px 0; font: 400 13px/26px var(--text); }
+.editor .side .head { padding: 0 18px; font: 700 11px/26px var(--text); letter-spacing: 0.08em; }
+.editor .side .item { padding: 0 18px; display: flex; align-items: center; gap: 8px; height: 26px; }
+.editor .side .dot { width: 7px; height: 7px; border-radius: 50%; }
+.editor .code { position: absolute; left: 196px; right: 0; top: 40px; bottom: 28px; padding: 12px 0; font: 400 14.5px/24px var(--mono); white-space: pre; }
+.editor .line { position: relative; height: 24px; display: flex; }
+.editor .num { position: relative; width: 54px; padding-right: 16px; text-align: right; flex: none; }
+.editor .current { position: absolute; left: 0; right: 0; top: 0; height: 24px; }
+.editor .caret { position: absolute; width: 2px; height: 19px; top: 2.5px; border-radius: 1px; }
+.editor .status { position: absolute; left: 0; right: 0; bottom: 0; height: 28px; display: flex; align-items: center; gap: 18px; padding: 0 14px; font: 500 12px/1 var(--text); }
+.editor .status .spacer { margin-left: auto; }
+
+/* MARK: Switcher (the product's own full-screen carousel) */
+.switcher { position: absolute; inset: 0; opacity: 0; }
+.switcher .back { position: absolute; inset: -80px; background-size: cover; background-position: center; filter: blur(46px) saturate(1.1); opacity: 0; }
+.switcher .dim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
+.switcher .card {
+  position: absolute; left: 0; top: 0; width: 634px; height: 396px; border-radius: 14px; overflow: hidden;
+}
+.switcher .card img { width: 100%; height: 100%; display: block; }
+.switcher .card .ring { position: absolute; inset: 0; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14); }
+.glass {
+  background: rgba(255, 255, 255, 0.10); border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+.switcher .badge {
+  position: absolute; right: 14px; top: 14px; height: 28px; padding: 0 11px; border-radius: 14px; display: flex; align-items: center; gap: 5px;
+  font: 600 13px/1 var(--text); color: var(--white);
+}
+.switcher .info { position: absolute; left: 0; right: 0; top: 560px; text-align: center; }
+.switcher .name { font: 700 42px/1.1 var(--display); letter-spacing: -0.01em; }
+.switcher .summary { margin-top: 10px; font: 400 20px/1.3 var(--text); color: rgba(235, 235, 245, 0.6); }
+.switcher .meta { margin-top: 18px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+.dots { display: flex; gap: 5px; }
+.dots i { width: 13px; height: 13px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.2); }
+.looks { display: flex; gap: 2px; padding: 3px; border-radius: 20px; }
+.looks span { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 16px; font: 500 15px/1 var(--text); color: rgba(235, 235, 245, 0.6); }
+.looks span.on { background: rgba(255, 255, 255, 0.2); color: var(--white); }
+.switcher .hints {
+  position: absolute; left: 50%; top: 782px; transform: translateX(-50%); height: 44px; padding: 0 18px; border-radius: 22px;
+  display: flex; align-items: center; gap: 24px; font: 400 15px/1 var(--text); color: rgba(235, 235, 245, 0.6); white-space: nowrap;
+}
+.hint { display: flex; align-items: center; gap: 6px; }
+.cap {
+  min-width: 24px; height: 24px; padding: 0 6px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
+  font: 500 13px/1 var(--display); color: var(--white); background: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.18);
+}
+
+/* MARK: Captions and end card */
+.caption {
+  position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap;
+  font: 600 46px/1.1 var(--display); letter-spacing: -0.015em; color: var(--white);
+}
+.caption .w { display: inline-block; margin: 0 0.16em; }
+.big { font-size: 112px; letter-spacing: -0.03em; }
+.spectrum {
+  background: linear-gradient(90deg, #ffd166, #ff8a5c, #ff6fa9, #b98cff, #6ec3ff, #5fe0b8, #ffd166);
+  background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+#vignette { background: radial-gradient(ellipse 58% 46% at 50% 50%, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0) 100%); opacity: 0; }
+#endcard .aura { position: absolute; left: 630px; top: 150px; width: 660px; height: 560px; border-radius: 50%; filter: blur(130px); opacity: 0;
+  background: radial-gradient(circle at 50% 45%, #8b8ff5 0%, #c18ad8 40%, rgba(0, 0, 0, 0) 70%); }
+#endcard .word { position: absolute; left: 0; right: 0; top: 614px; text-align: center; font: 600 100px/1 var(--display); letter-spacing: -0.03em; opacity: 0; }
+#endcard .tag { position: absolute; left: 0; right: 0; top: 742px; text-align: center; font: 500 38px/1.2 var(--display); color: var(--gray); letter-spacing: -0.01em; opacity: 0; }
+#grain { background-image: url("../../build/film/assets/grain.png"); background-size: 256px 256px; opacity: 0.045; mix-blend-mode: overlay; }
+#fade { background: #000; opacity: 0; }

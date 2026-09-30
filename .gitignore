@@ -5,3 +5,4 @@
 *.profraw
 build/
 dist/
+node_modules/
