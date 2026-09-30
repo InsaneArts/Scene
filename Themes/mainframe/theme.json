@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/mainframe",
+  "version": "1.0.0",
+  "name": "Mainframe",
+  "summary": "The seven colors of a 3270 terminal on black glass.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "green",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#07090c",
+        "surface": "#030406",
+        "overlay": "#0e1318",
+        "border": "#313941",
+        "foreground": "#89f58f",
+        "muted": "#76828d",
+        "accent": "#3be1e1",
+        "selection": "#002a2b",
+        "cursor": "#caffcb",
+        "currentLine": "#0a0e12",
+        "search": "#4e410d",
+        "error": "#ff847d",
+        "warning": "#f2c50e",
+        "success": "#72dd78",
+        "info": "#7aaffe"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#caffcb",
+        "ansi": {
+          "black": "#07090c",
+          "red": "#ff847d",
+          "green": "#72dd78",
+          "yellow": "#f2c50e",
+          "blue": "#7aaffe",
+          "magenta": "#fe7fc0",
+          "cyan": "#03dcdc",
+          "white": "#89f58f",
+          "brightBlack": "#313941",
+          "brightRed": "#fea69e",
+          "brightGreen": "#80f386",
+          "brightYellow": "#ffdb69",
+          "brightBlue": "#9ac3ff",
+          "brightMagenta": "#ffa3cf",
+          "brightCyan": "#06f2f2",
+          "brightWhite": "#caffcb"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#76828d",
+          "italic": true
+        },
+        "keyword": "#ffa3cf",
+        "operator": "#9ac3ff",
+        "punctuation": "#76828d",
+        "string": "#72dd78",
+        "escape": "#ffa3cf",
+        "number": "#ffa666",
+        "constant": "#ffa666",
+        "function": "#7aaffe",
+        "type": "#f2c50e",
+        "builtin": "#03dcdc",
+        "variable": "#89f58f",
+        "parameter": {
+          "color": "#03dcdc",
+          "italic": true
+        },
+        "property": "#03dcdc",
+        "tag": "#ff847d",
+        "attribute": {
+          "color": "#03dcdc",
+          "italic": true
+        },
+        "added": "#72dd78",
+        "removed": "#ff847d",
+        "changed": "#f2c50e"
+      },
+      "system": {
+        "accentColor": "green",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-machine-room.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-terminal-glow.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-maze.png",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-machine-room.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-terminal-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-maze.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

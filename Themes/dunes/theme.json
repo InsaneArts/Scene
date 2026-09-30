@@ -1,0 +1,241 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/dunes",
+  "version": "1.0.0",
+  "name": "Dunes",
+  "summary": "Sand by day, dusk over the ridges by night.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "warm",
+    "earthy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#2b130f",
+        "surface": "#200c09",
+        "overlay": "#3a1b16",
+        "border": "#6a4039",
+        "foreground": "#e5d5c3",
+        "muted": "#a3726a",
+        "accent": "#f2a866",
+        "selection": "#512e0a",
+        "cursor": "#f9ecde",
+        "currentLine": "#321712",
+        "search": "#62482c",
+        "error": "#e88f85",
+        "warning": "#e1c570",
+        "success": "#90d192",
+        "info": "#7aaeef"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f9ecde",
+        "ansi": {
+          "black": "#2b130f",
+          "red": "#e88f85",
+          "green": "#90d192",
+          "yellow": "#e1c570",
+          "blue": "#7aaeef",
+          "magenta": "#d195d4",
+          "cyan": "#57d4d4",
+          "white": "#e5d5c3",
+          "brightBlack": "#6a4039",
+          "brightRed": "#ffa196",
+          "brightGreen": "#9ee6a0",
+          "brightYellow": "#f7d979",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#e8a6ec",
+          "brightCyan": "#5de9e9",
+          "brightWhite": "#f9ecde"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#a3726a",
+          "italic": true
+        },
+        "keyword": "#e8a6ec",
+        "operator": "#91c1ff",
+        "punctuation": "#a3726a",
+        "string": "#90d192",
+        "escape": "#e8a6ec",
+        "number": "#f1a774",
+        "constant": "#f1a774",
+        "function": "#7aaeef",
+        "type": "#e1c570",
+        "builtin": "#57d4d4",
+        "variable": "#e5d5c3",
+        "parameter": {
+          "color": "#57d4d4",
+          "italic": true
+        },
+        "property": "#57d4d4",
+        "tag": "#e88f85",
+        "attribute": {
+          "color": "#57d4d4",
+          "italic": true
+        },
+        "added": "#90d192",
+        "removed": "#e88f85",
+        "changed": "#e1c570"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-dusk.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-moonlit.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-contours.heic",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#f6e5cf",
+        "surface": "#efdbc0",
+        "overlay": "#ebd5b8",
+        "border": "#bba485",
+        "foreground": "#3a2a20",
+        "muted": "#836e51",
+        "accent": "#bd5833",
+        "selection": "#eab7a5",
+        "cursor": "#26160e",
+        "currentLine": "#f0ddc4",
+        "search": "#d4c191",
+        "error": "#a34942",
+        "warning": "#866c02",
+        "success": "#2f7434",
+        "info": "#2e64a6"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#26160e",
+        "ansi": {
+          "black": "#f6e5cf",
+          "red": "#a34942",
+          "green": "#2f7434",
+          "yellow": "#866c02",
+          "blue": "#2e64a6",
+          "magenta": "#8e5192",
+          "cyan": "#076f6f",
+          "white": "#3a2a20",
+          "brightBlack": "#bba485",
+          "brightRed": "#b8554c",
+          "brightGreen": "#38853e",
+          "brightYellow": "#977a03",
+          "brightBlue": "#3772bb",
+          "brightMagenta": "#a05da4",
+          "brightCyan": "#017f7f",
+          "brightWhite": "#26160e"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#836e51",
+          "italic": true
+        },
+        "keyword": "#a05da4",
+        "operator": "#3772bb",
+        "punctuation": "#836e51",
+        "string": "#2f7434",
+        "escape": "#a05da4",
+        "number": "#9f5618",
+        "constant": "#9f5618",
+        "function": "#2e64a6",
+        "type": "#866c02",
+        "builtin": "#076f6f",
+        "variable": "#3a2a20",
+        "parameter": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "property": "#076f6f",
+        "tag": "#a34942",
+        "attribute": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "added": "#2f7434",
+        "removed": "#a34942",
+        "changed": "#866c02"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-contours.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-morning.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-glow.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-dusk.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-moonlit.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-morning.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

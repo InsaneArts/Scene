@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/teletext",
+  "version": "1.0.0",
+  "name": "Teletext",
+  "summary": "Eight broadcast colors and chunky blocks on black.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "vivid",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#090909",
+        "surface": "#040404",
+        "overlay": "#141213",
+        "border": "#3c3638",
+        "foreground": "#d7d7d7",
+        "muted": "#877d80",
+        "accent": "#22fcfd",
+        "selection": "#002a2b",
+        "cursor": "#eeeeee",
+        "currentLine": "#0e0e0e",
+        "search": "#515113",
+        "error": "#fd3b2e",
+        "warning": "#f8f929",
+        "success": "#4df83f",
+        "info": "#528dff"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#eeeeee",
+        "ansi": {
+          "black": "#090909",
+          "red": "#fd3b2e",
+          "green": "#4df83f",
+          "yellow": "#f8f929",
+          "blue": "#528dff",
+          "magenta": "#f33ff3",
+          "cyan": "#22fcfd",
+          "white": "#d7d7d7",
+          "brightBlack": "#3c3638",
+          "brightRed": "#ff968a",
+          "brightGreen": "#5fed6c",
+          "brightYellow": "#fecf00",
+          "brightBlue": "#86bafe",
+          "brightMagenta": "#f889ff",
+          "brightCyan": "#10e7e7",
+          "brightWhite": "#eeeeee"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#877d80",
+          "italic": true
+        },
+        "keyword": "#f889ff",
+        "operator": "#86bafe",
+        "punctuation": "#877d80",
+        "string": "#4df83f",
+        "escape": "#f889ff",
+        "number": "#ff9646",
+        "constant": "#ff9646",
+        "function": "#528dff",
+        "type": "#f8f929",
+        "builtin": "#22fcfd",
+        "variable": "#d7d7d7",
+        "parameter": {
+          "color": "#22fcfd",
+          "italic": true
+        },
+        "property": "#22fcfd",
+        "tag": "#fd3b2e",
+        "attribute": {
+          "color": "#22fcfd",
+          "italic": true
+        },
+        "added": "#4df83f",
+        "removed": "#fd3b2e",
+        "changed": "#f8f929"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-sunset.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-tv-page.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-dither.png",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-sunset.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-tv-page.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-dither.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

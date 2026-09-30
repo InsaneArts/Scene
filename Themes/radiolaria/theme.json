@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/radiolaria",
+  "version": "1.0.0",
+  "name": "Radiolaria",
+  "summary": "Sea creatures drawn in 1904: ink, teal, and ochre on cream.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "teal",
+    "vintage"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#f6eedc",
+        "surface": "#eee4ce",
+        "overlay": "#eadec7",
+        "border": "#b9ad93",
+        "foreground": "#372b21",
+        "muted": "#7c7057",
+        "accent": "#057176",
+        "selection": "#a1d6d9",
+        "cursor": "#23180f",
+        "currentLine": "#f0e6d2",
+        "search": "#d4c7a2",
+        "error": "#9a5049",
+        "warning": "#846c1b",
+        "success": "#3b723e",
+        "info": "#39659b"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#23180f",
+        "ansi": {
+          "black": "#f6eedc",
+          "red": "#9a5049",
+          "green": "#3b723e",
+          "yellow": "#846c1b",
+          "blue": "#39659b",
+          "magenta": "#89568c",
+          "cyan": "#076f6f",
+          "white": "#372b21",
+          "brightBlack": "#b9ad93",
+          "brightRed": "#af5c53",
+          "brightGreen": "#448247",
+          "brightYellow": "#957b1e",
+          "brightBlue": "#4273b0",
+          "brightMagenta": "#9b629e",
+          "brightCyan": "#017f7f",
+          "brightWhite": "#23180f"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7c7057",
+          "italic": true
+        },
+        "keyword": "#9b629e",
+        "operator": "#4273b0",
+        "punctuation": "#7c7057",
+        "string": "#3b723e",
+        "escape": "#9b629e",
+        "number": "#985b2d",
+        "constant": "#985b2d",
+        "function": "#39659b",
+        "type": "#846c1b",
+        "builtin": "#076f6f",
+        "variable": "#372b21",
+        "parameter": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "property": "#076f6f",
+        "tag": "#9a5049",
+        "attribute": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "added": "#3b723e",
+        "removed": "#9a5049",
+        "changed": "#846c1b"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-contours.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-current.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-sea-forms.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-current.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-sea-forms.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

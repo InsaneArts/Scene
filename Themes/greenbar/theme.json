@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/greenbar",
+  "version": "1.0.0",
+  "name": "Greenbar",
+  "summary": "Tractor-feed printer paper and dot-matrix ink.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "green",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#f3f9f1",
+        "surface": "#e8efe5",
+        "overlay": "#e3ebdf",
+        "border": "#b0b9ab",
+        "foreground": "#282f35",
+        "muted": "#6b7566",
+        "accent": "#21763c",
+        "selection": "#baddc0",
+        "cursor": "#151b21",
+        "currentLine": "#ebf2e8",
+        "search": "#d4d0a9",
+        "error": "#b24840",
+        "warning": "#8d7102",
+        "success": "#267d30",
+        "info": "#2769b7"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#151b21",
+        "ansi": {
+          "black": "#f3f9f1",
+          "red": "#b24840",
+          "green": "#267d30",
+          "yellow": "#8d7102",
+          "blue": "#2769b7",
+          "magenta": "#99519e",
+          "cyan": "#057575",
+          "white": "#282f35",
+          "brightBlack": "#b0b9ab",
+          "brightRed": "#c7534a",
+          "brightGreen": "#2f8d39",
+          "brightYellow": "#9e8003",
+          "brightBlue": "#3077cd",
+          "brightMagenta": "#ac5db1",
+          "brightCyan": "#098585",
+          "brightWhite": "#151b21"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6b7566",
+          "italic": true
+        },
+        "keyword": "#ac5db1",
+        "operator": "#3077cd",
+        "punctuation": "#6b7566",
+        "string": "#267d30",
+        "escape": "#ac5db1",
+        "number": "#ac5701",
+        "constant": "#ac5701",
+        "function": "#2769b7",
+        "type": "#8d7102",
+        "builtin": "#057575",
+        "variable": "#282f35",
+        "parameter": {
+          "color": "#057575",
+          "italic": true
+        },
+        "property": "#057575",
+        "tag": "#b24840",
+        "attribute": {
+          "color": "#057575",
+          "italic": true
+        },
+        "added": "#267d30",
+        "removed": "#b24840",
+        "changed": "#8d7102"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-fanfold.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-printer.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-contours.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-fanfold.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-printer.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

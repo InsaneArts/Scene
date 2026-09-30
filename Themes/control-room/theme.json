@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/control-room",
+  "version": "1.0.0",
+  "name": "Control Room",
+  "summary": "Warm gray consoles, amber readouts, and teal screens.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "warm",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#1e1a15",
+        "surface": "#16120e",
+        "overlay": "#2b241c",
+        "border": "#564b3f",
+        "foreground": "#ded6c9",
+        "muted": "#8b7e6f",
+        "accent": "#fcaf41",
+        "selection": "#4b3210",
+        "cursor": "#f4eee3",
+        "currentLine": "#241f18",
+        "search": "#574c32",
+        "error": "#e08f86",
+        "warning": "#dbc276",
+        "success": "#92cc93",
+        "info": "#7cabe6"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f4eee3",
+        "ansi": {
+          "black": "#1e1a15",
+          "red": "#e08f86",
+          "green": "#92cc93",
+          "yellow": "#dbc276",
+          "blue": "#7cabe6",
+          "magenta": "#cb95ce",
+          "cyan": "#63cfc9",
+          "white": "#ded6c9",
+          "brightBlack": "#564b3f",
+          "brightRed": "#f99f94",
+          "brightGreen": "#a0e1a1",
+          "brightYellow": "#f1d680",
+          "brightBlue": "#8bbeff",
+          "brightMagenta": "#e2a5e5",
+          "brightCyan": "#6be5de",
+          "brightWhite": "#f4eee3"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#8b7e6f",
+          "italic": true
+        },
+        "keyword": "#e2a5e5",
+        "operator": "#8bbeff",
+        "punctuation": "#8b7e6f",
+        "string": "#92cc93",
+        "escape": "#e2a5e5",
+        "number": "#e9a679",
+        "constant": "#e9a679",
+        "function": "#7cabe6",
+        "type": "#dbc276",
+        "builtin": "#63cfc9",
+        "variable": "#ded6c9",
+        "parameter": {
+          "color": "#63cfc9",
+          "italic": true
+        },
+        "property": "#63cfc9",
+        "tag": "#e08f86",
+        "attribute": {
+          "color": "#63cfc9",
+          "italic": true
+        },
+        "added": "#92cc93",
+        "removed": "#e08f86",
+        "changed": "#dbc276"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-control-room.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-trace.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-contours.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-control-room.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-trace.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

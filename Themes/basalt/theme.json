@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/basalt",
+  "version": "1.0.0",
+  "name": "Basalt",
+  "summary": "Black volcanic rock and a seam of lava.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "orange",
+    "earthy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#120f0e",
+        "surface": "#0a0807",
+        "overlay": "#1e1817",
+        "border": "#473d3b",
+        "foreground": "#ddd6d1",
+        "muted": "#8b7c7a",
+        "accent": "#fe7222",
+        "selection": "#432010",
+        "cursor": "#f3ede9",
+        "currentLine": "#181412",
+        "search": "#4f452a",
+        "error": "#e58c82",
+        "warning": "#dec26d",
+        "success": "#8dcd8e",
+        "info": "#77abec"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f3ede9",
+        "ansi": {
+          "black": "#120f0e",
+          "red": "#e58c82",
+          "green": "#8dcd8e",
+          "yellow": "#dec26d",
+          "blue": "#77abec",
+          "magenta": "#ce92d1",
+          "cyan": "#53d1d0",
+          "white": "#ddd6d1",
+          "brightBlack": "#473d3b",
+          "brightRed": "#fe9c91",
+          "brightGreen": "#9be39d",
+          "brightYellow": "#f4d576",
+          "brightBlue": "#8bbeff",
+          "brightMagenta": "#e5a3e8",
+          "brightCyan": "#59e6e6",
+          "brightWhite": "#f3ede9"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#8b7c7a",
+          "italic": true
+        },
+        "keyword": "#e5a3e8",
+        "operator": "#8bbeff",
+        "punctuation": "#8b7c7a",
+        "string": "#8dcd8e",
+        "escape": "#e5a3e8",
+        "number": "#eea471",
+        "constant": "#eea471",
+        "function": "#77abec",
+        "type": "#dec26d",
+        "builtin": "#53d1d0",
+        "variable": "#ddd6d1",
+        "parameter": {
+          "color": "#53d1d0",
+          "italic": true
+        },
+        "property": "#53d1d0",
+        "tag": "#e58c82",
+        "attribute": {
+          "color": "#53d1d0",
+          "italic": true
+        },
+        "added": "#8dcd8e",
+        "removed": "#e58c82",
+        "changed": "#dec26d"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-contours.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-lava-seam.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glow.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-lava-seam.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

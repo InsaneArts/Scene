@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/night-orbit",
+  "version": "1.0.0",
+  "name": "Night Orbit",
+  "summary": "Navy night and the gold of cities seen from orbit.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "blue",
+    "space"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#06132a",
+        "surface": "#030b1f",
+        "overlay": "#0b1d3b",
+        "border": "#2d456c",
+        "foreground": "#ccd9e8",
+        "muted": "#6581af",
+        "accent": "#f3b94c",
+        "selection": "#412c00",
+        "cursor": "#e5f0fc",
+        "currentLine": "#081832",
+        "search": "#48483c",
+        "error": "#ed8c81",
+        "warning": "#e3c566",
+        "success": "#8bd28d",
+        "info": "#75aef5"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e5f0fc",
+        "ansi": {
+          "black": "#06132a",
+          "red": "#ed8c81",
+          "green": "#8bd28d",
+          "yellow": "#e3c566",
+          "blue": "#75aef5",
+          "magenta": "#d493d8",
+          "cyan": "#44d6d6",
+          "white": "#ccd9e8",
+          "brightBlack": "#2d456c",
+          "brightRed": "#ffa196",
+          "brightGreen": "#99e89b",
+          "brightYellow": "#fad86f",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#eba3ef",
+          "brightCyan": "#4aebeb",
+          "brightWhite": "#e5f0fc"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6581af",
+          "italic": true
+        },
+        "keyword": "#eba3ef",
+        "operator": "#91c1ff",
+        "punctuation": "#6581af",
+        "string": "#8bd28d",
+        "escape": "#eba3ef",
+        "number": "#f6a56d",
+        "constant": "#f6a56d",
+        "function": "#75aef5",
+        "type": "#e3c566",
+        "builtin": "#44d6d6",
+        "variable": "#ccd9e8",
+        "parameter": {
+          "color": "#44d6d6",
+          "italic": true
+        },
+        "property": "#44d6d6",
+        "tag": "#ed8c81",
+        "attribute": {
+          "color": "#44d6d6",
+          "italic": true
+        },
+        "added": "#8bd28d",
+        "removed": "#ed8c81",
+        "changed": "#e3c566"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-nebula.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glow.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-earth-curve.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-nebula.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-earth-curve.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

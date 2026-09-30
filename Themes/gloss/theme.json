@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/gloss",
+  "version": "1.0.0",
+  "name": "Gloss",
+  "summary": "Silver, aqua, and gloss from the year 2000.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "cyan",
+    "glossy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#e8f4fa",
+        "surface": "#dbebf3",
+        "overlay": "#d5e6ef",
+        "border": "#a1b5bf",
+        "foreground": "#222f3c",
+        "muted": "#607580",
+        "accent": "#06899d",
+        "selection": "#a5d8e3",
+        "cursor": "#101c28",
+        "currentLine": "#deedf4",
+        "search": "#ceceb0",
+        "error": "#b9463f",
+        "warning": "#907402",
+        "success": "#1f812d",
+        "info": "#226bc0"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#101c28",
+        "ansi": {
+          "black": "#e8f4fa",
+          "red": "#b9463f",
+          "green": "#1f812d",
+          "yellow": "#907402",
+          "blue": "#226bc0",
+          "magenta": "#9f51a4",
+          "cyan": "#047879",
+          "white": "#222f3c",
+          "brightBlack": "#a1b5bf",
+          "brightRed": "#ce5249",
+          "brightGreen": "#299236",
+          "brightYellow": "#a18304",
+          "brightBlue": "#2b7ad6",
+          "brightMagenta": "#b25cb7",
+          "brightCyan": "#078989",
+          "brightWhite": "#101c28"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#607580",
+          "italic": true
+        },
+        "keyword": "#b25cb7",
+        "operator": "#2b7ad6",
+        "punctuation": "#607580",
+        "string": "#1f812d",
+        "escape": "#b25cb7",
+        "number": "#b05a02",
+        "constant": "#b05a02",
+        "function": "#226bc0",
+        "type": "#907402",
+        "builtin": "#047879",
+        "variable": "#222f3c",
+        "parameter": {
+          "color": "#047879",
+          "italic": true
+        },
+        "property": "#047879",
+        "tag": "#b9463f",
+        "attribute": {
+          "color": "#047879",
+          "italic": true
+        },
+        "added": "#1f812d",
+        "removed": "#b9463f",
+        "changed": "#907402"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-liquid-chrome.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-gadgets.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-glow.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-liquid-chrome.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-gadgets.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/deprecated",
+  "version": "1.0.0",
+  "name": "Deprecated",
+  "summary": "A vanitas of dead media: floppy disks, a keyboard, a guttering candle.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "brown",
+    "painting"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#0d0b08",
+        "surface": "#060504",
+        "overlay": "#18140f",
+        "border": "#403931",
+        "foreground": "#e2d5c4",
+        "muted": "#887f73",
+        "accent": "#e4b473",
+        "selection": "#362201",
+        "cursor": "#f7eddf",
+        "currentLine": "#12100c",
+        "search": "#4a432f",
+        "error": "#db978c",
+        "warning": "#d9c68b",
+        "success": "#a7ca93",
+        "info": "#93aae1"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f7eddf",
+        "ansi": {
+          "black": "#0d0b08",
+          "red": "#db978c",
+          "green": "#a7ca93",
+          "yellow": "#d9c68b",
+          "blue": "#93aae1",
+          "magenta": "#d199c2",
+          "cyan": "#7bd0c3",
+          "white": "#e2d5c4",
+          "brightBlack": "#403931",
+          "brightRed": "#f5a79b",
+          "brightGreen": "#b7dfa0",
+          "brightYellow": "#f0da95",
+          "brightBlue": "#a2bcfc",
+          "brightMagenta": "#e9aad7",
+          "brightCyan": "#85e6d7",
+          "brightWhite": "#f7eddf"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#887f73",
+          "italic": true
+        },
+        "keyword": "#e9aad7",
+        "operator": "#a2bcfc",
+        "punctuation": "#887f73",
+        "string": "#a7ca93",
+        "escape": "#e9aad7",
+        "number": "#e3ae89",
+        "constant": "#e3ae89",
+        "function": "#93aae1",
+        "type": "#d9c68b",
+        "builtin": "#7bd0c3",
+        "variable": "#e2d5c4",
+        "parameter": {
+          "color": "#7bd0c3",
+          "italic": true
+        },
+        "property": "#7bd0c3",
+        "tag": "#db978c",
+        "attribute": {
+          "color": "#7bd0c3",
+          "italic": true
+        },
+        "added": "#a7ca93",
+        "removed": "#db978c",
+        "changed": "#d9c68b"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-still-life.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-ledge.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-hourglass.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-still-life.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-ledge.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-hourglass.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

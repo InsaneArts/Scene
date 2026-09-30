@@ -1,0 +1,242 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/hi-fi",
+  "version": "1.0.0",
+  "name": "Hi-Fi",
+  "summary": "Brushed aluminum, walnut, and one orange button.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "orange",
+    "design",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#1f130b",
+        "surface": "#160c05",
+        "overlay": "#2d1c11",
+        "border": "#594233",
+        "foreground": "#dbd7d0",
+        "muted": "#967a67",
+        "accent": "#f77e35",
+        "selection": "#4b2916",
+        "cursor": "#f1eee9",
+        "currentLine": "#26180e",
+        "search": "#584828",
+        "error": "#e58c82",
+        "warning": "#dec26d",
+        "success": "#8dcd8e",
+        "info": "#77abec"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f1eee9",
+        "ansi": {
+          "black": "#1f130b",
+          "red": "#e58c82",
+          "green": "#8dcd8e",
+          "yellow": "#dec26d",
+          "blue": "#77abec",
+          "magenta": "#ce92d1",
+          "cyan": "#53d1d0",
+          "white": "#dbd7d0",
+          "brightBlack": "#594233",
+          "brightRed": "#fe9c91",
+          "brightGreen": "#9be39d",
+          "brightYellow": "#f4d576",
+          "brightBlue": "#8bbeff",
+          "brightMagenta": "#e5a3e8",
+          "brightCyan": "#59e6e6",
+          "brightWhite": "#f1eee9"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#967a67",
+          "italic": true
+        },
+        "keyword": "#e5a3e8",
+        "operator": "#8bbeff",
+        "punctuation": "#967a67",
+        "string": "#8dcd8e",
+        "escape": "#e5a3e8",
+        "number": "#eea471",
+        "constant": "#eea471",
+        "function": "#77abec",
+        "type": "#dec26d",
+        "builtin": "#53d1d0",
+        "variable": "#dbd7d0",
+        "parameter": {
+          "color": "#53d1d0",
+          "italic": true
+        },
+        "property": "#53d1d0",
+        "tag": "#e58c82",
+        "attribute": {
+          "color": "#53d1d0",
+          "italic": true
+        },
+        "added": "#8dcd8e",
+        "removed": "#e58c82",
+        "changed": "#dec26d"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-receiver.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-turntable.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-ridges.heic",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#e9ebee",
+        "surface": "#dde2e7",
+        "overlay": "#d8dde3",
+        "border": "#a4acb4",
+        "foreground": "#2b2e32",
+        "muted": "#69737d",
+        "accent": "#d86105",
+        "selection": "#e6bda9",
+        "cursor": "#181b1e",
+        "currentLine": "#e0e4e8",
+        "search": "#cdc6a7",
+        "error": "#a94f47",
+        "warning": "#8d7102",
+        "success": "#357a3a",
+        "info": "#346aac"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#181b1e",
+        "ansi": {
+          "black": "#e9ebee",
+          "red": "#a94f47",
+          "green": "#357a3a",
+          "yellow": "#8d7102",
+          "blue": "#346aac",
+          "magenta": "#945798",
+          "cyan": "#057575",
+          "white": "#2b2e32",
+          "brightBlack": "#a4acb4",
+          "brightRed": "#be5b52",
+          "brightGreen": "#3e8b44",
+          "brightYellow": "#9e8003",
+          "brightBlue": "#3d78c2",
+          "brightMagenta": "#a763ab",
+          "brightCyan": "#098585",
+          "brightWhite": "#181b1e"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#69737d",
+          "italic": true
+        },
+        "keyword": "#a763ab",
+        "operator": "#3d78c2",
+        "punctuation": "#69737d",
+        "string": "#357a3a",
+        "escape": "#a763ab",
+        "number": "#a65c20",
+        "constant": "#a65c20",
+        "function": "#346aac",
+        "type": "#8d7102",
+        "builtin": "#057575",
+        "variable": "#2b2e32",
+        "parameter": {
+          "color": "#057575",
+          "italic": true
+        },
+        "property": "#057575",
+        "tag": "#a94f47",
+        "attribute": {
+          "color": "#057575",
+          "italic": true
+        },
+        "added": "#357a3a",
+        "removed": "#a94f47",
+        "changed": "#8d7102"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-record-player.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-speaker-grille.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-glow.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-receiver.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-turntable.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-ridges.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-record-player.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-speaker-grille.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

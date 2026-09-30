@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/amber",
+  "version": "1.0.0",
+  "name": "Amber",
+  "summary": "Warm amber phosphor on a tube that has been on all night.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "orange",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#170d05",
+        "surface": "#0f0602",
+        "overlay": "#241609",
+        "border": "#4f3b29",
+        "foreground": "#fece92",
+        "muted": "#947b65",
+        "accent": "#ffa839",
+        "selection": "#3f2503",
+        "cursor": "#ffebd3",
+        "currentLine": "#1e1207",
+        "search": "#534321",
+        "error": "#e98a7a",
+        "warning": "#e0c262",
+        "success": "#a9c870",
+        "info": "#50b3e8"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#ffebd3",
+        "ansi": {
+          "black": "#170d05",
+          "red": "#e98a7a",
+          "green": "#a9c870",
+          "yellow": "#e0c262",
+          "blue": "#50b3e8",
+          "magenta": "#e08bbc",
+          "cyan": "#48d3c5",
+          "white": "#fece92",
+          "brightBlack": "#4f3b29",
+          "brightRed": "#fe9c8c",
+          "brightGreen": "#badd7b",
+          "brightYellow": "#f6d56b",
+          "brightBlue": "#60c7fe",
+          "brightMagenta": "#f99bd1",
+          "brightCyan": "#4ee9d9",
+          "brightWhite": "#ffebd3"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#947b65",
+          "italic": true
+        },
+        "keyword": "#f99bd1",
+        "operator": "#60c7fe",
+        "punctuation": "#947b65",
+        "string": "#a9c870",
+        "escape": "#f99bd1",
+        "number": "#f2a26a",
+        "constant": "#f2a26a",
+        "function": "#50b3e8",
+        "type": "#e0c262",
+        "builtin": "#48d3c5",
+        "variable": "#fece92",
+        "parameter": {
+          "color": "#48d3c5",
+          "italic": true
+        },
+        "property": "#48d3c5",
+        "tag": "#e98a7a",
+        "attribute": {
+          "color": "#48d3c5",
+          "italic": true
+        },
+        "added": "#a9c870",
+        "removed": "#e98a7a",
+        "changed": "#e0c262"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-terminal.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-trace.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-phosphor-macro.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-terminal.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-trace.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-phosphor-macro.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

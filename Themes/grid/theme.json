@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/grid",
+  "version": "1.0.0",
+  "name": "Grid",
+  "summary": "Black and red on white, set on a strict grid.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "red",
+    "minimal"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#fafafa",
+        "surface": "#f2eff0",
+        "overlay": "#eeeaeb",
+        "border": "#beb7b9",
+        "foreground": "#2e2e2e",
+        "muted": "#7a6e71",
+        "accent": "#df2321",
+        "selection": "#f8c9c2",
+        "cursor": "#1b1b1b",
+        "currentLine": "#f4f2f2",
+        "search": "#d9d1b0",
+        "error": "#b24840",
+        "warning": "#8d7102",
+        "success": "#267d30",
+        "info": "#2769b7"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#1b1b1b",
+        "ansi": {
+          "black": "#fafafa",
+          "red": "#b24840",
+          "green": "#267d30",
+          "yellow": "#8d7102",
+          "blue": "#2769b7",
+          "magenta": "#99519e",
+          "cyan": "#057575",
+          "white": "#2e2e2e",
+          "brightBlack": "#beb7b9",
+          "brightRed": "#c7534a",
+          "brightGreen": "#2f8d39",
+          "brightYellow": "#9e8003",
+          "brightBlue": "#3077cd",
+          "brightMagenta": "#ac5db1",
+          "brightCyan": "#098585",
+          "brightWhite": "#1b1b1b"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7a6e71",
+          "italic": true
+        },
+        "keyword": "#ac5db1",
+        "operator": "#3077cd",
+        "punctuation": "#7a6e71",
+        "string": "#267d30",
+        "escape": "#ac5db1",
+        "number": "#ac5701",
+        "constant": "#ac5701",
+        "function": "#2769b7",
+        "type": "#8d7102",
+        "builtin": "#057575",
+        "variable": "#2e2e2e",
+        "parameter": {
+          "color": "#057575",
+          "italic": true
+        },
+        "property": "#057575",
+        "tag": "#b24840",
+        "attribute": {
+          "color": "#057575",
+          "italic": true
+        },
+        "added": "#267d30",
+        "removed": "#b24840",
+        "changed": "#8d7102"
+      },
+      "system": {
+        "accentColor": "red",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-red-circle.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-tiles.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-alpine-road.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-red-circle.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-tiles.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-alpine-road.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

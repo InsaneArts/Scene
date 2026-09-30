@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/confetti",
+  "version": "1.0.0",
+  "name": "Confetti",
+  "summary": "Confetti, squiggles, and hot pink on warm white.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "pink",
+    "playful"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#f9f5e6",
+        "surface": "#f0ebd9",
+        "overlay": "#ece6d2",
+        "border": "#bab49e",
+        "foreground": "#2d2d33",
+        "muted": "#78725b",
+        "accent": "#d94393",
+        "selection": "#efc3d5",
+        "cursor": "#1a1a1f",
+        "currentLine": "#f2eedc",
+        "search": "#dacfa2",
+        "error": "#c0453d",
+        "warning": "#937702",
+        "success": "#178529",
+        "info": "#1d6ec9"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#1a1a1f",
+        "ansi": {
+          "black": "#f9f5e6",
+          "red": "#c0453d",
+          "green": "#178529",
+          "yellow": "#937702",
+          "blue": "#1d6ec9",
+          "magenta": "#a550aa",
+          "cyan": "#027c7c",
+          "white": "#2d2d33",
+          "brightBlack": "#bab49e",
+          "brightRed": "#d65048",
+          "brightGreen": "#229633",
+          "brightYellow": "#a58604",
+          "brightBlue": "#267cdf",
+          "brightMagenta": "#b75cbd",
+          "brightCyan": "#068c8c",
+          "brightWhite": "#1a1a1f"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#78725b",
+          "italic": true
+        },
+        "keyword": "#b75cbd",
+        "operator": "#267cdf",
+        "punctuation": "#78725b",
+        "string": "#178529",
+        "escape": "#b75cbd",
+        "number": "#b45c03",
+        "constant": "#b45c03",
+        "function": "#1d6ec9",
+        "type": "#937702",
+        "builtin": "#027c7c",
+        "variable": "#2d2d33",
+        "parameter": {
+          "color": "#027c7c",
+          "italic": true
+        },
+        "property": "#027c7c",
+        "tag": "#c0453d",
+        "attribute": {
+          "color": "#027c7c",
+          "italic": true
+        },
+        "added": "#178529",
+        "removed": "#c0453d",
+        "changed": "#937702"
+      },
+      "system": {
+        "accentColor": "pink",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-confetti.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-room.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-tiles.png",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-confetti.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-room.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-tiles.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/manual",
+  "version": "1.0.0",
+  "name": "Manual",
+  "summary": "A 1970s computer manual: cream, orange, and brown.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "orange",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#f8edd8",
+        "surface": "#f0e3ca",
+        "overlay": "#ecdec2",
+        "border": "#bbac8f",
+        "foreground": "#3a2a20",
+        "muted": "#7e7053",
+        "accent": "#c95b0a",
+        "selection": "#ecc0a9",
+        "cursor": "#26160e",
+        "currentLine": "#f2e6cd",
+        "search": "#d6c698",
+        "error": "#a7463e",
+        "warning": "#866c02",
+        "success": "#27762f",
+        "info": "#2863ab"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#26160e",
+        "ansi": {
+          "black": "#f8edd8",
+          "red": "#a7463e",
+          "green": "#27762f",
+          "yellow": "#866c02",
+          "blue": "#2863ab",
+          "magenta": "#904e95",
+          "cyan": "#076f6f",
+          "white": "#3a2a20",
+          "brightBlack": "#bbac8f",
+          "brightRed": "#bc5148",
+          "brightGreen": "#308639",
+          "brightYellow": "#977a03",
+          "brightBlue": "#3072c1",
+          "brightMagenta": "#a35aa7",
+          "brightCyan": "#017f7f",
+          "brightWhite": "#26160e"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7e7053",
+          "italic": true
+        },
+        "keyword": "#a35aa7",
+        "operator": "#3072c1",
+        "punctuation": "#7e7053",
+        "string": "#27762f",
+        "escape": "#a35aa7",
+        "number": "#a35303",
+        "constant": "#a35303",
+        "function": "#2863ab",
+        "type": "#866c02",
+        "builtin": "#076f6f",
+        "variable": "#3a2a20",
+        "parameter": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "property": "#076f6f",
+        "tag": "#a7463e",
+        "attribute": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "added": "#27762f",
+        "removed": "#a7463e",
+        "changed": "#866c02"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-cover.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-stripes.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-office.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-cover.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-stripes.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-office.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

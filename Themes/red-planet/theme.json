@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/red-planet",
+  "version": "1.0.0",
+  "name": "Red Planet",
+  "summary": "Rust ground and a blue sunset, on Mars.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "red",
+    "space"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#250f07",
+        "surface": "#1b0803",
+        "overlay": "#34170d",
+        "border": "#633c2e",
+        "foreground": "#e6d4c3",
+        "muted": "#a27363",
+        "accent": "#f47f46",
+        "selection": "#4f2611",
+        "cursor": "#faecde",
+        "currentLine": "#2c130a",
+        "search": "#5d4522",
+        "error": "#e9897e",
+        "warning": "#e0c262",
+        "success": "#88cf8a",
+        "info": "#60b3dc"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#faecde",
+        "ansi": {
+          "black": "#250f07",
+          "red": "#e9897e",
+          "green": "#88cf8a",
+          "yellow": "#e0c262",
+          "blue": "#60b3dc",
+          "magenta": "#d190d4",
+          "cyan": "#40d2d2",
+          "white": "#e6d4c3",
+          "brightBlack": "#633c2e",
+          "brightRed": "#fe9c91",
+          "brightGreen": "#96e498",
+          "brightYellow": "#f6d56b",
+          "brightBlue": "#8bbeff",
+          "brightMagenta": "#e8a0ec",
+          "brightCyan": "#45e8e8",
+          "brightWhite": "#faecde"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#a27363",
+          "italic": true
+        },
+        "keyword": "#e8a0ec",
+        "operator": "#8bbeff",
+        "punctuation": "#a27363",
+        "string": "#88cf8a",
+        "escape": "#e8a0ec",
+        "number": "#f2a26a",
+        "constant": "#f2a26a",
+        "function": "#60b3dc",
+        "type": "#e0c262",
+        "builtin": "#40d2d2",
+        "variable": "#e6d4c3",
+        "parameter": {
+          "color": "#40d2d2",
+          "italic": true
+        },
+        "property": "#40d2d2",
+        "tag": "#e9897e",
+        "attribute": {
+          "color": "#40d2d2",
+          "italic": true
+        },
+        "added": "#88cf8a",
+        "removed": "#e9897e",
+        "changed": "#e0c262"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-contours.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glow.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-dusk.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-dusk.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

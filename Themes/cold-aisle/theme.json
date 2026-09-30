@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/cold-aisle",
+  "version": "1.0.0",
+  "name": "Cold Aisle",
+  "summary": "A data center under a swirling, star-filled night, in thick impasto.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "blue",
+    "painting"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#090f18",
+        "surface": "#04080f",
+        "overlay": "#111926",
+        "border": "#344052",
+        "foreground": "#c9dbe0",
+        "muted": "#728198",
+        "accent": "#d2be66",
+        "selection": "#332a01",
+        "cursor": "#e3f1f6",
+        "currentLine": "#0d141f",
+        "search": "#484632",
+        "error": "#db9887",
+        "warning": "#dac870",
+        "success": "#a1cc98",
+        "info": "#89addd"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e3f1f6",
+        "ansi": {
+          "black": "#090f18",
+          "red": "#db9887",
+          "green": "#a1cc98",
+          "yellow": "#dac870",
+          "blue": "#89addd",
+          "magenta": "#d199c2",
+          "cyan": "#7bd0c3",
+          "white": "#c9dbe0",
+          "brightBlack": "#344052",
+          "brightRed": "#f4a895",
+          "brightGreen": "#b0e1a5",
+          "brightYellow": "#f0dc7a",
+          "brightBlue": "#97c1f7",
+          "brightMagenta": "#e9aad7",
+          "brightCyan": "#85e6d7",
+          "brightWhite": "#e3f1f6"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#728198",
+          "italic": true
+        },
+        "keyword": "#e9aad7",
+        "operator": "#97c1f7",
+        "punctuation": "#728198",
+        "string": "#a1cc98",
+        "escape": "#e9aad7",
+        "number": "#e3ae82",
+        "constant": "#e3ae82",
+        "function": "#89addd",
+        "type": "#dac870",
+        "builtin": "#7bd0c3",
+        "variable": "#c9dbe0",
+        "parameter": {
+          "color": "#7bd0c3",
+          "italic": true
+        },
+        "property": "#7bd0c3",
+        "tag": "#db9887",
+        "attribute": {
+          "color": "#7bd0c3",
+          "italic": true
+        },
+        "added": "#a1cc98",
+        "removed": "#db9887",
+        "changed": "#dac870"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-starry-campus.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-canal.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-cypress.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-starry-campus.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-canal.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-cypress.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

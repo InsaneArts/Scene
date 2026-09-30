@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/phosphor",
+  "version": "1.0.0",
+  "name": "Phosphor",
+  "summary": "Green phosphor glowing on a dark tube.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "green",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#081209",
+        "surface": "#040b05",
+        "overlay": "#101d11",
+        "border": "#305135",
+        "foreground": "#80ee8b",
+        "muted": "#53895c",
+        "accent": "#67ec5b",
+        "selection": "#19381e",
+        "cursor": "#bfffbd",
+        "currentLine": "#0c180d",
+        "search": "#494a20",
+        "error": "#eb8373",
+        "warning": "#e0cc55",
+        "success": "#6ce36e",
+        "info": "#6bb6d9"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#bfffbd",
+        "ansi": {
+          "black": "#081209",
+          "red": "#eb8373",
+          "green": "#6ce36e",
+          "yellow": "#e0cc55",
+          "blue": "#6bb6d9",
+          "magenta": "#cf94c9",
+          "cyan": "#5cd5c7",
+          "white": "#80ee8b",
+          "brightBlack": "#305135",
+          "brightRed": "#ff9786",
+          "brightGreen": "#88fe7d",
+          "brightYellow": "#f5e05d",
+          "brightBlue": "#75caf2",
+          "brightMagenta": "#e6a4e0",
+          "brightCyan": "#64ebdb",
+          "brightWhite": "#bfffbd"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#53895c",
+          "italic": true
+        },
+        "keyword": "#e6a4e0",
+        "operator": "#75caf2",
+        "punctuation": "#53895c",
+        "string": "#6ce36e",
+        "escape": "#e6a4e0",
+        "number": "#e99e5e",
+        "constant": "#e99e5e",
+        "function": "#6bb6d9",
+        "type": "#e0cc55",
+        "builtin": "#5cd5c7",
+        "variable": "#80ee8b",
+        "parameter": {
+          "color": "#5cd5c7",
+          "italic": true
+        },
+        "property": "#5cd5c7",
+        "tag": "#eb8373",
+        "attribute": {
+          "color": "#5cd5c7",
+          "italic": true
+        },
+        "added": "#6ce36e",
+        "removed": "#eb8373",
+        "changed": "#e0cc55"
+      },
+      "system": {
+        "accentColor": "green",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-maze.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-trace.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-contours.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-maze.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-trace.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

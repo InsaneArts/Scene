@@ -1,0 +1,243 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/handheld",
+  "version": "1.0.0",
+  "name": "Handheld",
+  "summary": "Four shades of pea green on a pocket LCD.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "green",
+    "retro",
+    "pixel"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#0d2008",
+        "surface": "#071704",
+        "overlay": "#132c0d",
+        "border": "#375730",
+        "foreground": "#d1e195",
+        "muted": "#678c60",
+        "accent": "#c0d772",
+        "selection": "#333d01",
+        "cursor": "#e9f7ba",
+        "currentLine": "#10260a",
+        "search": "#4b562b",
+        "error": "#f09c7e",
+        "warning": "#dbd57e",
+        "success": "#99db9b",
+        "info": "#6ebdf3"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e9f7ba",
+        "ansi": {
+          "black": "#0d2008",
+          "red": "#f09c7e",
+          "green": "#99db9b",
+          "yellow": "#dbd57e",
+          "blue": "#6ebdf3",
+          "magenta": "#db9fde",
+          "cyan": "#62dedd",
+          "white": "#d1e195",
+          "brightBlack": "#375730",
+          "brightRed": "#ffb297",
+          "brightGreen": "#a8f0a9",
+          "brightYellow": "#f0e988",
+          "brightBlue": "#8ed0ff",
+          "brightMagenta": "#f2aff6",
+          "brightCyan": "#69f4f3",
+          "brightWhite": "#e9f7ba"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#678c60",
+          "italic": true
+        },
+        "keyword": "#f2aff6",
+        "operator": "#8ed0ff",
+        "punctuation": "#678c60",
+        "string": "#99db9b",
+        "escape": "#f2aff6",
+        "number": "#fcb17e",
+        "constant": "#fcb17e",
+        "function": "#6ebdf3",
+        "type": "#dbd57e",
+        "builtin": "#62dedd",
+        "variable": "#d1e195",
+        "parameter": {
+          "color": "#62dedd",
+          "italic": true
+        },
+        "property": "#62dedd",
+        "tag": "#f09c7e",
+        "attribute": {
+          "color": "#62dedd",
+          "italic": true
+        },
+        "added": "#99db9b",
+        "removed": "#f09c7e",
+        "changed": "#dbd57e"
+      },
+      "system": {
+        "accentColor": "green",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-pixel-night.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-maze.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-sunrise.png",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#ccd99d",
+        "surface": "#c2d08c",
+        "overlay": "#bccc80",
+        "border": "#8c9b4d",
+        "foreground": "#193612",
+        "muted": "#596b36",
+        "accent": "#26541c",
+        "selection": "#88bf7c",
+        "cursor": "#052200",
+        "currentLine": "#c4d28e",
+        "search": "#adb36f",
+        "error": "#843825",
+        "warning": "#655904",
+        "success": "#275b1b",
+        "info": "#0e4f86"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#052200",
+        "ansi": {
+          "black": "#ccd99d",
+          "red": "#843825",
+          "green": "#275b1b",
+          "yellow": "#655904",
+          "blue": "#0e4f86",
+          "magenta": "#763c72",
+          "cyan": "#025653",
+          "white": "#193612",
+          "brightBlack": "#8c9b4d",
+          "brightRed": "#98432e",
+          "brightGreen": "#316a23",
+          "brightYellow": "#756700",
+          "brightBlue": "#175d9b",
+          "brightMagenta": "#884783",
+          "brightCyan": "#056662",
+          "brightWhite": "#052200"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#596b36",
+          "italic": true
+        },
+        "keyword": "#884783",
+        "operator": "#175d9b",
+        "punctuation": "#596b36",
+        "string": "#275b1b",
+        "escape": "#884783",
+        "number": "#824103",
+        "constant": "#824103",
+        "function": "#0e4f86",
+        "type": "#655904",
+        "builtin": "#025653",
+        "variable": "#193612",
+        "parameter": {
+          "color": "#025653",
+          "italic": true
+        },
+        "property": "#025653",
+        "tag": "#843825",
+        "attribute": {
+          "color": "#025653",
+          "italic": true
+        },
+        "added": "#275b1b",
+        "removed": "#843825",
+        "changed": "#655904"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-sunrise.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-lcd-macro.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-maze.png",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-pixel-night.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-maze.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-sunrise.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-sunrise.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-lcd-macro.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-maze.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

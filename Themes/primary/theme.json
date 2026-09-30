@@ -1,0 +1,241 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/primary",
+  "version": "1.0.0",
+  "name": "Primary",
+  "summary": "Red, yellow, and blue on cream, with black.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "primary",
+    "design"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#15161a",
+        "surface": "#0d0e12",
+        "overlay": "#1e2027",
+        "border": "#444752",
+        "foreground": "#dbd8c9",
+        "muted": "#7b808e",
+        "accent": "#f45246",
+        "selection": "#4d2621",
+        "cursor": "#f2efe3",
+        "currentLine": "#1a1b20",
+        "search": "#594d24",
+        "error": "#fb8276",
+        "warning": "#f7cd3a",
+        "success": "#7bd77f",
+        "info": "#6496f4"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f2efe3",
+        "ansi": {
+          "black": "#15161a",
+          "red": "#fb8276",
+          "green": "#7bd77f",
+          "yellow": "#f7cd3a",
+          "blue": "#6496f4",
+          "magenta": "#dd8be2",
+          "cyan": "#06d8d9",
+          "white": "#dbd8c9",
+          "brightBlack": "#444752",
+          "brightRed": "#ffa196",
+          "brightGreen": "#89ec8d",
+          "brightYellow": "#ffd753",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#f49bf9",
+          "brightCyan": "#0aeeee",
+          "brightWhite": "#f2efe3"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7b808e",
+          "italic": true
+        },
+        "keyword": "#f49bf9",
+        "operator": "#91c1ff",
+        "punctuation": "#7b808e",
+        "string": "#7bd77f",
+        "escape": "#f49bf9",
+        "number": "#ffa15c",
+        "constant": "#ffa15c",
+        "function": "#6496f4",
+        "type": "#f7cd3a",
+        "builtin": "#06d8d9",
+        "variable": "#dbd8c9",
+        "parameter": {
+          "color": "#06d8d9",
+          "italic": true
+        },
+        "property": "#06d8d9",
+        "tag": "#fb8276",
+        "attribute": {
+          "color": "#06d8d9",
+          "italic": true
+        },
+        "added": "#7bd77f",
+        "removed": "#fb8276",
+        "changed": "#f7cd3a"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-tiles.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-night-composition.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-sculpture.heic",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#f6f2e2",
+        "surface": "#ede8d4",
+        "overlay": "#e9e3cd",
+        "border": "#b8b199",
+        "foreground": "#2e2e2b",
+        "muted": "#787259",
+        "accent": "#d02d27",
+        "selection": "#f0c1ba",
+        "cursor": "#1b1b18",
+        "currentLine": "#f0ead8",
+        "search": "#ded09f",
+        "error": "#ba3e38",
+        "warning": "#a68003",
+        "success": "#097f23",
+        "info": "#2454b3"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#1b1b18",
+        "ansi": {
+          "black": "#f6f2e2",
+          "red": "#ba3e38",
+          "green": "#097f23",
+          "yellow": "#a68003",
+          "blue": "#2454b3",
+          "magenta": "#9e4aa4",
+          "cyan": "#057575",
+          "white": "#2e2e2b",
+          "brightBlack": "#b8b199",
+          "brightRed": "#cf4a42",
+          "brightGreen": "#18902c",
+          "brightYellow": "#9e8003",
+          "brightBlue": "#1e76d8",
+          "brightMagenta": "#b156b7",
+          "brightCyan": "#098585",
+          "brightWhite": "#1b1b18"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#787259",
+          "italic": true
+        },
+        "keyword": "#b156b7",
+        "operator": "#1e76d8",
+        "punctuation": "#787259",
+        "string": "#097f23",
+        "escape": "#b156b7",
+        "number": "#ac5701",
+        "constant": "#ac5701",
+        "function": "#2454b3",
+        "type": "#a68003",
+        "builtin": "#057575",
+        "variable": "#2e2e2b",
+        "parameter": {
+          "color": "#057575",
+          "italic": true
+        },
+        "property": "#057575",
+        "tag": "#ba3e38",
+        "attribute": {
+          "color": "#057575",
+          "italic": true
+        },
+        "added": "#097f23",
+        "removed": "#ba3e38",
+        "changed": "#a68003"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-tiles.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-composition.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-facade.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-tiles.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-night-composition.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-sculpture.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-tiles.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-composition.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-facade.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

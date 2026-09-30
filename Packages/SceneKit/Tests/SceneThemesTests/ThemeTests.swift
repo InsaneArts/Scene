@@ -35,8 +35,8 @@ struct BundledThemeTests {
         .filter { FileManager.default.fileExists(atPath: Repo.themes.appendingPathComponent("\($0)/theme.json").path) }
         .sorted()
 
-    @Test func bundlesTwentyOneThemes() {
-        #expect(Self.folders.count == 21, "\(Self.folders)")
+    @Test func bundlesEveryTheme() {
+        #expect(Self.folders.count == 75, "\(Self.folders)")
     }
 
     @Test(arguments: folders)

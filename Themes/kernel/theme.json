@@ -1,0 +1,133 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/kernel",
+  "version": "1.0.0",
+  "name": "Kernel",
+  "summary": "White on black, with one red panic.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "minimal"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#060606",
+        "surface": "#020202",
+        "overlay": "#100e0e",
+        "border": "#373133",
+        "foreground": "#d7d7d7",
+        "muted": "#877d80",
+        "accent": "#e94740",
+        "selection": "#37120f",
+        "cursor": "#eeeeee",
+        "currentLine": "#0b0a0a",
+        "search": "#484332",
+        "error": "#f14e46",
+        "warning": "#e2d099",
+        "success": "#b0d3a4",
+        "info": "#94b7e4"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#eeeeee",
+        "ansi": {
+          "black": "#060606",
+          "red": "#f14e46",
+          "green": "#b0d3a4",
+          "yellow": "#e2d099",
+          "blue": "#94b7e4",
+          "magenta": "#d0a7d2",
+          "cyan": "#8cd5e2",
+          "white": "#d7d7d7",
+          "brightBlack": "#373133",
+          "brightRed": "#fab3aa",
+          "brightGreen": "#c0e9b2",
+          "brightYellow": "#f9e4a3",
+          "brightBlue": "#a2cafe",
+          "brightMagenta": "#e7b8e9",
+          "brightCyan": "#95ebfa",
+          "brightWhite": "#eeeeee"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#877d80",
+          "italic": true
+        },
+        "keyword": "#e7b8e9",
+        "operator": "#a2cafe",
+        "punctuation": "#877d80",
+        "string": "#b0d3a4",
+        "escape": "#e7b8e9",
+        "number": "#ebb896",
+        "constant": "#ebb896",
+        "function": "#94b7e4",
+        "type": "#e2d099",
+        "builtin": "#8cd5e2",
+        "variable": "#d7d7d7",
+        "parameter": {
+          "color": "#8cd5e2",
+          "italic": true
+        },
+        "property": "#8cd5e2",
+        "tag": "#f14e46",
+        "attribute": {
+          "color": "#8cd5e2",
+          "italic": true
+        },
+        "added": "#b0d3a4",
+        "removed": "#f14e46",
+        "changed": "#e2d099"
+      },
+      "system": {
+        "accentColor": "graphite",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-ridges.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-maze.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-red-led.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-ridges.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-maze.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-red-led.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

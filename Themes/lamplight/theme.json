@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/lamplight",
+  "version": "1.0.0",
+  "name": "Lamplight",
+  "summary": "A desk lamp's warm light on a navy night.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "blue",
+    "warm"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#051427",
+        "surface": "#020c1d",
+        "overlay": "#0a1e38",
+        "border": "#2c4668",
+        "foreground": "#e2d6c2",
+        "muted": "#6482aa",
+        "accent": "#f8b14e",
+        "selection": "#442a01",
+        "cursor": "#f7eddd",
+        "currentLine": "#081930",
+        "search": "#48493a",
+        "error": "#ed8c81",
+        "warning": "#e3c566",
+        "success": "#8bd28d",
+        "info": "#75aef5"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f7eddd",
+        "ansi": {
+          "black": "#051427",
+          "red": "#ed8c81",
+          "green": "#8bd28d",
+          "yellow": "#e3c566",
+          "blue": "#75aef5",
+          "magenta": "#d493d8",
+          "cyan": "#44d6d6",
+          "white": "#e2d6c2",
+          "brightBlack": "#2c4668",
+          "brightRed": "#ffa196",
+          "brightGreen": "#99e89b",
+          "brightYellow": "#fad86f",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#eba3ef",
+          "brightCyan": "#4aebeb",
+          "brightWhite": "#f7eddd"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6482aa",
+          "italic": true
+        },
+        "keyword": "#eba3ef",
+        "operator": "#91c1ff",
+        "punctuation": "#6482aa",
+        "string": "#8bd28d",
+        "escape": "#eba3ef",
+        "number": "#f6a56d",
+        "constant": "#f6a56d",
+        "function": "#75aef5",
+        "type": "#e3c566",
+        "builtin": "#44d6d6",
+        "variable": "#e2d6c2",
+        "parameter": {
+          "color": "#44d6d6",
+          "italic": true
+        },
+        "property": "#44d6d6",
+        "tag": "#ed8c81",
+        "attribute": {
+          "color": "#44d6d6",
+          "italic": true
+        },
+        "added": "#8bd28d",
+        "removed": "#ed8c81",
+        "changed": "#e3c566"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-desk-lamp.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-night-window.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glow.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-desk-lamp.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-night-window.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

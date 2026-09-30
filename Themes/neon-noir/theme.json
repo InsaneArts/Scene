@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/neon-noir",
+  "version": "1.0.0",
+  "name": "Neon Noir",
+  "summary": "Rain on asphalt under teal, magenta, and amber signs.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "neon",
+    "teal"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#091521",
+        "surface": "#040d17",
+        "overlay": "#0f1f30",
+        "border": "#31475d",
+        "foreground": "#c9dae7",
+        "muted": "#69839e",
+        "accent": "#0dd7c6",
+        "selection": "#013934",
+        "cursor": "#e3f1fb",
+        "currentLine": "#0c1a28",
+        "search": "#4c492a",
+        "error": "#fb8276",
+        "warning": "#eac33f",
+        "success": "#7bd77f",
+        "info": "#6dadff"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e3f1fb",
+        "ansi": {
+          "black": "#091521",
+          "red": "#fb8276",
+          "green": "#7bd77f",
+          "yellow": "#eac33f",
+          "blue": "#6dadff",
+          "magenta": "#dd8be2",
+          "cyan": "#06d8d9",
+          "white": "#c9dae7",
+          "brightBlack": "#31475d",
+          "brightRed": "#ffa196",
+          "brightGreen": "#89ec8d",
+          "brightYellow": "#ffd753",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#f49bf9",
+          "brightCyan": "#0aeeee",
+          "brightWhite": "#e3f1fb"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#69839e",
+          "italic": true
+        },
+        "keyword": "#f49bf9",
+        "operator": "#91c1ff",
+        "punctuation": "#69839e",
+        "string": "#7bd77f",
+        "escape": "#f49bf9",
+        "number": "#ffa15c",
+        "constant": "#ffa15c",
+        "function": "#6dadff",
+        "type": "#eac33f",
+        "builtin": "#06d8d9",
+        "variable": "#c9dae7",
+        "parameter": {
+          "color": "#06d8d9",
+          "italic": true
+        },
+        "property": "#06d8d9",
+        "tag": "#fb8276",
+        "attribute": {
+          "color": "#06d8d9",
+          "italic": true
+        },
+        "added": "#7bd77f",
+        "removed": "#fb8276",
+        "changed": "#eac33f"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-rain-window.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-parking-garage.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glow.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-rain-window.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-parking-garage.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

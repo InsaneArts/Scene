@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/waveform",
+  "version": "1.0.0",
+  "name": "Waveform",
+  "summary": "A lime trace on charcoal.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "green",
+    "minimal"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#141712",
+        "surface": "#0d0f0b",
+        "overlay": "#1e221a",
+        "border": "#444a3e",
+        "foreground": "#d6d9ce",
+        "muted": "#7b8374",
+        "accent": "#baed3f",
+        "selection": "#2c3813",
+        "cursor": "#edf0e7",
+        "currentLine": "#191c16",
+        "search": "#524b2e",
+        "error": "#e88f85",
+        "warning": "#e1c570",
+        "success": "#90d192",
+        "info": "#7aaeef"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#edf0e7",
+        "ansi": {
+          "black": "#141712",
+          "red": "#e88f85",
+          "green": "#90d192",
+          "yellow": "#e1c570",
+          "blue": "#7aaeef",
+          "magenta": "#d195d4",
+          "cyan": "#57d4d4",
+          "white": "#d6d9ce",
+          "brightBlack": "#444a3e",
+          "brightRed": "#ffa196",
+          "brightGreen": "#9ee6a0",
+          "brightYellow": "#f7d979",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#e8a6ec",
+          "brightCyan": "#5de9e9",
+          "brightWhite": "#edf0e7"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7b8374",
+          "italic": true
+        },
+        "keyword": "#e8a6ec",
+        "operator": "#91c1ff",
+        "punctuation": "#7b8374",
+        "string": "#90d192",
+        "escape": "#e8a6ec",
+        "number": "#f1a774",
+        "constant": "#f1a774",
+        "function": "#7aaeef",
+        "type": "#e1c570",
+        "builtin": "#57d4d4",
+        "variable": "#d6d9ce",
+        "parameter": {
+          "color": "#57d4d4",
+          "italic": true
+        },
+        "property": "#57d4d4",
+        "tag": "#e88f85",
+        "attribute": {
+          "color": "#57d4d4",
+          "italic": true
+        },
+        "added": "#90d192",
+        "removed": "#e88f85",
+        "changed": "#e1c570"
+      },
+      "system": {
+        "accentColor": "green",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-trace.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-dish.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-ridges.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-trace.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-dish.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-ridges.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

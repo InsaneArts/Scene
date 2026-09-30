@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/marginalia",
+  "version": "1.0.0",
+  "name": "Marginalia",
+  "summary": "Bugs in the margins of a blank manuscript page.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "gold",
+    "manuscript"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#efebe2",
+        "surface": "#e7e0d5",
+        "overlay": "#e3dbcf",
+        "border": "#b2aa9b",
+        "foreground": "#38292f",
+        "muted": "#7a7060",
+        "accent": "#4973ab",
+        "selection": "#b0caeb",
+        "cursor": "#24161c",
+        "currentLine": "#e9e3d8",
+        "search": "#cfc7b0",
+        "error": "#a65249",
+        "warning": "#85733a",
+        "success": "#2d7a51",
+        "info": "#496b96"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#24161c",
+        "ansi": {
+          "black": "#efebe2",
+          "red": "#a65249",
+          "green": "#2d7a51",
+          "yellow": "#85733a",
+          "blue": "#496b96",
+          "magenta": "#865f9b",
+          "cyan": "#07747f",
+          "white": "#38292f",
+          "brightBlack": "#b2aa9b",
+          "brightRed": "#bb5d53",
+          "brightGreen": "#338a5d",
+          "brightYellow": "#96823f",
+          "brightBlue": "#5279ac",
+          "brightMagenta": "#976caf",
+          "brightCyan": "#008491",
+          "brightWhite": "#24161c"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7a7060",
+          "italic": true
+        },
+        "keyword": "#976caf",
+        "operator": "#5279ac",
+        "punctuation": "#7a7060",
+        "string": "#2d7a51",
+        "escape": "#976caf",
+        "number": "#966542",
+        "constant": "#966542",
+        "function": "#496b96",
+        "type": "#85733a",
+        "builtin": "#07747f",
+        "variable": "#38292f",
+        "parameter": {
+          "color": "#07747f",
+          "italic": true
+        },
+        "property": "#07747f",
+        "tag": "#a65249",
+        "attribute": {
+          "color": "#07747f",
+          "italic": true
+        },
+        "added": "#2d7a51",
+        "removed": "#a65249",
+        "changed": "#85733a"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-bugs.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-joust.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-corner.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-bugs.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-joust.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-corner.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

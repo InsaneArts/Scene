@@ -1,0 +1,133 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/prism",
+  "version": "1.0.0",
+  "name": "Prism",
+  "summary": "A prism's bands on black.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "vivid"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#08090d",
+        "surface": "#030406",
+        "overlay": "#10121a",
+        "border": "#343843",
+        "foreground": "#d5d7de",
+        "muted": "#7a8090",
+        "accent": "#c9acff",
+        "selection": "#291c3c",
+        "cursor": "#eceef4",
+        "currentLine": "#0c0e14",
+        "search": "#4e410d",
+        "error": "#ff8579",
+        "warning": "#f2c50e",
+        "success": "#72dd78",
+        "info": "#73b1ff"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#eceef4",
+        "ansi": {
+          "black": "#08090d",
+          "red": "#ff8579",
+          "green": "#72dd78",
+          "yellow": "#f2c50e",
+          "blue": "#73b1ff",
+          "magenta": "#e688ec",
+          "cyan": "#03dcdc",
+          "white": "#d5d7de",
+          "brightBlack": "#343843",
+          "brightRed": "#fea69c",
+          "brightGreen": "#80f386",
+          "brightYellow": "#ffdb69",
+          "brightBlue": "#97c4fe",
+          "brightMagenta": "#f99cff",
+          "brightCyan": "#06f2f2",
+          "brightWhite": "#eceef4"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7a8090",
+          "italic": true
+        },
+        "keyword": "#f99cff",
+        "operator": "#97c4fe",
+        "punctuation": "#7a8090",
+        "string": "#72dd78",
+        "escape": "#f99cff",
+        "number": "#ffa666",
+        "constant": "#ffa666",
+        "function": "#73b1ff",
+        "type": "#f2c50e",
+        "builtin": "#03dcdc",
+        "variable": "#d5d7de",
+        "parameter": {
+          "color": "#03dcdc",
+          "italic": true
+        },
+        "property": "#03dcdc",
+        "tag": "#ff8579",
+        "attribute": {
+          "color": "#03dcdc",
+          "italic": true
+        },
+        "added": "#72dd78",
+        "removed": "#ff8579",
+        "changed": "#f2c50e"
+      },
+      "system": {
+        "accentColor": "multicolor",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-prism.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-bars.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-light-lines.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-prism.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-bars.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-light-lines.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

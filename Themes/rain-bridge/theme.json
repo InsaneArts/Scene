@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/rain-bridge",
+  "version": "1.0.0",
+  "name": "Rain Bridge",
+  "summary": "A sudden shower over a bridge, printed from woodblocks.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "blue",
+    "print"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#10161d",
+        "surface": "#090e14",
+        "overlay": "#18202a",
+        "border": "#3c4857",
+        "foreground": "#d1d8e1",
+        "muted": "#738295",
+        "accent": "#91c1fd",
+        "selection": "#1b3350",
+        "cursor": "#e9eff6",
+        "currentLine": "#141b24",
+        "search": "#4a4c3d",
+        "error": "#db959a",
+        "warning": "#d0cb89",
+        "success": "#8fcfa8",
+        "info": "#85afdc"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e9eff6",
+        "ansi": {
+          "black": "#10161d",
+          "red": "#db959a",
+          "green": "#8fcfa8",
+          "yellow": "#d0cb89",
+          "blue": "#85afdc",
+          "magenta": "#c19ed5",
+          "cyan": "#77ced9",
+          "white": "#d1d8e1",
+          "brightBlack": "#3c4857",
+          "brightRed": "#f5a5aa",
+          "brightGreen": "#9ce4b8",
+          "brightYellow": "#e5de94",
+          "brightBlue": "#92c2f6",
+          "brightMagenta": "#d7afed",
+          "brightCyan": "#80e3f0",
+          "brightWhite": "#e9eff6"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#738295",
+          "italic": true
+        },
+        "keyword": "#d7afed",
+        "operator": "#92c2f6",
+        "punctuation": "#738295",
+        "string": "#8fcfa8",
+        "escape": "#d7afed",
+        "number": "#eaa98f",
+        "constant": "#eaa98f",
+        "function": "#85afdc",
+        "type": "#d0cb89",
+        "builtin": "#77ced9",
+        "variable": "#d1d8e1",
+        "parameter": {
+          "color": "#77ced9",
+          "italic": true
+        },
+        "property": "#77ced9",
+        "tag": "#db959a",
+        "attribute": {
+          "color": "#77ced9",
+          "italic": true
+        },
+        "added": "#8fcfa8",
+        "removed": "#db959a",
+        "changed": "#d0cb89"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-evening-shower.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-ferry.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-pines.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-evening-shower.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-ferry.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-pines.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    }
+  ]
+}

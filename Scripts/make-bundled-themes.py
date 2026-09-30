@@ -5,45 +5,25 @@ Palettes come from Omarchy v4.0.4 (MIT), vendored in Scripts/omarchy-palettes/. 
 does not ship come from their upstream projects: Rosé Pine Main (rose-pine/palette) and Gruvbox light
 (sainnhe/gruvbox-material, light, medium). The role mapping follows Omarchy's own templates
 (ghostty.conf.tpl, vscode-theme.json.tpl). Wallpapers and their provenance come from Themes/WALLPAPER_SOURCES.json.
+
+Scene's own themes live in Scripts/scene-palettes/<folder>/: theme.toml (name, summary, tags, credits) and dark.toml,
+light.toml, or both (the palette, in the Omarchy format, and the macOS look). See Scripts/scene-palettes/README.md.
 """
 import json
 import os
-import re
+
+from themekit import SCENE_PALETTES, complete, mix, read, spdx
 
 HERE = os.path.dirname(__file__)
 ROOT = os.path.join(HERE, "..", "Themes")
 PALETTES = os.path.join(HERE, "omarchy-palettes")
 OMARCHY_THEMES = "https://github.com/omacom/omarchy/tree/v4.0.4/themes"
-
-
-def mix(top, bottom, amount):
-    t = [int(top[i:i + 2], 16) for i in (1, 3, 5)]
-    b = [int(bottom[i:i + 2], 16) for i in (1, 3, 5)]
-    return "#" + "".join(f"{round(x * amount + y * (1 - amount)):02x}" for x, y in zip(t, b))
+OMARCHY_AUTHORS = [{"name": "Omarchy contributors", "url": "https://github.com/omacom/omarchy"}]
 
 
 def omarchy(name):
-    """Reads `key = "value"` lines from an Omarchy colors.toml and fills keys that a palette leaves out."""
-    p = {}
-    for line in open(os.path.join(PALETTES, f"{name}.toml")):
-        m = re.match(r'^\s*([a-z0-9_]+)\s*=\s*"([^"]*)"', line)
-        if m:
-            p[m.group(1)] = m.group(2).lower() if m.group(2).startswith("#") else m.group(2)
-    return complete(p)
-
-
-def complete(p):
-    p.setdefault("orange", mix(p["red"], p["yellow"], 0.5))
-    p.setdefault("bright_foreground", p["foreground"])
-    p.setdefault("dark_foreground", mix(p["foreground"], p["background"], 0.5))
-    p.setdefault("muted", mix(p["foreground"], p["background"], 0.3))
-    p.setdefault("dark_background", mix("#000000", p["background"], 0.2))
-    p.setdefault("lighter_background", mix(p["foreground"], p["background"], 0.08))
-    p.setdefault("selection", mix(p.get("accent", p["blue"]), p["background"], 0.3))
-    p.setdefault("accent", p["blue"])
-    for color in ("red", "yellow", "green", "cyan", "blue", "magenta"):
-        p.setdefault(f"bright_{color}", p[color])
-    return p
+    """An Omarchy colors.toml, with the keys a palette leaves out filled in."""
+    return complete(read(os.path.join(PALETTES, f"{name}.toml")))
 
 
 def variant(p, system):
@@ -106,7 +86,32 @@ GRUVBOX_LIGHT = complete(dict(accent="#45707a", selection="#dadec0", muted="#ddc
 
 def theme(folder, name, summary, variants, homepage=None, tags=(), nvim=None):
     return dict(folder=folder, name=name, summary=summary, variants=variants, homepage=homepage or f"{OMARCHY_THEMES}/{folder}",
-                tags=list(tags) + ["omarchy"], nvim=nvim or {})
+                tags=list(tags) + ["omarchy"], nvim=nvim or {}, authors=OMARCHY_AUTHORS, license="MIT")
+
+
+def scene_themes():
+    """Scene's own themes, one folder each in Scripts/scene-palettes."""
+    themes = []
+    for folder in sorted(os.listdir(SCENE_PALETTES)) if os.path.isdir(SCENE_PALETTES) else []:
+        path = os.path.join(SCENE_PALETTES, folder)
+        if not os.path.isdir(path):
+            continue
+        about = read(os.path.join(path, "theme.toml"))
+        variants = {}
+        for look in ("dark", "light"):
+            if os.path.exists(os.path.join(path, f"{look}.toml")):
+                p = complete(read(os.path.join(path, f"{look}.toml")))
+                system = (dark(p.get("accent_color", "auto"), p.get("icon_style", "dark"), p.get("icon_tint")) if look == "dark"
+                          else light(p.get("accent_color", "auto")))
+                variants[look] = variant(p, system)
+        author = {"name": about.get("author", "Scene")}
+        if about.get("author_url"):
+            author["url"] = about["author_url"]
+        themes.append(dict(folder=folder, name=about["name"], summary=about["summary"], variants=variants,
+                           homepage=about.get("homepage"), tags=[t.strip() for t in about.get("tags", "").split(",") if t.strip()],
+                           nvim={"any": about["nvim"]} if about.get("nvim") else {}, authors=[author],
+                           license=about.get("license", "MIT")))
+    return themes
 
 
 THEMES = [
@@ -160,19 +165,7 @@ THEMES = [
           {"dark": variant(omarchy("vantablack"), dark())}, tags=["dark", "minimal"]),
     theme("white", "White", "Pure white with black type.",
           {"light": variant(omarchy("white"), light())}, tags=["light", "minimal"]),
-]
-
-
-def spdx(note):
-    """Maps the free-text license note to an SPDX-style value. Unknown stays NOASSERTION."""
-    lowered = note.lower()
-    if lowered.startswith("public domain"):
-        return "LicenseRef-PublicDomain"
-    if lowered.startswith("unsplash"):
-        return "LicenseRef-Unsplash"
-    if lowered.startswith("pexels"):
-        return "LicenseRef-Pexels"
-    return "NOASSERTION"
+] + scene_themes()
 
 
 def main():
@@ -193,19 +186,21 @@ def main():
                     continue
                 wallpapers.append({"file": relative, "fit": "fill"})
                 author = match.get("author") or "unknown author"
-                via = "Omarchy" if match["source"] == "omarchy" else "r/unixporn"
-                attribution = match.get("attribution") or f"{author}, via {via}"
-                assets.append({"file": relative, "license": spdx(match.get("license", "")),
-                               "attribution": attribution, "source": match.get("pageURL") or match.get("imageURL")})
+                via = {"omarchy": "Omarchy", "unixporn": "r/unixporn"}.get(match["source"])
+                attribution = match.get("attribution") or (f"{author}, via {via}" if via else author)
+                asset = {"file": relative, "license": spdx(match.get("license", "")), "attribution": attribution}
+                if match.get("pageURL") or match.get("imageURL"):
+                    asset["source"] = match.get("pageURL") or match.get("imageURL")
+                assets.append(asset)
             if wallpapers:
                 spec["wallpapers"] = wallpapers
         manifest = {
             "$schema": "https://schema.scene.example/theme/1.json", "format": 1, "id": f"scene/{t['folder']}", "version": "1.0.0",
-            "name": t["name"], "summary": t["summary"],
-            "authors": [{"name": "Omarchy contributors", "url": "https://github.com/omacom/omarchy"}],
-            "license": "MIT", "homepage": t["homepage"], "tags": t["tags"], "requires": {"scene": ">=1.0"},
-            "variants": t["variants"],
+            "name": t["name"], "summary": t["summary"], "authors": t["authors"], "license": t["license"],
+            "homepage": t["homepage"], "tags": t["tags"], "requires": {"scene": ">=1.0"}, "variants": t["variants"],
         }
+        if not t["homepage"]:
+            del manifest["homepage"]
         if t["nvim"]:
             manifest["apps"] = {"neovim": {"preferInstalled": {"colorscheme": next(iter(t["nvim"].values()))}}}
         if assets:

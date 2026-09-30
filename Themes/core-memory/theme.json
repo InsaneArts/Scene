@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/core-memory",
+  "version": "1.0.0",
+  "name": "Core Memory",
+  "summary": "Copper wire and ferrite rings under a magnifier.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "copper",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#190f0a",
+        "surface": "#100805",
+        "overlay": "#261811",
+        "border": "#523d33",
+        "foreground": "#e4d5c7",
+        "muted": "#947a6e",
+        "accent": "#e18752",
+        "selection": "#45240f",
+        "cursor": "#f8ece1",
+        "currentLine": "#20140e",
+        "search": "#534426",
+        "error": "#e1897f",
+        "warning": "#dabf69",
+        "success": "#91c985",
+        "info": "#74a7e8"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f8ece1",
+        "ansi": {
+          "black": "#190f0a",
+          "red": "#e1897f",
+          "green": "#91c985",
+          "yellow": "#dabf69",
+          "blue": "#74a7e8",
+          "magenta": "#cb8fce",
+          "cyan": "#55cec0",
+          "white": "#e4d5c7",
+          "brightBlack": "#523d33",
+          "brightRed": "#fb988d",
+          "brightGreen": "#a0de93",
+          "brightYellow": "#f0d273",
+          "brightBlue": "#86bafe",
+          "brightMagenta": "#e29fe5",
+          "brightCyan": "#5ce4d5",
+          "brightWhite": "#f8ece1"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#947a6e",
+          "italic": true
+        },
+        "keyword": "#e29fe5",
+        "operator": "#86bafe",
+        "punctuation": "#947a6e",
+        "string": "#91c985",
+        "escape": "#e29fe5",
+        "number": "#eba16e",
+        "constant": "#eba16e",
+        "function": "#74a7e8",
+        "type": "#dabf69",
+        "builtin": "#55cec0",
+        "variable": "#e4d5c7",
+        "parameter": {
+          "color": "#55cec0",
+          "italic": true
+        },
+        "property": "#55cec0",
+        "tag": "#e1897f",
+        "attribute": {
+          "color": "#55cec0",
+          "italic": true
+        },
+        "added": "#91c985",
+        "removed": "#e1897f",
+        "changed": "#dabf69"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-ferrite-grid.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-copper-board.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-current.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-ferrite-grid.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-copper-board.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-current.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

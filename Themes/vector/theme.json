@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/vector",
+  "version": "1.0.0",
+  "name": "Vector",
+  "summary": "Glowing white lines on the black of a vector arcade monitor.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "cyan",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#040609",
+        "surface": "#010204",
+        "overlay": "#090f15",
+        "border": "#2b343d",
+        "foreground": "#cbdae2",
+        "muted": "#75828f",
+        "accent": "#4ae9f9",
+        "selection": "#012528",
+        "cursor": "#e4f1f7",
+        "currentLine": "#060a0f",
+        "search": "#48422e",
+        "error": "#ed9b92",
+        "warning": "#e8cf83",
+        "success": "#9ed99f",
+        "info": "#89b7f3"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e4f1f7",
+        "ansi": {
+          "black": "#040609",
+          "red": "#ed9b92",
+          "green": "#9ed99f",
+          "yellow": "#e8cf83",
+          "blue": "#89b7f3",
+          "magenta": "#d8a1db",
+          "cyan": "#6fdcdb",
+          "white": "#cbdae2",
+          "brightBlack": "#2b343d",
+          "brightRed": "#ffb0a6",
+          "brightGreen": "#adeeae",
+          "brightYellow": "#ffe38d",
+          "brightBlue": "#a2caff",
+          "brightMagenta": "#efb2f2",
+          "brightCyan": "#77f2f1",
+          "brightWhite": "#e4f1f7"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#75828f",
+          "italic": true
+        },
+        "keyword": "#efb2f2",
+        "operator": "#a2caff",
+        "punctuation": "#75828f",
+        "string": "#9ed99f",
+        "escape": "#efb2f2",
+        "number": "#f7b385",
+        "constant": "#f7b385",
+        "function": "#89b7f3",
+        "type": "#e8cf83",
+        "builtin": "#6fdcdb",
+        "variable": "#cbdae2",
+        "parameter": {
+          "color": "#6fdcdb",
+          "italic": true
+        },
+        "property": "#6fdcdb",
+        "tag": "#ed9b92",
+        "attribute": {
+          "color": "#6fdcdb",
+          "italic": true
+        },
+        "added": "#9ed99f",
+        "removed": "#ed9b92",
+        "changed": "#e8cf83"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-horizon.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-wireframe-range.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-trace.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-horizon.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-wireframe-range.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-trace.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

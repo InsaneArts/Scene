@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/red-team",
+  "version": "1.0.0",
+  "name": "Red Team",
+  "summary": "Crimson on graphite.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "red",
+    "minimal"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#1a1514",
+        "surface": "#110d0d",
+        "overlay": "#261e1e",
+        "border": "#514444",
+        "foreground": "#ddd5d5",
+        "muted": "#8d7b7b",
+        "accent": "#e63745",
+        "selection": "#4d2525",
+        "cursor": "#f3eded",
+        "currentLine": "#201a19",
+        "search": "#534934",
+        "error": "#f45058",
+        "warning": "#d9c37f",
+        "success": "#96ca97",
+        "info": "#81abe0"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f3eded",
+        "ansi": {
+          "black": "#1a1514",
+          "red": "#f45058",
+          "green": "#96ca97",
+          "yellow": "#d9c37f",
+          "blue": "#81abe0",
+          "magenta": "#c897ca",
+          "cyan": "#6ecdcc",
+          "white": "#ddd5d5",
+          "brightBlack": "#514444",
+          "brightRed": "#f4a298",
+          "brightGreen": "#a5e0a5",
+          "brightYellow": "#efd689",
+          "brightBlue": "#8fbefa",
+          "brightMagenta": "#dfa8e1",
+          "brightCyan": "#76e2e2",
+          "brightWhite": "#f3eded"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#8d7b7b",
+          "italic": true
+        },
+        "keyword": "#dfa8e1",
+        "operator": "#8fbefa",
+        "punctuation": "#8d7b7b",
+        "string": "#96ca97",
+        "escape": "#dfa8e1",
+        "number": "#e5a880",
+        "constant": "#e5a880",
+        "function": "#81abe0",
+        "type": "#d9c37f",
+        "builtin": "#6ecdcc",
+        "variable": "#ddd5d5",
+        "parameter": {
+          "color": "#6ecdcc",
+          "italic": true
+        },
+        "property": "#6ecdcc",
+        "tag": "#f45058",
+        "attribute": {
+          "color": "#6ecdcc",
+          "italic": true
+        },
+        "added": "#96ca97",
+        "removed": "#f45058",
+        "changed": "#d9c37f"
+      },
+      "system": {
+        "accentColor": "red",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-laser-line.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-maze.png",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-ridges.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-laser-line.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-maze.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-ridges.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

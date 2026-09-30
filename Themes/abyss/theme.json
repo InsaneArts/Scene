@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/abyss",
+  "version": "1.0.0",
+  "name": "Abyss",
+  "summary": "Glowing creatures in the deep blue dark.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "blue",
+    "cyan"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#000f1b",
+        "surface": "#000710",
+        "overlay": "#00192a",
+        "border": "#0f415f",
+        "foreground": "#badfe6",
+        "muted": "#5386aa",
+        "accent": "#14ecda",
+        "selection": "#02302c",
+        "cursor": "#d7f5fa",
+        "currentLine": "#001422",
+        "search": "#46462b",
+        "error": "#fa887d",
+        "warning": "#ebc751",
+        "success": "#84d987",
+        "info": "#73b1ff"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#d7f5fa",
+        "ansi": {
+          "black": "#000f1b",
+          "red": "#fa887d",
+          "green": "#84d987",
+          "yellow": "#ebc751",
+          "blue": "#73b1ff",
+          "magenta": "#d384e5",
+          "cyan": "#03dcdc",
+          "white": "#badfe6",
+          "brightBlack": "#0f415f",
+          "brightRed": "#fea69c",
+          "brightGreen": "#92ee95",
+          "brightYellow": "#ffdb69",
+          "brightBlue": "#97c4fe",
+          "brightMagenta": "#f5a1f9",
+          "brightCyan": "#06f2f2",
+          "brightWhite": "#d7f5fa"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#5386aa",
+          "italic": true
+        },
+        "keyword": "#f5a1f9",
+        "operator": "#97c4fe",
+        "punctuation": "#5386aa",
+        "string": "#84d987",
+        "escape": "#f5a1f9",
+        "number": "#ffa666",
+        "constant": "#ffa666",
+        "function": "#73b1ff",
+        "type": "#ebc751",
+        "builtin": "#03dcdc",
+        "variable": "#badfe6",
+        "parameter": {
+          "color": "#03dcdc",
+          "italic": true
+        },
+        "property": "#03dcdc",
+        "tag": "#fa887d",
+        "attribute": {
+          "color": "#03dcdc",
+          "italic": true
+        },
+        "added": "#84d987",
+        "removed": "#fa887d",
+        "changed": "#ebc751"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-jellyfish.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-sea-floor.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-current.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-jellyfish.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-sea-floor.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-current.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

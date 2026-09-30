@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/overprint",
+  "version": "1.0.0",
+  "name": "Overprint",
+  "summary": "Fluorescent pink and blue ink on off-white paper.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "pink",
+    "print"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#f8f5ee",
+        "surface": "#efebe1",
+        "overlay": "#eae6da",
+        "border": "#b9b4a6",
+        "foreground": "#1f2d4c",
+        "muted": "#777161",
+        "accent": "#e2348d",
+        "selection": "#f0c3d3",
+        "cursor": "#0d1936",
+        "currentLine": "#f1eee4",
+        "search": "#d9cea7",
+        "error": "#bd423a",
+        "warning": "#907402",
+        "success": "#118226",
+        "info": "#186bc5"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#0d1936",
+        "ansi": {
+          "black": "#f8f5ee",
+          "red": "#bd423a",
+          "green": "#118226",
+          "yellow": "#907402",
+          "blue": "#186bc5",
+          "magenta": "#a14da7",
+          "cyan": "#047879",
+          "white": "#1f2d4c",
+          "brightBlack": "#b9b4a6",
+          "brightRed": "#d24d45",
+          "brightGreen": "#1d9330",
+          "brightYellow": "#a18304",
+          "brightBlue": "#2279dc",
+          "brightMagenta": "#b459ba",
+          "brightCyan": "#078989",
+          "brightWhite": "#0d1936"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#777161",
+          "italic": true
+        },
+        "keyword": "#b459ba",
+        "operator": "#2279dc",
+        "punctuation": "#777161",
+        "string": "#118226",
+        "escape": "#b459ba",
+        "number": "#b05a02",
+        "constant": "#b05a02",
+        "function": "#186bc5",
+        "type": "#907402",
+        "builtin": "#047879",
+        "variable": "#1f2d4c",
+        "parameter": {
+          "color": "#047879",
+          "italic": true
+        },
+        "property": "#047879",
+        "tag": "#bd423a",
+        "attribute": {
+          "color": "#047879",
+          "italic": true
+        },
+        "added": "#118226",
+        "removed": "#bd423a",
+        "changed": "#907402"
+      },
+      "system": {
+        "accentColor": "pink",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-ink-shapes.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-riso-hills.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-tiles.png",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-ink-shapes.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-riso-hills.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-tiles.png",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

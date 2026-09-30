@@ -1,0 +1,241 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/concrete",
+  "version": "1.0.0",
+  "name": "Concrete",
+  "summary": "Raw concrete and a safety-orange stripe.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "gray",
+    "minimal"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#211f1d",
+        "surface": "#181715",
+        "overlay": "#2d2925",
+        "border": "#58514a",
+        "foreground": "#dad7d3",
+        "muted": "#887f75",
+        "accent": "#ec7b38",
+        "selection": "#573320",
+        "cursor": "#f1eeeb",
+        "currentLine": "#272421",
+        "search": "#58513e",
+        "error": "#d99890",
+        "warning": "#dac68b",
+        "success": "#9ecc9e",
+        "info": "#89aedd"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f1eeeb",
+        "ansi": {
+          "black": "#211f1d",
+          "red": "#d99890",
+          "green": "#9ecc9e",
+          "yellow": "#dac68b",
+          "blue": "#89aedd",
+          "magenta": "#c89dca",
+          "cyan": "#7dcece",
+          "white": "#dad7d3",
+          "brightBlack": "#58514a",
+          "brightRed": "#f2a89e",
+          "brightGreen": "#ace1ad",
+          "brightYellow": "#f0da95",
+          "brightBlue": "#97c1f7",
+          "brightMagenta": "#dfade1",
+          "brightCyan": "#85e4e3",
+          "brightWhite": "#f1eeeb"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#887f75",
+          "italic": true
+        },
+        "keyword": "#dfade1",
+        "operator": "#97c1f7",
+        "punctuation": "#887f75",
+        "string": "#9ecc9e",
+        "escape": "#dfade1",
+        "number": "#e3ad89",
+        "constant": "#e3ad89",
+        "function": "#89aedd",
+        "type": "#dac68b",
+        "builtin": "#7dcece",
+        "variable": "#dad7d3",
+        "parameter": {
+          "color": "#7dcece",
+          "italic": true
+        },
+        "property": "#7dcece",
+        "tag": "#d99890",
+        "attribute": {
+          "color": "#7dcece",
+          "italic": true
+        },
+        "added": "#9ecc9e",
+        "removed": "#d99890",
+        "changed": "#dac68b"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-brutalist-night.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-stripe-macro.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-contours.heic",
+          "fit": "fill"
+        }
+      ]
+    },
+    "light": {
+      "palette": {
+        "background": "#eae7e5",
+        "surface": "#e1ddd9",
+        "overlay": "#ddd8d3",
+        "border": "#ada69f",
+        "foreground": "#302d2b",
+        "muted": "#797066",
+        "accent": "#c95b0a",
+        "selection": "#e3baa6",
+        "cursor": "#1c1a18",
+        "currentLine": "#e4e0dc",
+        "search": "#cbc2a8",
+        "error": "#9a5049",
+        "warning": "#846c1b",
+        "success": "#3b723e",
+        "info": "#39659b"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#1c1a18",
+        "ansi": {
+          "black": "#eae7e5",
+          "red": "#9a5049",
+          "green": "#3b723e",
+          "yellow": "#846c1b",
+          "blue": "#39659b",
+          "magenta": "#89568c",
+          "cyan": "#076f6f",
+          "white": "#302d2b",
+          "brightBlack": "#ada69f",
+          "brightRed": "#af5c53",
+          "brightGreen": "#448247",
+          "brightYellow": "#957b1e",
+          "brightBlue": "#4273b0",
+          "brightMagenta": "#9b629e",
+          "brightCyan": "#017f7f",
+          "brightWhite": "#1c1a18"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#797066",
+          "italic": true
+        },
+        "keyword": "#9b629e",
+        "operator": "#4273b0",
+        "punctuation": "#797066",
+        "string": "#3b723e",
+        "escape": "#9b629e",
+        "number": "#985b2d",
+        "constant": "#985b2d",
+        "function": "#39659b",
+        "type": "#846c1b",
+        "builtin": "#076f6f",
+        "variable": "#302d2b",
+        "parameter": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "property": "#076f6f",
+        "tag": "#9a5049",
+        "attribute": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "added": "#3b723e",
+        "removed": "#9a5049",
+        "changed": "#846c1b"
+      },
+      "system": {
+        "accentColor": "orange",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-brutalist-day.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-stair-shadow.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-blueprint.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-brutalist-night.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-stripe-macro.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/light-brutalist-day.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-stair-shadow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-blueprint.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

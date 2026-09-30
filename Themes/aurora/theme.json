@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/aurora",
+  "version": "1.0.0",
+  "name": "Aurora",
+  "summary": "Green and violet light over a polar night.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "green",
+    "space"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#031222",
+        "surface": "#010b18",
+        "overlay": "#071d32",
+        "border": "#284561",
+        "foreground": "#cbdae2",
+        "muted": "#6383a5",
+        "accent": "#5aea98",
+        "selection": "#05381e",
+        "cursor": "#e4f1f7",
+        "currentLine": "#05182a",
+        "search": "#48472f",
+        "error": "#f6857a",
+        "warning": "#e8c44e",
+        "success": "#81d584",
+        "info": "#6dadff"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e4f1f7",
+        "ansi": {
+          "black": "#031222",
+          "red": "#f6857a",
+          "green": "#81d584",
+          "yellow": "#e8c44e",
+          "blue": "#6dadff",
+          "magenta": "#c688f2",
+          "cyan": "#06d8d9",
+          "white": "#cbdae2",
+          "brightBlack": "#284561",
+          "brightRed": "#ffa196",
+          "brightGreen": "#8eeb92",
+          "brightYellow": "#fed756",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#f19df6",
+          "brightCyan": "#0aeeee",
+          "brightWhite": "#e4f1f7"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#6383a5",
+          "italic": true
+        },
+        "keyword": "#f19df6",
+        "operator": "#91c1ff",
+        "punctuation": "#6383a5",
+        "string": "#81d584",
+        "escape": "#f19df6",
+        "number": "#ffa15c",
+        "constant": "#ffa15c",
+        "function": "#6dadff",
+        "type": "#e8c44e",
+        "builtin": "#06d8d9",
+        "variable": "#cbdae2",
+        "parameter": {
+          "color": "#06d8d9",
+          "italic": true
+        },
+        "property": "#06d8d9",
+        "tag": "#f6857a",
+        "attribute": {
+          "color": "#06d8d9",
+          "italic": true
+        },
+        "added": "#81d584",
+        "removed": "#f6857a",
+        "changed": "#e8c44e"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-glow.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-lake.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-nebula.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-lake.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-nebula.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

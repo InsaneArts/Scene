@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/cyberdeck",
+  "version": "1.0.0",
+  "name": "Cyberdeck",
+  "summary": "Magenta and cyan on black, like a rig built from parts.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "neon",
+    "magenta"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#10091a",
+        "surface": "#080411",
+        "overlay": "#1a1228",
+        "border": "#413755",
+        "foreground": "#dad3e9",
+        "muted": "#85799e",
+        "accent": "#f252d8",
+        "selection": "#3c1b35",
+        "cursor": "#f1ebfd",
+        "currentLine": "#150e21",
+        "search": "#524016",
+        "error": "#ff796d",
+        "warning": "#ebbf0d",
+        "success": "#65d86d",
+        "info": "#67aaff"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f1ebfd",
+        "ansi": {
+          "black": "#10091a",
+          "red": "#ff796d",
+          "green": "#65d86d",
+          "yellow": "#ebbf0d",
+          "blue": "#67aaff",
+          "magenta": "#e27ee8",
+          "cyan": "#09d5d5",
+          "white": "#dad3e9",
+          "brightBlack": "#413755",
+          "brightRed": "#fe9c91",
+          "brightGreen": "#72ed7b",
+          "brightYellow": "#ffd337",
+          "brightBlue": "#8bbeff",
+          "brightMagenta": "#f88fff",
+          "brightCyan": "#0deaeb",
+          "brightWhite": "#f1ebfd"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#85799e",
+          "italic": true
+        },
+        "keyword": "#f88fff",
+        "operator": "#8bbeff",
+        "punctuation": "#85799e",
+        "string": "#65d86d",
+        "escape": "#f88fff",
+        "number": "#ff9b52",
+        "constant": "#ff9b52",
+        "function": "#67aaff",
+        "type": "#ebbf0d",
+        "builtin": "#09d5d5",
+        "variable": "#dad3e9",
+        "parameter": {
+          "color": "#09d5d5",
+          "italic": true
+        },
+        "property": "#09d5d5",
+        "tag": "#ff796d",
+        "attribute": {
+          "color": "#09d5d5",
+          "italic": true
+        },
+        "added": "#65d86d",
+        "removed": "#ff796d",
+        "changed": "#ebbf0d"
+      },
+      "system": {
+        "accentColor": "pink",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-workbench.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-neon-alley.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-current.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-workbench.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-neon-alley.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-current.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

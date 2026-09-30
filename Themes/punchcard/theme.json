@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/punchcard",
+  "version": "1.0.0",
+  "name": "Punchcard",
+  "summary": "Manila card stock with black ink and a red stripe.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "light",
+    "warm",
+    "retro"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "light": {
+      "palette": {
+        "background": "#f4e8d0",
+        "surface": "#ecdec1",
+        "overlay": "#e9d9b9",
+        "border": "#b8a786",
+        "foreground": "#372b21",
+        "muted": "#7f7050",
+        "accent": "#b6322b",
+        "selection": "#edb6ae",
+        "cursor": "#23180f",
+        "currentLine": "#eee0c4",
+        "search": "#d3c392",
+        "error": "#a34942",
+        "warning": "#866c02",
+        "success": "#2f7434",
+        "info": "#2e64a6"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#23180f",
+        "ansi": {
+          "black": "#f4e8d0",
+          "red": "#a34942",
+          "green": "#2f7434",
+          "yellow": "#866c02",
+          "blue": "#2e64a6",
+          "magenta": "#8e5192",
+          "cyan": "#076f6f",
+          "white": "#372b21",
+          "brightBlack": "#b8a786",
+          "brightRed": "#b8554c",
+          "brightGreen": "#38853e",
+          "brightYellow": "#977a03",
+          "brightBlue": "#3772bb",
+          "brightMagenta": "#a05da4",
+          "brightCyan": "#017f7f",
+          "brightWhite": "#23180f"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7f7050",
+          "italic": true
+        },
+        "keyword": "#a05da4",
+        "operator": "#3772bb",
+        "punctuation": "#7f7050",
+        "string": "#2f7434",
+        "escape": "#a05da4",
+        "number": "#9f5618",
+        "constant": "#9f5618",
+        "function": "#2e64a6",
+        "type": "#866c02",
+        "builtin": "#076f6f",
+        "variable": "#372b21",
+        "parameter": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "property": "#076f6f",
+        "tag": "#a34942",
+        "attribute": {
+          "color": "#076f6f",
+          "italic": true
+        },
+        "added": "#2f7434",
+        "removed": "#a34942",
+        "changed": "#866c02"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "default"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/light-card-stack.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-backlit-holes.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/light-contours.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/light-card-stack.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-backlit-holes.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/light-contours.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

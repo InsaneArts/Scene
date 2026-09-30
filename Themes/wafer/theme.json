@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/wafer",
+  "version": "1.0.0",
+  "name": "Wafer",
+  "summary": "The rainbow sheen of a silicon wafer.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "purple",
+    "pastel"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#131423",
+        "surface": "#0c0d1a",
+        "overlay": "#1d1e32",
+        "border": "#424561",
+        "foreground": "#d1d7e9",
+        "muted": "#7a7d9f",
+        "accent": "#43cfe5",
+        "selection": "#023a42",
+        "cursor": "#e9eefc",
+        "currentLine": "#18192a",
+        "search": "#544c3d",
+        "error": "#f2988e",
+        "warning": "#ebcf7a",
+        "success": "#99db9b",
+        "info": "#84b7f9"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e9eefc",
+        "ansi": {
+          "black": "#131423",
+          "red": "#f2988e",
+          "green": "#99db9b",
+          "yellow": "#ebcf7a",
+          "blue": "#84b7f9",
+          "magenta": "#db9fde",
+          "cyan": "#62dedd",
+          "white": "#d1d7e9",
+          "brightBlack": "#424561",
+          "brightRed": "#ffb0a6",
+          "brightGreen": "#a8f0a9",
+          "brightYellow": "#ffe38d",
+          "brightBlue": "#a2caff",
+          "brightMagenta": "#f2aff6",
+          "brightCyan": "#69f4f3",
+          "brightWhite": "#e9eefc"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#7a7d9f",
+          "italic": true
+        },
+        "keyword": "#f2aff6",
+        "operator": "#a2caff",
+        "punctuation": "#7a7d9f",
+        "string": "#99db9b",
+        "escape": "#f2aff6",
+        "number": "#fcb17e",
+        "constant": "#fcb17e",
+        "function": "#84b7f9",
+        "type": "#ebcf7a",
+        "builtin": "#62dedd",
+        "variable": "#d1d7e9",
+        "parameter": {
+          "color": "#62dedd",
+          "italic": true
+        },
+        "property": "#62dedd",
+        "tag": "#f2988e",
+        "attribute": {
+          "color": "#62dedd",
+          "italic": true
+        },
+        "added": "#99db9b",
+        "removed": "#f2988e",
+        "changed": "#ebcf7a"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-silicon.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-thin-film.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-current.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-silicon.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-thin-film.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-current.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}

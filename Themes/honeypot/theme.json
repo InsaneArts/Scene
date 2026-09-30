@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/honeypot",
+  "version": "1.0.0",
+  "name": "Honeypot",
+  "summary": "Honey amber in a dark hive.",
+  "authors": [
+    {
+      "name": "Scene"
+    }
+  ],
+  "license": "MIT",
+  "tags": [
+    "dark",
+    "yellow",
+    "warm"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#1d1106",
+        "surface": "#140902",
+        "overlay": "#2b1a0a",
+        "border": "#573f2a",
+        "foreground": "#e5d6ba",
+        "muted": "#977a61",
+        "accent": "#f5b33b",
+        "selection": "#412c05",
+        "cursor": "#f9edd7",
+        "currentLine": "#241608",
+        "search": "#584723",
+        "error": "#ed8c81",
+        "warning": "#e3c566",
+        "success": "#8bd28d",
+        "info": "#75aef5"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#f9edd7",
+        "ansi": {
+          "black": "#1d1106",
+          "red": "#ed8c81",
+          "green": "#8bd28d",
+          "yellow": "#e3c566",
+          "blue": "#75aef5",
+          "magenta": "#d493d8",
+          "cyan": "#44d6d6",
+          "white": "#e5d6ba",
+          "brightBlack": "#573f2a",
+          "brightRed": "#ffa196",
+          "brightGreen": "#99e89b",
+          "brightYellow": "#fad86f",
+          "brightBlue": "#91c1ff",
+          "brightMagenta": "#eba3ef",
+          "brightCyan": "#4aebeb",
+          "brightWhite": "#f9edd7"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#977a61",
+          "italic": true
+        },
+        "keyword": "#eba3ef",
+        "operator": "#91c1ff",
+        "punctuation": "#977a61",
+        "string": "#8bd28d",
+        "escape": "#eba3ef",
+        "number": "#f6a56d",
+        "constant": "#f6a56d",
+        "function": "#75aef5",
+        "type": "#e3c566",
+        "builtin": "#44d6d6",
+        "variable": "#e5d6ba",
+        "parameter": {
+          "color": "#44d6d6",
+          "italic": true
+        },
+        "property": "#44d6d6",
+        "tag": "#ed8c81",
+        "attribute": {
+          "color": "#44d6d6",
+          "italic": true
+        },
+        "added": "#8bd28d",
+        "removed": "#ed8c81",
+        "changed": "#e3c566"
+      },
+      "system": {
+        "accentColor": "yellow",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-honeycomb.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-hex-light.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-glow.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-honeycomb.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-hex-light.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Generated for Scene with GPT Image"
+    },
+    {
+      "file": "wallpapers/dark-glow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    }
+  ]
+}
