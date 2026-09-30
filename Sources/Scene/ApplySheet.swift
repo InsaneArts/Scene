@@ -113,7 +113,8 @@ struct ApplySheet: View {
 
     var groups: [(String, [PlannedIntegration])] {
         let installed = planned.filter { $0.detection.installed }
-        return [("Desktop", .system), ("Terminals", .terminal), ("Editors", .editor), ("macOS look · experimental", .experimental)].compactMap { title, kind in
+        return [("Desktop", .system), ("Terminals", .terminal), ("Editors", .editor), ("Command-line tools", .tool),
+                ("macOS look · experimental", .experimental)].compactMap { title, kind in
             let items = installed.filter { $0.kind == kind }
             return items.isEmpty ? nil : (title, items)
         }

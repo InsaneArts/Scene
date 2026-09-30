@@ -65,6 +65,10 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public var tweaksAvailable = true
     public var failWallpaper = false
     public var extensions: [String: String] = [:]   // id -> version
+    /// Canned results for commands, keyed by "<executable name> <arguments>".
+    public var responses: [String: CLIResult] = [:]
+    /// Pretend running processes, keyed by bundle id or executable name. Nothing real is ever signaled.
+    public var running: [String: [pid_t]] = [:]
     public var calls: [String] = []
 
     public init() {}
@@ -86,7 +90,9 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public func setPreference(domain: String, key: String, value: PlistValue?) throws { lock.withLock { prefs["\(domain)#\(key)"] = value } }
 
     public func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult {
-        record("run \((executable as NSString).lastPathComponent) \(arguments.joined(separator: " "))")
+        let command = "\((executable as NSString).lastPathComponent) \(arguments.joined(separator: " "))"
+        record("run \(command)")
+        if let response = lock.withLock({ responses[command] }) { return response }
         if arguments.first == "--install-extension", let vsix = arguments.dropFirst().first {
             let name = (vsix as NSString).lastPathComponent   // scene-themes-<version>.vsix
             let version = name.replacingOccurrences(of: "scene-themes-", with: "").replacingOccurrences(of: ".vsix", with: "")
@@ -105,6 +111,13 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
         }
         if arguments.first == "--version" { return CLIResult(status: 0, stdout: "NVIM v0.11.5\n", stderr: "") }
         return CLIResult(status: 0, stdout: "", stderr: "")
+    }
+
+    public func processes(bundleID: String) -> [pid_t] { lock.withLock { running[bundleID] ?? [] } }
+    public func processes(named name: String) -> [pid_t] { lock.withLock { running[name] ?? [] } }
+    public func signal(_ signal: Int32, to pids: [pid_t]) -> Int {
+        record("signal \(signal) \(pids.sorted().map(String.init).joined(separator: ","))")
+        return pids.count
     }
 
     public func tweakAvailability(_ id: String) -> TweakAvailability { tweaksAvailable ? .available : .disabled("off in tests") }

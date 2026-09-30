@@ -183,3 +183,45 @@ public struct IconStyleIntegration: Integration {
         return style(wanted) == style(current) ? .matches : .mismatch("The icon style did not change")
     }
 }
+
+// MARK: - JankyBorders
+
+public struct BordersIntegration: Integration {
+    public let id = "borders"
+    public let displayName = "JankyBorders"
+    public let kind = IntegrationKind.system
+    public init() {}
+
+    /// borders runs `~/.config/borders/bordersrc`, or `~/.bordersrc`, when it starts without arguments. It ignores XDG_CONFIG_HOME.
+    static func script(_ env: SceneEnvironment) -> URL {
+        let candidates = [env.home.appendingPathComponent(".config/borders/bordersrc"), env.home.appendingPathComponent(".bordersrc")]
+        return candidates.first { FileOps.exists($0) } ?? candidates[0]
+    }
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        guard let borders = env.locateExecutable("borders") else { return .notInstalled() }
+        let script = Self.script(env)
+        return Detection(installed: true, detail: Operation.tilde(script.path),
+                         conflicts: ["borders reads this file only when it starts without arguments. If something starts it with arguments, such as AeroSpace, the colors last until borders restarts."],
+                         context: ["borders": borders.path, "script": script.path])
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        // The block comes last, so its colors win over the options before it.
+        let line = (["borders"] + BordersRenderer.arguments(request.current)).joined(separator: " ")
+        return IntegrationPlan(operations: [
+            .ensureAnchor(path: detection.context["script"]!, block: Anchor.block(lines: [line], comment: "#"), placement: .end),
+        ], conflicts: detection.conflicts)
+    }
+
+    /// Sends the file's colors to the running instance. `borders` with arguments starts a new instance when none runs,
+    /// so it is called only while one runs.
+    public func reload(_ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> ReloadResult {
+        guard let borders = detection.context["borders"], let script = detection.context["script"] else { return .notNeeded }
+        guard !services.processes(named: "borders").isEmpty else { return .notRunning }
+        let colors = FileOps.read(URL(fileURLWithPath: script)).map { BordersRenderer.colors(in: String(decoding: $0, as: UTF8.self)) } ?? []
+        guard !colors.isEmpty else { return .needsRestart("Restart borders to see your own colors again.") }
+        guard let result = try? await services.run(borders, colors, environment: nil) else { return .failed("could not run borders") }
+        return result.status == 0 ? .reloaded : .failed(result.stderr)
+    }
+}

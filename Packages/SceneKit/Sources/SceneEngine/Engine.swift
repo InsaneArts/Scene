@@ -118,6 +118,10 @@ public actor Engine {
         var executed: [(Operation, ResourceState, Data?)] = []
         var failure: String?
         for op in plan.operations {
+            if case .pause(let milliseconds) = op {
+                try? await Task.sleep(for: .milliseconds(milliseconds))
+                continue
+            }
             let resource = op.resource
             let before = await state(of: op)
             let beforeBytes = fileBytes(for: op)
@@ -284,6 +288,13 @@ public actor Engine {
             return .json(document.value(forKey: key))
         case .setPreference(let domain, let key, _):
             return .plist(services.preference(domain: domain, key: key))
+        case .setPreferenceEntry(let domain, let key, let entry, _):
+            guard case .dictionary(let dictionary)? = services.preference(domain: domain, key: key) else { return .plist(nil) }
+            return .plist(dictionary[entry])
+        case .setConfigValue(let path, let table, let key, _):
+            guard let data = FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))) else { return .absent }
+            let document = KeyValueDocument(text: String(decoding: data, as: UTF8.self))
+            return .configValue(document.value(forKey: (table.map { $0 + "." } ?? "") + key))
         case .setWallpaper(let id, _, _):
             return .wallpaper(path: await services.wallpaper(displayID: id))
         case .setAppearance:
@@ -293,12 +304,14 @@ public actor Engine {
             return .extensionVersion(await installedExtensionVersion(cli: cli, id: id))
         case .setTweak(let id, _):
             return .tweak((try? await services.tweakGet(id)) ?? .null)
+        case .pause:
+            return .absent
         }
     }
 
     func fileBytes(for op: Operation) -> Data? {
         switch op {
-        case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _):
+        case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _), .setConfigValue(let path, _, _, _):
             return FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path)))
         default: return nil
         }
@@ -339,6 +352,12 @@ public actor Engine {
         case .setPreference(let domain, let key, let value):
             try services.setPreference(domain: domain, key: key, value: value)
             return .plist(value)
+        case .setPreferenceEntry(let domain, let key, let entry, let value):
+            try setEntry(domain: domain, key: key, entry: entry, value: value)
+            return .plist(value)
+        case .setConfigValue(let path, let table, let key, let value):
+            try setConfig(path: path, table: table, key: key, value: value, deleteWhenEmpty: false)
+            return .configValue(value)
         case .setWallpaper(let id, let path, let fit):
             try await services.setWallpaper(displayID: id, path: path, fit: fit)
             return .wallpaper(path: path)
@@ -355,6 +374,8 @@ public actor Engine {
         case .setTweak(let id, let value):
             let readBack = try await services.tweakSet(id, value)
             return .tweak(readBack)
+        case .pause:
+            return .absent
         }
     }
 
@@ -395,6 +416,15 @@ public actor Engine {
             if document.keys.isEmpty { try FileOps.delete(url) } else { try FileOps.write(document.text, to: url) }
         case (.setPreference(let domain, let key, _), .plist(let value)):
             try services.setPreference(domain: domain, key: key, value: value)
+        case (.setPreferenceEntry(let domain, let key, let entry, _), .plist(let value)):
+            try setEntry(domain: domain, key: key, entry: entry, value: value)
+        case (.setConfigValue(let path, _, _, _), _) where fileBytes != nil:
+            try FileOps.write(fileBytes!, to: URL(fileURLWithPath: path))
+        case (.setConfigValue(let path, let table, let key, _), .configValue(let value)):
+            try setConfig(path: path, table: table, key: key, value: value, deleteWhenEmpty: false)
+        case (.setConfigValue(let path, let table, let key, _), .absent):
+            // The file did not exist before Scene. Remove the key, and the file once nothing else is in it.
+            try setConfig(path: path, table: table, key: key, value: nil, deleteWhenEmpty: true)
         case (.setWallpaper(let id, _, let fit), .wallpaper(let path)):
             guard let path, FileManager.default.fileExists(atPath: path) else {
                 throw SceneError.failed("the previous wallpaper file no longer exists")
@@ -416,6 +446,31 @@ public actor Engine {
         default:
             throw SceneError.failed("cannot restore \(op.resource) to \(target)")
         }
+    }
+
+    /// Changes one entry of a dictionary preference and keeps the other entries.
+    func setEntry(domain: String, key: String, entry: String, value: PlistValue?) throws {
+        var dictionary: [String: PlistValue] = [:]
+        if case .dictionary(let current)? = services.preference(domain: domain, key: key) { dictionary = current }
+        dictionary[entry] = value
+        try services.setPreference(domain: domain, key: key, value: dictionary.isEmpty ? nil : .dictionary(dictionary))
+    }
+
+    func setConfig(path: String, table: String?, key: String, value: String?, deleteWhenEmpty: Bool) throws {
+        let url = URL(fileURLWithPath: path)
+        guard let data = FileOps.read(FileOps.resolvedTarget(url)) else {
+            if let value {
+                var document = KeyValueDocument(text: "")
+                document.set(value, forKey: key, inTable: table)
+                try FileOps.write(document.text, to: url)
+            }
+            return
+        }
+        let text = String(decoding: data, as: UTF8.self)
+        var document = KeyValueDocument(text: text)
+        document.set(value, forKey: key, inTable: table)
+        if deleteWhenEmpty, document.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try FileOps.delete(url) }
+        else if document.text != text { try FileOps.write(document.text, to: url) }
     }
 
     func installedExtensionVersion(cli: String, id: String) async -> String? {

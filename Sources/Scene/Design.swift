@@ -187,7 +187,9 @@ struct AppIcon: View {
     }
 
     private static let bundleIDs: [String: [String]] = VSCodeFamilyIntegration.all.reduce(into: [
-        "ghostty": [GhosttyIntegration.bundleID], "iterm2": [ITermIntegration.bundleID],
+        "ghostty": [GhosttyIntegration.bundleID], "iterm2": [ITermIntegration.bundleID], "kitty": [KittyIntegration.bundleID],
+        "terminal": [TerminalAppIntegration.bundleID], "zed": ZedIntegration.bundleIDs, "xcode": [XcodeIntegration.bundleID],
+        "alacritty": [AlacrittyIntegration.bundleID], "warp": [WarpIntegration.bundleID],
     ]) { $0[$1.id] = $1.bundleIDs }
 
     private static var icons: [String: NSImage?] = [:]
@@ -207,7 +209,12 @@ struct AppIcon: View {
         case "accent": ("paintpalette.fill", Color(red: 1, green: 0.6, blue: 0.3), Color(red: 0.9, green: 0.25, blue: 0.5))
         case "iconStyle": ("square.grid.2x2.fill", Color(red: 0.5, green: 0.5, blue: 1), Color(red: 0.3, green: 0.25, blue: 0.85))
         case "neovim": ("chevron.left.forwardslash.chevron.right", Color(red: 0.45, green: 0.78, blue: 0.3), Color(red: 0.1, green: 0.5, blue: 0.3))
-        case "ghostty", "iterm2": ("terminal.fill", Color(white: 0.45), Color(white: 0.2))
+        case "ghostty", "iterm2", "kitty", "terminal", "alacritty", "warp": ("terminal.fill", Color(white: 0.45), Color(white: 0.2))
+        case "helix": ("chevron.left.forwardslash.chevron.right", Color(red: 0.6, green: 0.45, blue: 0.95), Color(red: 0.35, green: 0.2, blue: 0.7))
+        case "btop": ("gauge.with.dots.needle.67percent", Color(red: 0.95, green: 0.5, blue: 0.35), Color(red: 0.75, green: 0.25, blue: 0.2))
+        case "borders": ("square.dashed", Color(red: 0.4, green: 0.8, blue: 0.95), Color(red: 0.15, green: 0.5, blue: 0.8))
+        case "tmux": ("rectangle.split.2x1.fill", Color(red: 0.3, green: 0.75, blue: 0.4), Color(red: 0.1, green: 0.45, blue: 0.2))
+        case "bat": ("doc.text.fill", Color(red: 0.55, green: 0.45, blue: 0.9), Color(red: 0.3, green: 0.2, blue: 0.65))
         default: ("curlybraces", Color(red: 0.3, green: 0.6, blue: 1), Color(red: 0.1, green: 0.35, blue: 0.85))
         }
     }

@@ -15,7 +15,7 @@ struct AppsView: View {
         let installed = integrations.filter { model.detections[$0.id]?.installed ?? false }
         let missing = integrations.filter { !(model.detections[$0.id]?.installed ?? false) }
         PageScroll(title: "Apps", subtitle: "What Scene found on this Mac. A theme changes only the apps that are on.") {
-            ForEach([IntegrationKind.system, .terminal, .editor, .experimental], id: \.self) { kind in
+            ForEach([IntegrationKind.system, .terminal, .editor, .tool, .experimental], id: \.self) { kind in
                 let items = installed.filter { $0.kind == kind }
                 if !items.isEmpty {
                     CardSection(title: title(kind)) {
@@ -38,7 +38,7 @@ struct AppsView: View {
                         .opacity(0.8)
                         Divider()
                     }
-                    Text("Slack, Discord, Safari, and Chrome cannot be themed by other apps. Set their appearance to follow the system, and they switch with Light/Dark.")
+                    Text("Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set their appearance to follow the system, and they switch with Light/Dark.")
                         .foregroundStyle(.secondary)
                 }
                 .font(.callout)
@@ -55,6 +55,7 @@ struct AppsView: View {
         case .system: "Desktop"
         case .terminal: "Terminals"
         case .editor: "Editors"
+        case .tool: "Command-line tools"
         case .experimental: "macOS look · experimental"
         }
     }

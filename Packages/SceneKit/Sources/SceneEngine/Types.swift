@@ -43,10 +43,17 @@ public enum Operation: Codable, Sendable, Equatable {
     case ensureAnchor(path: String, block: String, placement: Placement)
     case setJSONValue(path: String, key: String, value: JSONValue?)
     case setPreference(domain: String, key: String, value: PlistValue?)
+    /// One entry of a dictionary preference, such as one profile in Terminal's `Window Settings`.
+    case setPreferenceEntry(domain: String, key: String, entry: String, value: PlistValue?)
+    /// One key in a TOML-style file. `value` is raw TOML text that Scene renders.
+    case setConfigValue(path: String, table: String?, key: String, value: String?)
     case setWallpaper(displayID: UInt32, imagePath: String, fit: WallpaperFit)
     case setAppearance(dark: Bool)
     case installEditorExtension(cli: String, packagePath: String, extensionID: String, version: String)
     case setTweak(id: String, value: JSONValue)
+    /// Waits between two changes, so an app that watches files loads the first before it reads the second.
+    /// It changes nothing, so the engine records nothing for it.
+    case pause(milliseconds: Int)
 
     /// The resource the operation owns. The ledger keeps one original value per resource.
     public var resource: String {
@@ -55,10 +62,13 @@ public enum Operation: Codable, Sendable, Equatable {
         case .ensureAnchor(let path, _, _): "anchor:\(path)"
         case .setJSONValue(let path, let key, _): "json:\(path)#\(key)"
         case .setPreference(let domain, let key, _): "pref:\(domain)#\(key)"
+        case .setPreferenceEntry(let domain, let key, let entry, _): "pref:\(domain)#\(key)/\(entry)"
+        case .setConfigValue(let path, let table, let key, _): "conf:\(path)#\(table.map { $0 + "." } ?? "")\(key)"
         case .setWallpaper(let id, _, _): "wallpaper:\(id)"
         case .setAppearance: "appearance"
         case .installEditorExtension(let cli, _, let id, _): "extension:\(cli)#\(id)"
         case .setTweak(let id, _): "tweak:\(id)"
+        case .pause: "pause"
         }
     }
 
@@ -69,10 +79,13 @@ public enum Operation: Codable, Sendable, Equatable {
         case .ensureAnchor(let path, _, _): "Add one include block to \(Self.tilde(path))"
         case .setJSONValue(let path, let key, let value): value == nil ? "Remove \"\(key)\" from \(Self.tilde(path))" : "Set \"\(key)\" in \(Self.tilde(path))"
         case .setPreference(let domain, let key, _): "Set \(key) in \(domain)"
+        case .setPreferenceEntry(let domain, let key, let entry, let value): value == nil ? "Remove “\(entry)” from \(key) in \(domain)" : "Set “\(entry)” in \(key) in \(domain)"
+        case .setConfigValue(let path, _, let key, let value): value == nil ? "Remove \(key) from \(Self.tilde(path))" : "Set \(key) in \(Self.tilde(path))"
         case .setWallpaper(let id, let path, _): "Set wallpaper of display \(id) to \((path as NSString).lastPathComponent)"
         case .setAppearance(let dark): "Switch macOS to \(dark ? "Dark" : "Light")"
         case .installEditorExtension(let cli, _, _, let version): "Install Scene Themes \(version) with \((cli as NSString).lastPathComponent)"
         case .setTweak(let id, _): "Set \(id) (experimental)"
+        case .pause(let milliseconds): "Wait \(milliseconds) ms, so the app loads the new files first"
         }
     }
 
@@ -88,6 +101,8 @@ public enum ResourceState: Codable, Sendable, Equatable {
     case anchor(block: String?, fileBackup: String?, fileExisted: Bool)
     case json(JSONValue?)
     case plist(PlistValue?)
+    /// The raw text of a key in a TOML-style file, or nil when the file does not set it.
+    case configValue(String?)
     case wallpaper(path: String?)
     case appearance(dark: Bool, auto: Bool)
     case extensionVersion(String?)
@@ -96,7 +111,7 @@ public enum ResourceState: Codable, Sendable, Equatable {
 
 // MARK: - Detection and plans
 
-public enum IntegrationKind: String, Sendable, Codable { case system, terminal, editor, experimental }
+public enum IntegrationKind: String, Sendable, Codable { case system, terminal, editor, tool, experimental }
 
 public enum SupportLevel: Sendable, Equatable {
     case official, scripting

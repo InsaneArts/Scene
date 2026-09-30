@@ -21,6 +21,11 @@ public protocol SystemServices: Sendable {
     func preference(domain: String, key: String) -> PlistValue?
     func setPreference(domain: String, key: String, value: PlistValue?) throws
     func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult
+    /// Running processes of this user, by app bundle id or by executable name.
+    func processes(bundleID: String) -> [pid_t]
+    func processes(named name: String) -> [pid_t]
+    /// Sends a signal and returns how many processes received it.
+    func signal(_ signal: Int32, to pids: [pid_t]) -> Int
     func tweakAvailability(_ id: String) -> TweakAvailability
     func tweakGet(_ id: String) async throws -> JSONValue
     func tweakSet(_ id: String, _ value: JSONValue) async throws -> JSONValue
@@ -129,6 +134,10 @@ public final class LiveSystemServices: SystemServices, @unchecked Sendable {
     public func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult {
         try await Task.detached { try Processes.run(executable, arguments, environment: environment, timeout: 120) }.value
     }
+
+    public func processes(bundleID: String) -> [pid_t] { Processes.pids(bundleID: bundleID) }
+    public func processes(named name: String) -> [pid_t] { Processes.pids(named: name) }
+    public func signal(_ signal: Int32, to pids: [pid_t]) -> Int { Processes.signal(signal, to: pids) }
 
     public func tweakAvailability(_ id: String) -> TweakAvailability { tweaks.availability(id) }
     public func tweakGet(_ id: String) async throws -> JSONValue { try await tweaks.get(id) }

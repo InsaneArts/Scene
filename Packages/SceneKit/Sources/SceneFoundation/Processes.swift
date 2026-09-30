@@ -46,6 +46,23 @@ public enum Processes {
         NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).map(\.processIdentifier)
     }
 
+    /// PIDs of this user's processes with an executable name, such as "hx". Names longer than 15 characters are cut.
+    public static func pids(named name: String) -> [pid_t] {
+        let capacity = Int(proc_listallpids(nil, 0)) + 64
+        guard capacity > 64 else { return [] }
+        var all = [pid_t](repeating: 0, count: capacity)
+        let count = Int(proc_listallpids(&all, Int32(capacity * MemoryLayout<pid_t>.size)))
+        let uid = getuid()
+        var buffer = [CChar](repeating: 0, count: 64)
+        return all.prefix(max(0, count)).filter { pid in
+            guard pid > 0, proc_name(pid, &buffer, UInt32(buffer.count)) > 0,
+                  String(decoding: buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self) == String(name.prefix(15)) else { return false }
+            var info = proc_bsdshortinfo()
+            let size = Int32(MemoryLayout<proc_bsdshortinfo>.size)
+            return proc_pidinfo(pid, PROC_PIDT_SHORTBSDINFO, 0, &info, size) == size && info.pbsi_uid == uid
+        }
+    }
+
     @discardableResult
     public static func signal(_ sig: Int32, to pids: [pid_t]) -> Int {
         pids.filter { kill($0, sig) == 0 }.count

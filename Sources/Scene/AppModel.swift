@@ -111,8 +111,10 @@ final class AppModel {
         library = ThemeLibrary(bundledFolder: Locations.bundledThemes, installedFolder: env.appSupport.appendingPathComponent("Themes"))
         tweaks = TweakRunner(helper: Locations.tweakHelper,
                              policy: TweakPolicy(enabled: defaults.bool(forKey: "experimentalEnabled"), allowUntested: defaults.bool(forKey: "allowUntested")))
-        let integrations: [Integration] = [WallpaperIntegration(), AppearanceIntegration(), AccentColorIntegration(), IconStyleIntegration(),
-                                           GhosttyIntegration(), ITermIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
+        let integrations: [Integration] = [WallpaperIntegration(), AppearanceIntegration(), BordersIntegration(), AccentColorIntegration(),
+                                           IconStyleIntegration(), GhosttyIntegration(), ITermIntegration(), KittyIntegration(),
+                                           AlacrittyIntegration(), WarpIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
+            + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration()]
         engine = Engine(env: env, services: LiveSystemServices(tweaks: tweaks), integrations: integrations)
     }
 
