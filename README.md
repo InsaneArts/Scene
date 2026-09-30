@@ -3,14 +3,18 @@
 <h3 align="center">One theme for your whole Mac.</h3>
 
 <p align="center">
-  <img src=".github/assets/film-switcher.png" width="100%" alt="The Scene theme switcher over the desktop, with Tokyo Night selected" />
+  <img src=".github/assets/switcher.jpg" width="100%" alt="The Scene theme switcher over the desktop, with Cold Aisle selected" />
 </p>
 
-Scene gives your desktop, terminals, and code editors one theme in one step, the way [Omarchy](https://omarchy.org) does on Linux. It changes the wallpaper, Light/Dark, the accent color, Ghostty, iTerm2, VS Code, Cursor, and Neovim together, and it can put your original setup back.
+Scene gives your desktop, terminals, and code editors one theme in one step, the way [Omarchy](https://omarchy.org) does on Linux. It changes the wallpaper, Light/Dark, and the accent color, your terminal (Ghostty, iTerm2, kitty, Alacritty, Warp, or Terminal), your editor (VS Code, Cursor, Zed, Xcode, Neovim, Helix, and more), and tools like tmux and bat, all together. It can put your original setup back.
 
 ## Switch from anywhere
 
-Press ⌃⇧⌘Space to show your themes over every screen. It is Omarchy's theme menu key, with ⌘ as Super. ← → choose a theme, ↑ ↓ switch between Light and Dark, ↩ applies it, and Esc closes.
+<p align="center">
+  <img src=".github/assets/shortcut.jpg" width="100%" alt="The Control, Shift, Command, and Space keys, lit from below" />
+</p>
+
+Press ⌃⇧⌘Space to show your themes over every screen. It is Omarchy's theme menu key, with ⌘ as Super. ← → choose a theme, ↑ ↓ switch between Light and Dark, ↩ applies it, and Esc closes. Type a name to narrow the list. Your favorites come first.
 
 ## Three backgrounds for every look
 
@@ -30,14 +34,19 @@ Before a theme touches anything, Scene lists each app and every file and setting
 
 ## What it themes
 
+<p align="center">
+  <img src=".github/assets/desktop.jpg" width="100%" alt="A Mac desktop in the Cold Aisle theme, captioned Wallpaper. Terminal. Editor. Accent color." />
+</p>
+
 | | Apps | How |
 |---|---|---|
-| Desktop | Wallpaper, Light/Dark | `NSWorkspace`; System Events, or a private call |
+| Desktop | Wallpaper, Light/Dark, JankyBorders | `NSWorkspace`; System Events, or a private call; one marked line in `bordersrc` |
 | macOS look | Accent color, icon & widget style | Private calls in a helper, on tested macOS builds only (experimental) |
-| Terminals | Ghostty, iTerm2 | A Scene theme file and one marked include line; an iTerm2 Dynamic Profile |
-| Editors | VS Code, Cursor, VSCodium, Windsurf, Neovim | A generated theme extension and a comment-preserving settings edit; a Neovim plugin file and a JSON data file |
+| Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one |
+| Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file |
+| Command-line tools | tmux, bat and delta, btop | A theme file and one marked include line or config key |
 
-Slack, Discord, Safari, and Chrome cannot be themed by other apps. Set them to follow the system, and they switch with Light/Dark.
+Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set them to follow the system, and they switch with Light/Dark.
 
 ## Install
 
@@ -74,22 +83,49 @@ defaults delete com.insanearts.scene
 - Pick a theme in the sidebar to see its page. Click Apply…, double-click the theme, or press ↩ to see the plan and apply it.
 - ⌥⌘Z undoes the last theme.
 - The Apps page shows what Scene found on your Mac. Its switches choose which apps a theme changes. Stop Managing, in an app's ⋯ menu, restores that app and leaves it out of later themes.
-- Import a `.scenetheme` file, a theme folder, or an Omarchy theme folder with the import button in the toolbar. The toolbar also opens the switcher.
+- Make your own theme in the Theme Maker: Add Theme → New Theme…, or right-click a theme → Open in Theme Maker. A few sliders move the background, the text's contrast, the accent, and the code colors, and a large preview of the desktop, a terminal, and an editor on your wallpaper follows every move. From Wallpaper takes the colors from the picture, Shuffle tries new ones, and a click on the palette strip sets one color by hand. Scene keeps the text readable wherever the sliders are. The preview also shows the macOS accent color in an open menu and the icon style in the Dock. Add three wallpapers per look; the checklist says what is missing. Save to Scene adds the theme; Export Folder… writes a folder that is ready to put on GitHub as it is.
+- Search your themes in the sidebar. Star a theme on its page, and it comes first in the sidebar, the switcher, and the menu bar.
+- Add Theme in the toolbar imports a `.scenetheme` file, a theme folder, or an Omarchy theme folder, or installs a theme from GitHub. Paste the address of one of [Omarchy's community themes](https://omarchy.org/themes/) or of a Scene theme. Update, on the theme's page, downloads its newest version. The toolbar also opens the switcher.
 - Turn on the menu bar icon in Settings to pick a theme from a panel of wallpapers in the menu bar.
 
 ## Settings
 
 <img src=".github/assets/settings.png" width="330" align="right" alt="Scene's Shortcuts settings: Switch theme and Next background, and the switcher's keys" />
 
-Open Settings with ⌘, or the gear in the toolbar. Record, reset, or turn off each shortcut. The Shortcuts tab also lists the switcher's keys. Open at login and the menu bar icon are under General. The private macOS calls for accent color, icon style, and Light/Dark are under Experimental.
+Open Settings with ⌘, or the gear in the toolbar. Record, reset, or turn off each shortcut. The Shortcuts tab also lists the switcher's keys. Open at login, the menu bar icon, following macOS Light/Dark, and updates are under General. With that switch on, the current theme changes to its other look when macOS switches, for example at sunset. For updates, Check for Updates… asks now, and Scene also checks once a day. Updates come from this repository's releases, and Scene installs one only if its signature checks out. The private macOS calls for accent color, icon style, and Light/Dark are under Experimental.
 
 <br clear="right" />
 
+## Make a theme with an AI agent
+
+A skill is a folder of instructions that an AI coding agent loads when a task needs it. Scene's skill, [`create-scene-theme`](skills/create-scene-theme), teaches Claude Code, Codex, and other agents that read `SKILL.md` files to make a complete Scene theme: a palette for each look, three wallpapers per look, and the macOS accent and icon style.
+
+Install it with the [`skills`](https://github.com/vercel-labs/skills) command, which needs Node:
+
+```sh
+npx skills add InsaneArts/Scene --skill create-scene-theme -g
+```
+
+It finds the coding agents on your Mac and installs the skill for them. `-g` puts it in your home folder, so it works in every project. To choose the agents yourself, add `-a claude-code` or `-a codex`. `npx skills update` gets a newer version, and `npx skills remove create-scene-theme` removes it. Without Node, copy [`skills/create-scene-theme`](skills/create-scene-theme) into your agent's skills folder: `~/.claude/skills/` for Claude Code, or `~/.codex/skills/` for Codex.
+
+Then ask your agent for a theme, for example "Make a Scene theme of a foggy harbor at dawn, in dark and light." The agent asks only what it doesn't know yet, designs a readable palette, and finds or makes three wallpapers per look. Then it checks the theme, builds it, and installs it with Scene's command line:
+
+```sh
+/Applications/Scene.app/Contents/MacOS/Scene --check-theme draft.json
+/Applications/Scene.app/Contents/MacOS/Scene --build-theme draft.json my-theme --install
+```
+
+The theme shows in Scene's sidebar. The agent uses the same draft and checks as the Theme Maker, so its theme also opens in the Theme Maker for changes by hand. The built folder has a README with every credit, so you can put it on GitHub as it is, and anyone can install it with Add Theme → Install from GitHub. The skill needs a Scene that has the Theme Maker. It checks this first, and stops if Scene is older.
+
 ## Themes
 
-Scene comes with 21 themes built from Omarchy's palettes, from Tokyo Night to Catppuccin, Gruvbox, and Rosé Pine. A theme is a folder or a `.scenetheme` zip with `theme.json`, `wallpapers/`, and optional `apps/` overrides. Themes are data only: Scene never runs code from a theme. Importing an Omarchy theme folder takes its colors and backgrounds and ignores everything else.
+<p align="center">
+  <img src=".github/assets/themes.jpg" width="100%" alt="A wall of Scene's themes, captioned 75 themes." />
+</p>
 
-The backgrounds come from Omarchy and r/unixporn. `Themes/WALLPAPER_SOURCES.json` lists where each one comes from and what is known about its license. Most licenses are unknown, so check image rights before you distribute the app.
+Scene comes with 75 themes. 21 are built from Omarchy's palettes, from Tokyo Night to Catppuccin, Gruvbox, and Rosé Pine. The other 54 are Scene's own, drawn from computing, science, and design: Phosphor, Amber, Mainframe, Teletext, Blueprint, Deep Field, Primary, Safelight, and more, 19 of them with a light look. Four remix old painting styles with computing, and take their colors from their paintings: Cold Aisle (a data center under a swirling starry sky), Deprecated (a Dutch still life of floppy disks and a guttering candle), Rain Bridge (a woodblock rain scene), and Marginalia (bugs in the margins of a manuscript). A theme is a folder or a `.scenetheme` zip with `theme.json`, `wallpapers/`, and optional `apps/` overrides. Themes are data only: Scene never runs code from a theme. Importing an Omarchy theme, from a folder or from GitHub, takes its colors and backgrounds and ignores everything else.
+
+`Themes/WALLPAPER_SOURCES.json` lists where each background comes from and what is known about its license. The backgrounds of the Omarchy themes come from Omarchy and r/unixporn, and most of their licenses are unknown, so check image rights before you distribute the app. The backgrounds of Scene's own themes were generated for Scene with OpenAI's GPT Image, with the prompt recorded, or drawn with code from the theme's palette, with the command recorded.
 
 ## Development
 
@@ -98,7 +134,7 @@ open Scene.xcodeproj    # ⌘R runs the app, ⌘U runs the tests
 ./Scripts/test.sh       # the same 120 tests from the command line
 ```
 
-The core is a local package, `Packages/SceneKit`. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains how the code is written, [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) how to build, test, and release it, and [docs/STATUS.md](docs/STATUS.md) what is done and what is open. Agents start at [AGENTS.md](AGENTS.md).
+To make a theme, use the `scene-theme` skill in `.claude/skills/`. The core is a local package, `Packages/SceneKit`. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains how the code is written, [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) how to build, test, and release it, and [docs/STATUS.md](docs/STATUS.md) what is done and what is open. Agents start at [AGENTS.md](AGENTS.md).
 
 ## Credits
 

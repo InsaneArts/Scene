@@ -39,15 +39,17 @@ The app lands in `.build/Xcode/Build/Products/Debug/Scene.app`.
 
 | Target | Covers |
 |---|---|
-| SceneFoundationTests | ZIP, JSONC edits |
-| SceneThemesTests | Colors, validation, bundled themes (all 21 load, 3 wallpapers per look), library, import, export |
-| SceneRenderersTests | Output for each app |
+| SceneFoundationTests | ZIP, JSONC edits, TOML-style key edits |
+| SceneThemesTests | Colors, validation, bundled themes (all load, 3 wallpapers per look), library, import, export, install from GitHub, search, icon styles |
+| SceneRenderersTests | Output for each app. Where the app is installed, its own parser reads the output in a throwaway folder: Ghostty, VS Code, Neovim, kitty (`kitty +runpy`), tmux (a private server, `-L`), bat and delta. A Python with `tomllib` checks the Alacritty and Helix TOML |
 | SceneEngineTests | The experimental tier with fake helpers |
 | SceneIntegrationsTests | Apply, verify, rollback, undo, restore, and backgrounds against fixture home folders |
 | SceneSwitcherTests | Carousel selection and shortcut rules |
 | SceneLiveTests | The real Mac. Opt-in, and not in the scheme |
 
-`./Scripts/test.sh` runs everything except SceneLiveTests through the Scene scheme. `swift test --package-path Packages/SceneKit` runs the same tests with Swift Package Manager (with `DEVELOPER_DIR` set).
+The theme command line runs from a Debug build without a window: `.build/Xcode/Build/Products/Debug/Scene.app/Contents/MacOS/Scene --check-theme draft.json` (see ARCHITECTURE.md → Command line). Leave out `--install` unless the user agrees, because it adds the theme to their Scene library.
+
+`./Scripts/test.sh` runs everything except SceneLiveTests through the Scene scheme. Two more tests are opt-in and change nothing on the Mac: `SCENE_NETWORK=1` downloads a real theme repository into a throwaway library (`SCENE_NETWORK_REPO=owner/repo` picks it, default `bjarneo/omarchy-aura-theme`), and `SCENE_OMARCHY_CORPUS=<folder>` imports every `colors.toml` in a folder. `swift test --package-path Packages/SceneKit` runs the same tests with Swift Package Manager (with `DEVELOPER_DIR` set).
 
 These change the real Mac, so run them only when the user agrees:
 
@@ -69,28 +71,51 @@ open -W -n -g -a "$PWD/.build/Xcode/Build/Products/Debug/Scene.app" \
 - `SCENE_SNAPSHOT_THEME=<theme id>` (for example `scene/tokyo-night`) picks the theme for the theme page, the Apply sheet, and the carousel.
 - `SCENE_SNAPSHOT_APPEARANCE=light` or `dark` renders Scene in that look, whatever macOS uses.
 - `-ApplePersistenceIgnoreState YES` makes the main window open even when it was closed last time.
-- The snapshot copy shares the user's settings. To render a default value, pass it in the argument domain instead of writing it, for example `-switcherShortcut "<hex of the JSON>"`.
+- The snapshot copy shares the user's settings. To render a default value, pass it in the argument domain instead of writing it, for example `-switcherShortcut "<hex of the JSON>"`, or favorites with `-favoriteThemes '("scene/nord", "scene/tokyo-night")'`.
 - The main window keeps the user's saved size. If macOS tiled it, it keeps the tile's size too.
 
-Files are named `<step>-<window index>.png`: `1-theme`, `2-other-look` (the theme's other variant), `3-background-picked`, `4-apply-plan` (the window with its sheet), `5-apps`, `6-history`, `7-carousel`, `8-menu-bar`, and `9-settings-<tab>`, then `10-switcher` and `11-switcher-moved` when the real switcher runs. The carousel and the menu bar panel render in windows of their own. Scene runs in the background, so windows show their inactive look: gray sidebar text and gray standard buttons. The images in `.github/assets` come from these renders.
+Files are named `<step>-<window index>.png`: `1-theme`, `2-other-look` (the theme's other variant), `3-background-picked`, `4-apply-plan` (the window with its sheet, and the sheet alone as `4-apply-plan-0-sheet`), `5-apps`, `6-history`, `12-search` (the sidebar searching "night"), `13-github` (the Install from GitHub sheet), `7-carousel`, `7-carousel-search` (the carousel searching "ro"), `8-menu-bar`, `14-maker` (the Theme Maker, started from the chosen theme), `15-icon-styles` (the Theme Maker's Dock in all four icon styles, on the chosen theme's look), and `9-settings-<tab>`, then `10-switcher` and `11-switcher-moved` when the real switcher runs. The carousel and the menu bar panel render in windows of their own. Scene runs in the background, so windows show their inactive look: gray sidebar text and gray standard buttons. The PNG screenshots in `.github/assets` come from these renders. The JPEG images are frames of the product film, from `node Marketing/film/render.mjs readme`.
 
 ## Bundled themes
 
 `Themes/<folder>/theme.json` is generated. Don't edit it by hand. Change the inputs and run the script:
 
-- `Scripts/make-bundled-themes.py`: theme names, summaries, and how Omarchy's colors map to Scene's roles.
-- `Scripts/omarchy-palettes/*.toml`: the palettes, from Omarchy v4.0.4 (MIT).
-- `Themes/WALLPAPER_SOURCES.json`: one entry per image, with its theme, variant, `order`, file, source, author, license, sha256, and size.
+- `Scripts/make-bundled-themes.py`: the Omarchy themes' names and summaries, and how a palette maps to Scene's roles.
+- `Scripts/omarchy-palettes/*.toml`: Omarchy's palettes, from Omarchy v4.0.4 (MIT), unchanged.
+- `Scripts/scene-palettes/<folder>/`: Scene's own themes, one folder each (`theme.toml`, `dark.toml`, `light.toml`). The format is in that folder's README.
+- `Themes/WALLPAPER_SOURCES.json`: one entry per image, with its theme, variant, `order`, file, source, author, license, attribution, sha256, and size, plus the prompt or the command for a generated image.
 
 ```sh
 python3 Scripts/make-bundled-themes.py
 ```
 
-A theme must stay under the 40 MB package limit. The bundled-theme test loads all 21 themes through the validator and requires 3 wallpapers per look.
+A theme must stay under the 40 MB package limit. The bundled-theme test loads every theme through the validator, checks the count in `bundlesEveryTheme`, and requires 3 wallpapers per look.
+
+To make a theme, use the `scene-theme` skill (`.claude/skills/scene-theme/`). Its scripts also work on their own:
+
+| Script | Does |
+|---|---|
+| `check-palette.py` | Checks contrast and hue spacing; `--table` shows each role's OKLCH |
+| `make-wallpaper.py` | Draws a wallpaper from a palette with code (15 styles) |
+| `generate-wallpaper.py` | Generates one with OpenAI's image API, in a palette's colors or in its own, optionally in the style of earlier wallpapers; needs `OPENAI_API_KEY` |
+| `recolor-wallpaper.py` | Pulls an image into a palette |
+| `palette-from-image.py` | Derives a palette from a picture, for a theme that starts from its art |
+| `add-wallpaper.py` | Checks an image, writes it into `Themes/` (as HEIC through macOS's `sips`, or PNG), and records its provenance |
+
+`themekit.py` holds what they share: reading palettes, and the color math.
 
 ## Release
 
-Bump `BUILD_NUMBER` in `version.env` first. `./Scripts/release.sh` makes a distributable build. It follows the same steps as FindSFSymbols and Jolt: a universal (arm64 and x86_64) build, Developer ID signing (Techzy LLC, 539293JFA3) with hardened runtime and a secure timestamp, notarization with the `camus-notary` keychain profile, stapling, a Gatekeeper check, and `dist/Scene-<version>.zip`. It publishes nothing.
+Bump `BUILD_NUMBER` in `version.env` first, and write the release notes in `releases/<version>.md`: Sparkle shows them in its update window. `./Scripts/release.sh` makes a distributable build. It follows the same steps as FindSFSymbols and Jolt: a universal (arm64 and x86_64) build, Developer ID signing (Techzy LLC, 539293JFA3) with hardened runtime and a secure timestamp, Sparkle's helpers signed the same way, notarization with the `camus-notary` keychain profile, stapling, a Gatekeeper check, and `dist/Scene-<version>.zip`. Like WorldClock, it then checks that the Keychain's Sparkle key matches `SUPublicEDKey`, writes `dist/appcast.xml`, signs it, and verifies the feed's and the zip's signatures. It publishes nothing.
+
+**Publishing** is the user's step, and it needs the repository to be public. The feed URL reads `appcast.xml` from the latest release, so both files go on the release:
+
+```sh
+gh release create v<version> dist/Scene-<version>.zip dist/appcast.xml --repo InsaneArts/Scene \
+  --title "Scene <version>" --notes-file releases/<version>.md
+```
+
+**The Sparkle key.** The private key was created on Sep 30, 2026 with `generate_keys --account Scene` and lives only in the login Keychain. Without it, no later update can be signed, and people would have to download Scene again by hand. Back it up to a safe place with `.build/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys --account Scene -x <file>`, and import it on another Mac with `-f <file>`. The tools appear after the first build resolves the Sparkle package.
 
 Notarization sends the app to Apple, so ask the user before running it. On Sep 28 the preflight failed from an agent session with "No Keychain password item found for profile: camus-notary", although builds 1 to 3 were notarized with that profile earlier that day. If that happens, the user runs `./Scripts/release.sh` in their own terminal.
 
@@ -101,9 +126,9 @@ Scene.xcodeproj           the app target Scene and the helper target scene-tweak
 Sources/Scene             SwiftUI app
 Sources/SceneTweak        scene-tweak helper for experimental private calls (Swift 5 mode)
 Packages/SceneKit         the core as a local package, no UI
-  SceneFoundation         ZIP, JSONC, safe file writes, processes
-  SceneThemes             theme model, validation, library, Omarchy import
-  SceneRenderers          theme files for Ghostty, iTerm2, VS Code, and Neovim
+  SceneFoundation         ZIP, JSONC and TOML-style edits, safe file writes, processes
+  SceneThemes             theme model, validation, library, Omarchy import, GitHub install, drafts, the theme command line
+  SceneRenderers          theme files for each app
   SceneEngine             plan, apply, journal, ledger, restore, system services
   SceneIntegrations       one integration per app or system setting
   SceneSwitcher           carousel selection and shortcut rules
@@ -112,7 +137,10 @@ Config/                   Info.plist keys, entitlements, Version.xcconfig (reads
 Assets/Scene.icon         app icon (Icon Composer format)
 Themes/                   bundled themes (generated)
 Scripts/                  test, package, release, theme generation, private-call check
+releases/                 release notes, one Markdown file per version, for Sparkle's update window
+skills/create-scene-theme the skill that lets an AI agent make a theme for a Scene user
 .github/assets/           README images
+Marketing/film/           the 30-second product film, rendered from HTML (see its README)
 docs/                     this file, ARCHITECTURE.md, STATUS.md, the original research
 ```
 

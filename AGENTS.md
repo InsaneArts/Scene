@@ -32,9 +32,10 @@ Scene is a native macOS app that gives the desktop, terminals, and code editors 
 - **Private macOS calls** live only in the `scene-tweak` helper and run only on builds in `TweakCatalog.testedBuilds`. Add a macOS build there only after `Scripts/verify-tweaks.sh` passes on it.
 - **Modules.** Dependencies go one way (see ARCHITECTURE.md). Anything used across modules must be `public`. SceneIntegrations declares `typealias Operation = SceneEngine.Operation`, because Foundation has an `Operation` too.
 - **Swift.** Swift 6 language mode everywhere except `scene-tweak`, which uses Swift 5 mode because it works with raw C function pointers.
-- **Bundled themes are generated.** Edit `Scripts/make-bundled-themes.py`, `Scripts/omarchy-palettes/`, or `Themes/WALLPAPER_SOURCES.json`, then run the script. Don't edit `Themes/*/theme.json` by hand.
+- **Bundled themes are generated.** Edit `Scripts/make-bundled-themes.py`, `Scripts/scene-palettes/`, or `Themes/WALLPAPER_SOURCES.json` (through `Scripts/add-wallpaper.py`), then run the script. Don't edit `Themes/*/theme.json` by hand, and leave `Scripts/omarchy-palettes/` as Omarchy ships it. The `scene-theme` skill (`.claude/skills/scene-theme/`) makes new themes.
 - **Global shortcuts** use Carbon `RegisterEventHotKey`, with id 1 for the switcher and id 2 for Next Background. A shortcut needs ⌘ or ⌃, because macOS 15 and later refuse Option-only ones.
 - **Wallpapers.** Each copy gets its own file name, because Scene verifies a display's wallpaper by its path.
+- **Updates.** Sparkle's feed URL and public key are in `Config/Scene-Info.plist`. The private key lives only in the release Mac's Keychain, account `Scene`; never commit it. Publishing a GitHub release is the user's step (DEVELOPMENT.md → Release).
 
 ## Commands
 
