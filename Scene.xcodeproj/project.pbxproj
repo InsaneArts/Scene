@@ -10,8 +10,10 @@
 		02263FC239D8343D99BC10CC /* SceneThemes in Frameworks */ = {isa = PBXBuildFile; productRef = 4F6CDBD46E76A88CB730E414 /* SceneThemes */; };
 		0238398469C01CAF44AE4BD8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BF2F275E0C65BD5CE1F976 /* ContentView.swift */; };
 		1252C52606D83D82CE74B56C /* Design.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF1411577C7BB3B75155FF7 /* Design.swift */; };
+		CFE544E30970723278F20EC4 /* Updater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B233577823BBB4ABA9D61CD /* Updater.swift */; };
 		0F9913F1EA756E8B848D279B /* OtherViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FF52109108822145DB4385 /* OtherViews.swift */; };
 		1B30168CDE4BB628548D0245 /* ThemeSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EC82A95544EFDE9084DAC2 /* ThemeSwitcher.swift */; };
+		1A130C525464C3D64B203536 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 745F46EE1C0C5D5D8CF950CC /* Sparkle */; };
 		22EAAB0F27C1670F4EA07968 /* SceneEngine in Frameworks */ = {isa = PBXBuildFile; productRef = D3CCECB6AC74ECDDC4F9D623 /* SceneEngine */; };
 		3173B7F164444D9B6B0189A5 /* SceneSwitcher in Frameworks */ = {isa = PBXBuildFile; productRef = 46ED1507DBFD03994F90AD99 /* SceneSwitcher */; };
 		51EBE14BE7C14193252265D2 /* scene-tweak in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = 9BFF67339310ED4F6B33B3F1 /* scene-tweak */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -67,6 +69,7 @@
 		D4FF52109108822145DB4385 /* OtherViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherViews.swift; sourceTree = "<group>"; };
 		D6BF2F275E0C65BD5CE1F976 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FDF1411577C7BB3B75155FF7 /* Design.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Design.swift; sourceTree = "<group>"; };
+		1B233577823BBB4ABA9D61CD /* Updater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Updater.swift; sourceTree = "<group>"; };
 		D7C998E8AD87251C18BAB3D7 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		E553453C68145F53394C3792 /* SceneKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SceneKit; path = Packages/SceneKit; sourceTree = SOURCE_ROOT; };
 		E5EC82A95544EFDE9084DAC2 /* ThemeSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeSwitcher.swift; sourceTree = "<group>"; };
@@ -82,6 +85,7 @@
 				90D5A3B665E0FB6147E066D9 /* SceneIntegrations in Frameworks */,
 				3173B7F164444D9B6B0189A5 /* SceneSwitcher in Frameworks */,
 				02263FC239D8343D99BC10CC /* SceneThemes in Frameworks */,
+				1A130C525464C3D64B203536 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +107,7 @@
 				FCC92D32B808C6057CE7CA34 /* AppModel.swift */,
 				D6BF2F275E0C65BD5CE1F976 /* ContentView.swift */,
 				FDF1411577C7BB3B75155FF7 /* Design.swift */,
+				1B233577823BBB4ABA9D61CD /* Updater.swift */,
 				820BBEF88B9676D9B4CF1FCC /* HotKey.swift */,
 				D4FF52109108822145DB4385 /* OtherViews.swift */,
 				3ED43E32D004752FF7850F5D /* Previews.swift */,
@@ -209,6 +214,7 @@
 				5D84E217BDBC0B8DD205C2C3 /* SceneIntegrations */,
 				46ED1507DBFD03994F90AD99 /* SceneSwitcher */,
 				4F6CDBD46E76A88CB730E414 /* SceneThemes */,
+				745F46EE1C0C5D5D8CF950CC /* Sparkle */,
 			);
 			productName = Scene;
 			productReference = BA223A26CEEFFBF35D00B1B1 /* Scene.app */;
@@ -242,6 +248,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				DB48B33491A16FA5F5AF51F3 /* XCLocalSwiftPackageReference "Packages/SceneKit" */,
+				4093F3E108F3190D446BDDCD /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F4E8E1C3ADAC039ABB0CB6FA /* Products */;
@@ -275,6 +282,7 @@
 				C98307B23AA5234FD59E8A28 /* ApplySheet.swift in Sources */,
 				0238398469C01CAF44AE4BD8 /* ContentView.swift in Sources */,
 				1252C52606D83D82CE74B56C /* Design.swift in Sources */,
+				CFE544E30970723278F20EC4 /* Updater.swift in Sources */,
 				BE582C16F19C83AF152C206F /* HotKey.swift in Sources */,
 				0F9913F1EA756E8B848D279B /* OtherViews.swift in Sources */,
 				9E5535321A4ED19987AC6C37 /* Previews.swift in Sources */,
@@ -554,6 +562,17 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		4093F3E108F3190D446BDDCD /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		46ED1507DBFD03994F90AD99 /* SceneSwitcher */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -570,6 +589,11 @@
 		D3CCECB6AC74ECDDC4F9D623 /* SceneEngine */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SceneEngine;
+		};
+		745F46EE1C0C5D5D8CF950CC /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4093F3E108F3190D446BDDCD /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -70,6 +70,13 @@ for library in "$APP/Contents/MacOS/"*.dylib; do
   [[ -f "$library" ]] || continue
   codesign "${CODESIGN_ARGS[@]}" "$library"
 done
+# Sparkle's helpers, inside out, as Sparkle's documentation signs them. The downloader keeps its entitlements.
+SPARKLE="$APP/Contents/Frameworks/Sparkle.framework"
+codesign "${CODESIGN_ARGS[@]}" "$SPARKLE/Versions/B/XPCServices/Installer.xpc"
+codesign "${CODESIGN_ARGS[@]}" --preserve-metadata=entitlements "$SPARKLE/Versions/B/XPCServices/Downloader.xpc"
+codesign "${CODESIGN_ARGS[@]}" "$SPARKLE/Versions/B/Autoupdate"
+codesign "${CODESIGN_ARGS[@]}" "$SPARKLE/Versions/B/Updater.app"
+codesign "${CODESIGN_ARGS[@]}" "$SPARKLE"
 codesign "${CODESIGN_ARGS[@]}" "$APP/Contents/Helpers/scene-tweak"
 codesign "${CODESIGN_ARGS[@]}" --entitlements "$ROOT/Config/Scene.entitlements" "$APP"
 codesign --verify --deep --strict "$APP"

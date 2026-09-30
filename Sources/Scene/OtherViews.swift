@@ -254,7 +254,7 @@ struct SettingsView: View {
         @Bindable var model = model
         // The window takes each tab's size, so each tab fits its content without scrolling.
         TabView(selection: $model.settingsTab) {
-            GeneralSettings().frame(width: 540, height: 190).tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
+            GeneralSettings().frame(width: 540, height: 440).tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
             ShortcutSettings().frame(width: 540, height: 440).tabItem { Label("Shortcuts", systemImage: "keyboard") }.tag(SettingsTab.shortcuts)
             ExperimentalSettings().frame(width: 540, height: 330).tabItem { Label("Experimental", systemImage: "flask") }.tag(SettingsTab.experimental)
         }
@@ -266,6 +266,7 @@ struct GeneralSettings: View {
 
     var body: some View {
         @Bindable var model = model
+        @Bindable var updater = Updater.shared
         Form {
             Section {
                 Toggle("Open Scene at login", isOn: Binding(get: { _ = model.loginItemVersion; return model.openAtLogin }, set: { model.openAtLogin = $0 }))
@@ -273,6 +274,16 @@ struct GeneralSettings: View {
             } footer: {
                 Text("The shortcuts work while Scene runs. Scene keeps running after you close its window. Choose which apps a theme changes on the Apps page of the main window.")
                     .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Updates") {
+                LabeledContent {
+                    Button("Check for Updates…") { updater.checkForUpdates() }
+                        .disabled(!updater.canCheckForUpdates)
+                } label: {
+                    Text("Scene \(Updater.version)")
+                    Text(updater.lastChecked.map { "Last checked \($0.formatted(.relative(presentation: .named)))." } ?? "Not checked yet.")
+                }
+                Toggle("Check for updates automatically", isOn: $updater.checksAutomatically)
             }
         }
         .formStyle(.grouped)

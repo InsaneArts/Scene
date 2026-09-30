@@ -8,7 +8,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        MainActor.assumeIsolated { ThemeSwitcher.shared.model?.registerShortcuts() }
+        MainActor.assumeIsolated {
+            ThemeSwitcher.shared.model?.registerShortcuts()
+            Updater.shared.start()
+        }
     }
 }
 
@@ -37,6 +40,10 @@ struct SceneApp: App {
         .defaultSize(width: 1180, height: 800)
         .windowToolbarStyle(.unified(showsTitle: false))
         .commands {
+            CommandGroup(after: .appInfo) {
+                Button("Check for Updates…") { Updater.shared.checkForUpdates() }
+                    .disabled(!Updater.shared.canCheckForUpdates)
+            }
             CommandGroup(after: .newItem) {
                 Button("Switch Theme…" + model.switcherShortcut.menuSuffix) { ThemeSwitcher.shared.show() }
                 Button("Next Background" + model.nextBackgroundShortcut.menuSuffix) { Task { await model.nextBackground() } }
