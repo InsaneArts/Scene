@@ -11,6 +11,7 @@
 		0238398469C01CAF44AE4BD8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BF2F275E0C65BD5CE1F976 /* ContentView.swift */; };
 		1252C52606D83D82CE74B56C /* Design.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF1411577C7BB3B75155FF7 /* Design.swift */; };
 		CFE544E30970723278F20EC4 /* Updater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B233577823BBB4ABA9D61CD /* Updater.swift */; };
+		7A3F2C9E5B1D4E8F90A1B2C3 /* ThemeMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4E3D0F6C2E5F9A01B2C3D4 /* ThemeMaker.swift */; };
 		0F9913F1EA756E8B848D279B /* OtherViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FF52109108822145DB4385 /* OtherViews.swift */; };
 		1B30168CDE4BB628548D0245 /* ThemeSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EC82A95544EFDE9084DAC2 /* ThemeSwitcher.swift */; };
 		1A130C525464C3D64B203536 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 745F46EE1C0C5D5D8CF950CC /* Sparkle */; };
@@ -70,6 +71,7 @@
 		D6BF2F275E0C65BD5CE1F976 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FDF1411577C7BB3B75155FF7 /* Design.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Design.swift; sourceTree = "<group>"; };
 		1B233577823BBB4ABA9D61CD /* Updater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Updater.swift; sourceTree = "<group>"; };
+		8B4E3D0F6C2E5F9A01B2C3D4 /* ThemeMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeMaker.swift; sourceTree = "<group>"; };
 		D7C998E8AD87251C18BAB3D7 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		E553453C68145F53394C3792 /* SceneKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SceneKit; path = Packages/SceneKit; sourceTree = SOURCE_ROOT; };
 		E5EC82A95544EFDE9084DAC2 /* ThemeSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeSwitcher.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 				D6BF2F275E0C65BD5CE1F976 /* ContentView.swift */,
 				FDF1411577C7BB3B75155FF7 /* Design.swift */,
 				1B233577823BBB4ABA9D61CD /* Updater.swift */,
+				8B4E3D0F6C2E5F9A01B2C3D4 /* ThemeMaker.swift */,
 				820BBEF88B9676D9B4CF1FCC /* HotKey.swift */,
 				D4FF52109108822145DB4385 /* OtherViews.swift */,
 				3ED43E32D004752FF7850F5D /* Previews.swift */,
@@ -283,6 +286,7 @@
 				0238398469C01CAF44AE4BD8 /* ContentView.swift in Sources */,
 				1252C52606D83D82CE74B56C /* Design.swift in Sources */,
 				CFE544E30970723278F20EC4 /* Updater.swift in Sources */,
+				7A3F2C9E5B1D4E8F90A1B2C3 /* ThemeMaker.swift in Sources */,
 				BE582C16F19C83AF152C206F /* HotKey.swift in Sources */,
 				0F9913F1EA756E8B848D279B /* OtherViews.swift in Sources */,
 				9E5535321A4ED19987AC6C37 /* Previews.swift in Sources */,

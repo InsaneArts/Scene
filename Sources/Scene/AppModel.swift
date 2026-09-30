@@ -58,6 +58,14 @@ final class AppModel {
     var searchText = ""
     /// The Install from GitHub sheet is open.
     var installingFromGitHub = false
+    /// The theme in the Theme Maker.
+    var draft: ThemeDraft?
+    /// The Theme Maker's sliders for each look. They make the draft's colors.
+    var draftEdits: [Appearance: PaletteEdit] = [:]
+    /// The author name the Theme Maker fills in.
+    var themeAuthor: String {
+        didSet { UserDefaults.standard.set(themeAuthor, forKey: "themeAuthor") }
+    }
     /// The wallpaper you picked for each theme and appearance, by file name. Keys are "<theme id>#<appearance>".
     var backgroundChoices: [String: String] {
         didSet { UserDefaults.standard.set(backgroundChoices, forKey: "backgroundChoices") }
@@ -122,6 +130,7 @@ final class AppModel {
         favoriteThemes = Set(defaults.stringArray(forKey: "favoriteThemes") ?? [])
         themeSources = defaults.dictionary(forKey: "themeSources") as? [String: String] ?? [:]
         followSystemAppearance = defaults.bool(forKey: "followSystemAppearance")
+        themeAuthor = defaults.string(forKey: "themeAuthor") ?? NSFullUserName()
         backgroundChoices = defaults.dictionary(forKey: "backgroundChoices") as? [String: String] ?? [:]
         switcherShortcut = Self.loadShortcut("switcherShortcut", default: .omarchyDefault)
         nextBackgroundShortcut = Self.loadShortcut("nextBackgroundShortcut", default: .nextBackgroundDefault)
@@ -324,6 +333,75 @@ final class AppModel {
             themeSources[theme.id] = nil
             await reload()
         } catch { alert = "\(error)" }
+    }
+
+    // MARK: Theme Maker
+
+    /// Opens a theme in the Theme Maker. Scene's own themes and other authors' themes start as a copy.
+    func startDraft(from theme: Theme) {
+        let draft = ThemeDraft(theme: theme, author: themeAuthor)
+        self.draft = draft
+        draftEdits = Dictionary(uniqueKeysWithValues: draft.looks.map { ($0.appearance, PaletteEdit(colors: $0.look.colors, appearance: $0.appearance)) })
+    }
+
+    /// Changes a look's sliders or hand-set colors, and puts the colors they make into the draft.
+    func editLook(_ appearance: Appearance, _ change: (inout PaletteEdit) -> Void) {
+        guard var edit = draftEdits[appearance], var look = draft?.look(appearance) else { return }
+        change(&edit)
+        draftEdits[appearance] = edit
+        look.colors = edit.colors
+        draft?.setLook(look, for: appearance)
+    }
+
+    /// Turns a look on, from a calm starting palette, or off.
+    func setLook(_ appearance: Appearance, on: Bool) {
+        if on {
+            let edit = PaletteEdit(recipe: .starting(appearance))
+            draftEdits[appearance] = edit
+            draft?.setLook(ThemeDraft.Look(colors: edit.colors, iconStyle: appearance == .dark ? "dark" : "default"), for: appearance)
+        } else {
+            draftEdits[appearance] = nil
+            draft?.setLook(nil, for: appearance)
+        }
+    }
+
+    /// Builds the Theme Maker's theme and adds it to Scene. Returns nil when it worked, otherwise the reason.
+    func saveDraft() async -> String? {
+        guard let draft else { return nil }
+        let scratch = FileManager.default.temporaryDirectory.appendingPathComponent("scene-maker-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: scratch) }
+        do {
+            try draft.write(to: scratch.appendingPathComponent(draft.folderName))
+            let theme = try library.importPackage(at: scratch.appendingPathComponent(draft.folderName))
+            themeAuthor = draft.author
+            await reload()
+            selectedThemeID = theme.id
+            return nil
+        } catch let error as ThemeLoadError {
+            return error.errors.prefix(8).joined(separator: "\n")
+        } catch {
+            return "\(error)"
+        }
+    }
+
+    /// Writes the Theme Maker's theme as a folder in `parent`, ready to put on GitHub, and returns the folder.
+    func exportDraft(to parent: URL) throws -> URL {
+        guard let draft else { return parent }
+        let folder = parent.appendingPathComponent(draft.folderName)
+        try draft.write(to: folder)
+        themeAuthor = draft.author
+        return folder
+    }
+
+    /// Posted by `Scene --build-theme … --install` after it adds a theme, so a running Scene shows it.
+    static let libraryChanged = Notification.Name("com.insanearts.scene.library-changed")
+    @ObservationIgnored private var libraryObserver: NSObjectProtocol?
+
+    func startWatchingLibrary() {
+        guard libraryObserver == nil, Snapshot.folder == nil else { return }
+        libraryObserver = DistributedNotificationCenter.default().addObserver(forName: Self.libraryChanged, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in await self?.reload() }
+        }
     }
 
     /// Downloads a theme from a GitHub repository and installs it. Returns nil when it worked, otherwise the reason.

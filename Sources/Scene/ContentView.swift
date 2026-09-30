@@ -40,6 +40,8 @@ struct ContentView: View {
                     Button { ThemeSwitcher.shared.show() } label: { Label("Switch Theme", systemImage: "rectangle.on.rectangle.angled") }
                         .help("Show every theme over the screen" + model.switcherShortcut.menuSuffix)
                     Menu {
+                        NewThemeButton()
+                        Divider()
                         Button("Import File or Folder…") { importing = true }
                         Button("Install from GitHub…") { model.installingFromGitHub = true }
                     } label: { Label("Add Theme", systemImage: "square.and.arrow.down") }
@@ -166,11 +168,13 @@ struct ThemeRow: View {
 
 struct ThemeActions: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.openWindow) private var openWindow
     let theme: Theme
     @Binding var applying: Theme?
 
     var body: some View {
         Button("Apply…") { applying = theme }
+        Button("Open in Theme Maker") { model.startDraft(from: theme); openWindow(id: "maker") }
         Button(model.favoriteThemes.contains(theme.id) ? "Remove from Favorites" : "Add to Favorites") { model.toggleFavorite(theme) }
         Button("Export…") { export() }
         if let source = model.themeSources[theme.id], let url = URL(string: source) {
@@ -324,7 +328,7 @@ struct ThemeCredits: View {
         let m = theme.manifest
         let asset = m.assets?.first { $0.file == "wallpapers/\(wallpaper?.name ?? "")" }
         VStack(alignment: .leading, spacing: 8) {
-            Label("By \(m.authors.map(\.name).joined(separator: ", ")) · \(Self.license(m.license)) · Version \(m.version)" + (theme.isBundled ? "" : " · Installed"),
+            Label("By \(m.authors.map(\.name).joined(separator: ", ")) · Version \(m.version)" + (theme.isBundled ? "" : " · Installed"),
                   systemImage: "person.2")
             if let source = model.themeSources[theme.id], let url = URL(string: source) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -339,7 +343,7 @@ struct ThemeCredits: View {
             }
             if let asset {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Label("Wallpaper: \(asset.attribution ?? asset.file) · \(Self.license(asset.license))", systemImage: "photo").lineLimit(2)
+                    Label("Wallpaper: \(asset.attribution ?? asset.file)", systemImage: "photo").lineLimit(2)
                     if let source = asset.source, let url = URL(string: source) { Link("Source", destination: url) }
                 }
             }
@@ -347,15 +351,6 @@ struct ThemeCredits: View {
         .font(.callout)
         .foregroundStyle(.secondary)
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    /// An SPDX license id in words: "NOASSERTION" means nobody stated one.
-    static func license(_ id: String) -> String {
-        switch id {
-        case "NOASSERTION": return "license unknown"
-        case "LicenseRef-PublicDomain": return "public domain"
-        default: return id.hasPrefix("LicenseRef-") ? id.dropFirst("LicenseRef-".count) + " license" : id
-        }
     }
 }
 
@@ -431,6 +426,19 @@ struct GitHubInstallSheet: View {
             error = await model.installFromGitHub(text)
             working = false
             if error == nil { dismiss() }
+        }
+    }
+}
+
+/// Opens the Theme Maker, starting from the theme on screen.
+struct NewThemeButton: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button("New Theme…") {
+            if let theme = model.selectedTheme ?? model.themes.first { model.startDraft(from: theme) }
+            openWindow(id: "maker")
         }
     }
 }

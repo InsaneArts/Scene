@@ -32,17 +32,26 @@ public enum ThemeLoader {
 
     public static func load(folder: URL, isBundled: Bool = false, limits: Limits = .init()) throws -> Theme {
         var errors: [String] = []
-        var warnings: [String] = []
+        let warnings: [String] = []
 
         // Layer 1: container.
         try checkContainer(folder: folder, limits: limits, errors: &errors)
         guard errors.isEmpty else { throw ThemeLoadError(errors: errors, warnings: warnings) }
 
+        return try load(manifest: Data(contentsOf: folder.appendingPathComponent("theme.json")), folder: folder, isBundled: isBundled,
+                        limits: limits, warnings: warnings)
+    }
+
+    /// Layers 2 to 4 for a theme.json already in memory. The Theme Maker's preview uses it on every change,
+    /// with no wallpapers and no files.
+    static func load(manifest data: Data, folder: URL, isBundled: Bool = false, limits: Limits = .init(),
+                     warnings: [String] = []) throws -> Theme {
+        var errors: [String] = []
+        var warnings = warnings
+
         // Layer 2: schema.
-        let manifestURL = folder.appendingPathComponent("theme.json")
         let manifest: ThemeManifest
         do {
-            let data = try Data(contentsOf: manifestURL)
             manifest = try JSONDecoder().decode(ThemeManifest.self, from: data)
         } catch let error as DecodingError {
             throw ThemeLoadError(errors: ["theme.json: \(describe(error))"], warnings: [])

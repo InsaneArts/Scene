@@ -1,4 +1,5 @@
 import ImageIO
+import SceneEngine
 import SceneThemes
 import SwiftUI
 import UniformTypeIdentifiers
@@ -11,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         MainActor.assumeIsolated {
             ThemeSwitcher.shared.model?.registerShortcuts()
             ThemeSwitcher.shared.model?.startFollowingAppearance()
+            ThemeSwitcher.shared.model?.startWatchingLibrary()
             Updater.shared.start()
         }
     }
@@ -22,6 +24,8 @@ struct SceneApp: App {
     @State private var model: AppModel
 
     init() {
+        // `Scene --check-theme` and `Scene --build-theme` run the theme command line and quit before any window opens.
+        if let status = ThemeTool.run(CommandLine.arguments, install: Self.install, print: { print($0) }) { exit(status) }
         // Limit ImageIO to the formats themes may contain, for the lifetime of the process.
         if #available(macOS 14.2, *) {
             CGImageSourceSetAllowableTypes([UTType.png.identifier, UTType.jpeg.identifier, UTType.heic.identifier] as CFArray)
@@ -29,6 +33,14 @@ struct SceneApp: App {
         let model = AppModel()
         ThemeSwitcher.shared.model = model
         _model = State(initialValue: model)
+    }
+
+    /// Adds a theme folder built on the command line to the library, and tells a running Scene to show it.
+    static func install(_ folder: URL) throws {
+        let library = ThemeLibrary(bundledFolder: Locations.bundledThemes,
+                                   installedFolder: SceneEnvironment.live().appSupport.appendingPathComponent("Themes"))
+        try library.importPackage(at: folder)
+        DistributedNotificationCenter.default().postNotificationName(AppModel.libraryChanged, object: nil, userInfo: nil, deliverImmediately: true)
     }
 
     var body: some Scene {
@@ -46,6 +58,8 @@ struct SceneApp: App {
                     .disabled(!Updater.shared.canCheckForUpdates)
             }
             CommandGroup(after: .newItem) {
+                // Commands sit outside the window's views, so the model is passed in.
+                NewThemeButton().environment(model)
                 Button("Install Theme from GitHub…") { model.installingFromGitHub = true }
                 Divider()
                 Button("Switch Theme…" + model.switcherShortcut.menuSuffix) { ThemeSwitcher.shared.show() }
@@ -56,6 +70,12 @@ struct SceneApp: App {
                     .disabled(model.history.isEmpty)
             }
         }
+
+        Window("Theme Maker", id: "maker") {
+            ThemeMakerView().environment(model)
+                .frame(minWidth: 1100, minHeight: 740)
+        }
+        .defaultSize(width: 1320, height: 880)
 
         Settings {
             SettingsView().environment(model)

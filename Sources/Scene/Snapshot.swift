@@ -90,6 +90,18 @@ enum Snapshot {
         searching.query = "ro"
         await show(ThemeCarouselView(state: searching, onApply: {}, onClose: {}), size: NSSize(width: 1600, height: 900), style: [.borderless], name: "7-carousel-search")
         await show(MenuBarView().environment(model), size: NSSize(width: 364, height: 590), style: [.titled], name: "8-menu-bar")
+        // The Theme Maker, started from the chosen theme. Nothing is saved.
+        if let chosen { model.startDraft(from: chosen) }
+        await show(ThemeMakerView().environment(model), size: NSSize(width: 1320, height: 880), style: [.titled], name: "14-maker")
+        model.draft = nil
+        // The Theme Maker's Dock in all four icon styles, on the chosen theme's look. No bundled theme uses Clear.
+        if let chosen, let look = chosen.variants[.dark] ?? chosen.variants[.light] {
+            let looks = IconStyle.allCases.map { style in var copy = look; copy.system.iconStyle = style; return copy }
+            let grid = LazyVGrid(columns: [GridItem(), GridItem()], spacing: 12) {
+                ForEach(Array(looks.enumerated()), id: \.offset) { DesktopPreview(variant: $0.element, wallpaper: model.wallpaper(for: look)?.url, showsSystem: true) }
+            }
+            await show(grid.padding(12).frame(width: 1400, height: 900), size: NSSize(width: 1400, height: 900), style: [.borderless], name: "15-icon-styles")
+        }
         // The Settings window, one tab at a time.
         openSettings()
         for tab in [SettingsTab.general, .shortcuts, .experimental] {

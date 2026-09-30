@@ -224,6 +224,9 @@ enum Highlighter {
 struct DesktopPreview: View {
     let variant: ResolvedVariant
     let wallpaper: URL?
+    /// Also draws what the macOS look changes: an open menu with its highlight in the accent color, and a Dock in
+    /// the icon style. The Theme Maker turns it on, so its macOS choices show.
+    var showsSystem = false
 
     var body: some View {
         GeometryReader { geo in
@@ -235,7 +238,8 @@ struct DesktopPreview: View {
                 HStack(spacing: w * 0.02) {
                     Image(systemName: "apple.logo")
                     Text("Scene").fontWeight(.semibold)
-                    Text("File"); Text("Edit"); Text("View")
+                    Text("File").anchorPreference(key: FileMenuAnchor.self, value: .bounds) { $0 }
+                    Text("Edit"); Text("View")
                     Spacer()
                     Circle().fill(variant.interface.accent.color).frame(width: font * 0.9, height: font * 0.9)
                     Image(systemName: variant.appearance == .dark ? "moon.fill" : "sun.max.fill")
@@ -251,6 +255,21 @@ struct DesktopPreview: View {
                     .offset(x: w * 0.05, y: h * 0.14)
                 window(title: "Applier.swift", w: w * 0.52, h: h * 0.6) { CodePreview(variant: variant, fontSize: font) }
                     .offset(x: w * 0.43, y: h * 0.3)
+                if showsSystem {
+                    SystemDock(variant: variant, size: h * 0.075)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, h * 0.018)
+                }
+            }
+            // The open File menu sits over the windows, under its title in the menu bar.
+            .overlayPreferenceValue(FileMenuAnchor.self) { anchor in
+                if showsSystem, let anchor {
+                    GeometryReader { proxy in
+                        let title = proxy[anchor]
+                        SystemMenu(variant: variant, font: font)
+                            .offset(x: title.minX - font * 0.6, y: title.maxY + h * 0.014)
+                    }
+                }
             }
         }
         .aspectRatio(16 / 10, contentMode: .fit)
@@ -280,5 +299,160 @@ struct DesktopPreview: View {
         .clipShape(RoundedRectangle(cornerRadius: w * 0.025, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: w * 0.025, style: .continuous).strokeBorder(ui.border.color.opacity(0.6), lineWidth: 0.5))
         .shadow(color: .black.opacity(0.35), radius: w * 0.03, y: h * 0.02)
+    }
+}
+
+// MARK: - The macOS look in a preview
+
+/// Where the preview's File menu title is, so its open menu can sit under it.
+private struct FileMenuAnchor: PreferenceKey {
+    static var defaultValue: Anchor<CGRect>? { nil }
+    static func reduce(value: inout Anchor<CGRect>?, nextValue: () -> Anchor<CGRect>?) { value = value ?? nextValue() }
+}
+
+extension AccentPreset {
+    /// About the color macOS gives this accent. Multicolor lets each app choose, and most choose blue.
+    var swatch: Color {
+        switch self {
+        case .blue, .multicolor, .hardware: Color(red: 0, green: 0.478, blue: 1)
+        case .purple: Color(red: 0.584, green: 0.239, blue: 0.588)
+        case .pink: Color(red: 0.969, green: 0.31, blue: 0.62)
+        case .red: Color(red: 0.878, green: 0.22, blue: 0.243)
+        case .orange: Color(red: 0.969, green: 0.51, blue: 0.106)
+        case .yellow: Color(red: 1, green: 0.78, blue: 0)
+        case .green: Color(red: 0.384, green: 0.729, blue: 0.275)
+        case .graphite: Color(white: 0.55)
+        }
+    }
+}
+
+/// An open File menu with one item highlighted, as macOS draws it: in the accent color the look sets.
+private struct SystemMenu: View {
+    let variant: ResolvedVariant
+    let font: CGFloat
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: font * 0.15) {
+            item("New Window", "⌘N")
+            item("New Theme…", "⇧⌘N", highlighted: true)
+            item("Open…", "⌘O")
+            Divider().padding(.vertical, font * 0.15)
+            item("Close Window", "⌘W")
+        }
+        .padding(font * 0.35)
+        .frame(width: font * 12.5)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: font * 0.7, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: font * 0.7, style: .continuous).strokeBorder(.primary.opacity(0.12), lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.3), radius: font, y: font * 0.4)
+        .environment(\.colorScheme, variant.appearance == .dark ? .dark : .light)
+    }
+
+    private func item(_ title: String, _ shortcut: String, highlighted: Bool = false) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text(shortcut).opacity(0.6)
+        }
+        .font(.system(size: font * 0.95))
+        .foregroundStyle(highlighted ? Color.white : Color.primary)
+        .padding(.horizontal, font * 0.5)
+        .padding(.vertical, font * 0.22)
+        .background(highlighted ? (variant.system.accent ?? .blue).swatch : .clear,
+                    in: RoundedRectangle(cornerRadius: font * 0.35, style: .continuous))
+    }
+}
+
+/// A Dock of real app icons in the look's icon style: colorful, dark, clear glass, or tinted with one color.
+private struct SystemDock: View {
+    let variant: ResolvedVariant
+    let size: CGFloat
+
+    var body: some View {
+        // App icons leave a margin around their shape, so they sit close together.
+        HStack(spacing: size * 0.02) {
+            ForEach(DockIcon.all) { icon($0) }
+        }
+        .padding(size * 0.1)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: size * 0.38, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: size * 0.38, style: .continuous).strokeBorder(.white.opacity(0.22), lineWidth: 0.5))
+        .environment(\.colorScheme, dark ? .dark : .light)
+    }
+
+    private var dark: Bool { variant.appearance == .dark }
+
+    private var tint: Color {
+        switch variant.system.iconTint {
+        case .preset(let preset)?: preset.swatch
+        case .custom(let color)?: color.color
+        case nil: variant.interface.accent.color
+        }
+    }
+
+    /// Clear and Tinted fill the icon's own shape, then color its glyph.
+    private func icon(_ app: DockIcon) -> some View {
+        let shape = Image(nsImage: app.normal).resizable().renderingMode(.template)
+        let glyph = Image(nsImage: app.glyph).resizable()
+        return ZStack {
+            switch variant.system.iconStyle ?? .default {
+            case .default:
+                Image(nsImage: app.normal).resizable()
+            case .dark:
+                Image(nsImage: app.dark).resizable()
+            case .clear:
+                shape.foregroundStyle(.white.opacity(dark ? 0.16 : 0.45))
+                glyph.colorMultiply(dark ? .white : Color(white: 0.3))
+            case .tinted:
+                shape.foregroundStyle(dark ? Color(white: 0.1) : Color(white: 0.96))
+                shape.foregroundStyle(LinearGradient(colors: [tint.opacity(dark ? 0.32 : 0.22), tint.opacity(dark ? 0.18 : 0.12)],
+                                                     startPoint: .top, endPoint: .bottom))
+                glyph.colorMultiply(tint)
+            }
+        }
+        .frame(width: size, height: size)
+        .shadow(color: .black.opacity(0.2), radius: size * 0.04, y: size * 0.02)
+    }
+}
+
+/// An app in the preview's Dock: its Default icon, and the Dark icon and glyph that `IconStyles` makes from it.
+private struct DockIcon: Identifiable {
+    let id: String
+    let normal: NSImage
+    let dark: NSImage
+    let glyph: NSImage
+
+    /// Made once, when the first Dock shows: 0.23 s in a Debug build. Each app keeps its Default icon in its asset catalog. Messages, Maps, and
+    /// FaceTime have only an .icns file, which ImageIO would read, and Scene limits ImageIO to PNG, JPEG, and HEIC.
+    @MainActor static let all = ["com.apple.finder", "com.apple.Safari", "com.apple.mail", "com.apple.Photos", "com.apple.Notes",
+                                 "com.apple.Music", "com.apple.Terminal", "com.apple.systempreferences"].compactMap { DockIcon($0) }
+
+    /// The Default icon comes from the app's bundle. NSWorkspace would give it in the Mac's current icon style.
+    @MainActor init?(_ bundleID: String) {
+        let side = 128
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID), let bundle = Bundle(url: url),
+              let name = (bundle.object(forInfoDictionaryKey: "CFBundleIconName") ?? bundle.object(forInfoDictionaryKey: "CFBundleIconFile")) as? String,
+              let normal = bundle.image(forResource: name), let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
+        var rect = NSRect(x: 0, y: 0, width: side, height: side)
+        guard let icon = normal.cgImage(forProposedRect: &rect, context: nil, hints: nil) else { return nil }
+        var bytes = [UInt8](repeating: 0, count: side * side * 4)
+        let drawn = bytes.withUnsafeMutableBytes { buffer -> Bool in
+            guard let context = CGContext(data: buffer.baseAddress, width: side, height: side, bitsPerComponent: 8, bytesPerRow: side * 4,
+                                          space: space, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
+            context.interpolationQuality = .high
+            context.draw(icon, in: CGRect(x: 0, y: 0, width: side, height: side))
+            return true
+        }
+        let styles = IconStyles.derive(IconStyles.Pixels(size: side, bytes: bytes))
+        func image(_ pixels: IconStyles.Pixels) -> NSImage? {
+            guard let provider = CGDataProvider(data: Data(pixels.bytes) as CFData),
+                  let image = CGImage(width: side, height: side, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: side * 4, space: space,
+                                      bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue), provider: provider,
+                                      decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { return nil }
+            return NSImage(cgImage: image, size: NSSize(width: side, height: side))
+        }
+        guard drawn, let dark = image(styles.dark), let glyph = image(styles.glyph) else { return nil }
+        self.id = bundleID
+        self.normal = normal
+        self.dark = dark
+        self.glyph = glyph
     }
 }
