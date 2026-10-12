@@ -1,0 +1,3 @@
+out/
+reviews/*
+!reviews/review-1.md
