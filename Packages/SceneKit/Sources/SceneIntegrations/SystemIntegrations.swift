@@ -208,7 +208,7 @@ public struct BordersIntegration: Integration {
 
     public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
         // The block comes last, so its colors win over the options before it.
-        let line = (["borders"] + BordersRenderer.arguments(request.current)).joined(separator: " ")
+        let line = BordersRenderer.scriptLine(request.current)
         return IntegrationPlan(operations: [
             .ensureAnchor(path: detection.context["script"]!, block: Anchor.block(lines: [line], comment: "#"), placement: .end),
         ], conflicts: detection.conflicts)

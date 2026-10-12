@@ -132,6 +132,20 @@ struct MoreRendererTests {
         #expect((((parsed["appearance"] as? [String: Any])?["text"] as? [String: String])?["font_name"]) == "JetBrains Mono")
     }
 
+    @Test func bordersColorsReadBackGradientsAndGlowsAndSkipAnythingElse() throws {
+        let script = """
+        borders active_color=0xff112233 inactive_color=0xff445566
+        borders 'active_color=glow(0xff778899)' "inactive_color=gradient(top_right=0xff000000,bottom_left=0xffffffff)"
+        borders active_color=gradient(evil) inactive_color=0xff12345
+        """
+        #expect(BordersRenderer.colors(in: script) == ["active_color=glow(0xff778899)",
+                                                       "inactive_color=gradient(top_right=0xff000000,bottom_left=0xffffffff)"])
+        // Without a theme's own colors: the accent and the border color, and no quotes in the script line.
+        let nord = try #require(try Fixtures.theme("nord").variants[.dark])
+        #expect(BordersRenderer.scriptLine(nord) == "borders " + BordersRenderer.arguments(nord).joined(separator: " "))
+        #expect(BordersRenderer.arguments(nord)[0] == "active_color=0xff\(nord.interface.accent.hexStripped)")
+    }
+
     @Test func btopThemeHasEveryKey() throws {
         let v = try #require(try Fixtures.theme("nord").variants[.dark])
         let lines = BtopRenderer.themeFile(v).split(separator: "\n").dropFirst()

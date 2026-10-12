@@ -98,6 +98,16 @@ struct ValidationTests {
         #expect(errors(badRef).contains { $0.contains("not a palette role") })
     }
 
+    @Test func bordersTakeOneOrTwoColorsAndPaletteRoles() throws {
+        let withBorders = { (borders: String) in Self.minimal.replacingOccurrences(of: "\"syntax\":{}", with: "\"syntax\":{},\"borders\":\(borders)") }
+        let v = try #require(try load(withBorders(##"{"active":["#e20342","@accent"]}"##)).variants[.dark])
+        #expect(v.borders?.active.map(\.hex) == ["#e20342", "#3a86ff"])
+        #expect(v.borders?.inactive == [v.interface.border])          // inactive falls back to the border color
+        #expect(errors(withBorders(##"{"active":["#111111","#222222","#333333"]}"##)).contains { $0.contains("borders.active needs one or two colors") })
+        #expect(errors(withBorders(##"{"active":["red"]}"##)).contains { $0.contains("borders.active") })
+        #expect(try load(Self.minimal).variants[.dark]?.borders == nil)
+    }
+
     @Test func rejectsInjectionAttempts() {
         // A newline in a color can never reach a config file: it fails to parse as a color.
         let injected = Self.minimal.replacingOccurrences(of: "\"#e0e0e0\"", with: "\"#e0e0e0\\ncommand = /bin/sh\"")

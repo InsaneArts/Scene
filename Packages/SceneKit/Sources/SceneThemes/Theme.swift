@@ -49,6 +49,14 @@ public struct VariantSpec: Codable, Sendable, Equatable {
     /// The first one is the default. You can pick another in Scene.
     public var wallpapers: [WallpaperSpec]?
     public var system: SystemSpec?
+    /// Window borders for JankyBorders. Without them, the focused window's border is the accent and the others the border color.
+    public var borders: BordersSpec?
+}
+
+/// One color (`#hex` or `@role`) per border, or two for a gradient from the top left to the bottom right.
+public struct BordersSpec: Codable, Sendable, Equatable {
+    public var active: [String]
+    public var inactive: [String]?
 }
 
 public struct TerminalSpec: Codable, Sendable, Equatable {
@@ -209,6 +217,12 @@ public struct SystemLook: Hashable, Sendable {
     public var iconTint: IconTint?
 }
 
+/// Window border colors: one color, or two for a gradient from the top left to the bottom right.
+public struct BorderColors: Hashable, Sendable {
+    public var active: [RGBA]
+    public var inactive: [RGBA]
+}
+
 public enum IconTint: Hashable, Sendable {
     case preset(AccentPreset)
     case custom(RGBA)
@@ -228,6 +242,8 @@ public struct ResolvedVariant: Hashable, Sendable {
     /// Curated override files from `apps/`, already validated, keyed by integration id.
     public var overrides: [String: Data]
     public var preferInstalled: [String: AppOverrideSpec.PreferInstalled]
+    /// The theme's own window border colors, or nil for the accent and the border color.
+    public var borders: BorderColors?
 
     /// The wallpaper with this file name, or the first one when there is no such wallpaper.
     public func wallpaper(named name: String?) -> Wallpaper? {

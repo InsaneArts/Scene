@@ -301,6 +301,18 @@ public enum ThemeLoader {
             if !local.isEmpty { errors.append(contentsOf: local); return nil }
         }
 
+        // Window borders.
+        var borders: BorderColors?
+        if let b = spec.borders {
+            func colors(_ values: [String], _ key: String) -> [RGBA] {
+                guard (1...2).contains(values.count) else { local.append("\(where_).borders.\(key) needs one or two colors"); return [] }
+                return values.compactMap { ref($0, "\(where_).borders.\(key)") }
+            }
+            let active = colors(b.active, "active"), inactive = b.inactive.map { colors($0, "inactive") } ?? [ui.border]
+            if !local.isEmpty { errors.append(contentsOf: local); return nil }
+            borders = BorderColors(active: active, inactive: inactive)
+        }
+
         // Curated overrides.
         var overrides: [String: Data] = [:]
         var prefer: [String: AppOverrideSpec.PreferInstalled] = [:]
@@ -322,7 +334,7 @@ public enum ThemeLoader {
 
         return ResolvedVariant(themeID: manifest.id, themeName: manifest.name, themeVersion: manifest.version, appearance: appearance,
                                interface: ui, terminal: terminal, syntax: colors, wallpapers: wallpapers,
-                               system: system, overrides: overrides, preferInstalled: prefer)
+                               system: system, overrides: overrides, preferInstalled: prefer, borders: borders)
     }
 
     /// Reads dimensions and type from the image header without decoding pixels.
