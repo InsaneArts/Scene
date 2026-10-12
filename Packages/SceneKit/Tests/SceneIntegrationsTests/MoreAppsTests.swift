@@ -24,6 +24,7 @@ struct MoreAppsTests {
     static let gitconfig = "[user]\n\tname = Me\n[core]\n\tpager = delta\n"
     static let alacrittyConfig = "[general]\nlive_config_reload = true\nimport = [\"~/.config/alacritty/themes/gruvbox.toml\"]\n\n[font]\nsize = 13\n"
     static let helixConfig = "theme = \"onedark\" # mine\n\n[editor]\nline-number = \"relative\"\n"
+    static let herdrConfig = "# herdr\n[theme]\nname = \"catppuccin-latte\" # mine\nauto_switch = false\n\n[ui]\nshow_agent_labels_on_pane_borders = true\n"
     static var myXcodeTheme: [String: Any] { [
         "DVTFontAndColorVersion": 1, "DVTLineSpacing": 1.3, "DVTSourceTextBackground": "0 0 0 1",
         "DVTSourceTextSyntaxFonts": ["xcode.syntax.plain": "Menlo-Regular - 14.0"], "DVTMarkupTextNormalFont": ".AppleSystemUIFont - 11.0",
@@ -45,7 +46,7 @@ struct MoreAppsTests {
             AlacrittyIntegration.bundleID: try home.fakeApp("Alacritty", version: "0.16.1"),
         ]
         var found: [String: URL] = [:]
-        for name in ["tmux", "bat", "delta", "hx", "btop"] { found[name] = try home.write("bin/\(name)", "#!/bin/sh\n") }
+        for name in ["tmux", "bat", "delta", "hx", "btop", "herdr"] { found[name] = try home.write("bin/\(name)", "#!/bin/sh\n") }
         let tools = found
         try home.write(".config/zed/settings.json", Self.zedSettings)
         try home.write(".config/kitty/kitty.conf", Self.kittyConfig)
@@ -55,6 +56,7 @@ struct MoreAppsTests {
         try home.write(".gitconfig", Self.gitconfig)
         try home.write(".config/alacritty/alacritty.toml", Self.alacrittyConfig)
         try home.write(".config/helix/config.toml", Self.helixConfig)
+        try home.write(".config/herdr/config.toml", Self.herdrConfig)
         let theme = try PropertyListSerialization.data(fromPropertyList: Self.myXcodeTheme, format: .xml, options: 0)
         try theme.write(to: home.path("Library/Developer/Xcode/UserData/FontAndColorThemes/Mine.xccolortheme").creatingFolder())
         let env = SceneEnvironment(home: home.url, locateApp: { apps[$0] }, locateExecutable: { tools[$0] })
@@ -68,11 +70,12 @@ struct MoreAppsTests {
         ])
         services.responses["bat --version"] = CLIResult(status: 0, stdout: "bat 0.26.1 (979ba22)\n", stderr: "")
         services.responses["tmux -V"] = CLIResult(status: 0, stdout: "tmux 3.6b\n", stderr: "")
-        services.running = [KittyIntegration.bundleID: [4242], "hx": [4343], "btop": [4444], XcodeIntegration.bundleID: [4545]]
+        services.running = [KittyIntegration.bundleID: [4242], "hx": [4343], "btop": [4444], XcodeIntegration.bundleID: [4545], "herdr": [4747]]
         services.responses["hx --version"] = CLIResult(status: 0, stdout: "helix 25.07.1 (a05c151b)\n", stderr: "")
+        services.responses["herdr --version"] = CLIResult(status: 0, stdout: "herdr 0.9.0\n", stderr: "")
         services.responses["btop --version"] = CLIResult(status: 0, stdout: "btop version: \u{1b}[1m1.4.5\u{1b}[0m\n", stderr: "")
         let integrations: [Integration] = [ZedIntegration(), XcodeIntegration(), KittyIntegration(), TerminalAppIntegration(), TmuxIntegration(),
-                                           BatIntegration(), AlacrittyIntegration(), HelixIntegration(), BtopIntegration()]
+                                           BatIntegration(), AlacrittyIntegration(), HelixIntegration(), BtopIntegration(), HerdrIntegration()]
         return Setup(home: home, services: services, engine: Engine(env: env, services: services, integrations: integrations))
     }
 
@@ -140,6 +143,13 @@ struct MoreAppsTests {
         #expect(s.home.read(".config/helix/config.toml") == Self.helixConfig.replacingOccurrences(of: "\"onedark\"", with: "\"scene\""))
         #expect(FileManager.default.fileExists(atPath: s.home.path(".config/helix/themes/scene.toml").path))
         #expect(s.home.read(".config/btop/btop.conf") == "color_theme = \"scene\"\n")
+        // herdr: both looks, herdr's own switching, and the user's comment and other table kept.
+        let herdr = try #require(s.home.read(".config/herdr/config.toml"))
+        let dark = try Fixtures.theme("catppuccin").variants[.dark]!
+        #expect(herdr.hasPrefix("# herdr\n[theme]\n") && herdr.contains("auto_switch = true") && herdr.contains("show_agent_labels_on_pane_borders = true"))
+        #expect(herdr.contains("[theme.custom.dark]\naccent = \"#\(dark.interface.accent.hexStripped)\""))
+        #expect(herdr.contains("[theme.custom.light]") && !herdr.contains("sidebar_bg"))
+        #expect(s.services.calls.contains("run herdr server reload-config"))
 
         let items = await s.engine.restoreOriginal()
         #expect(!items.isEmpty && items.allSatisfy { !$0.keptUserChange })
@@ -151,6 +161,7 @@ struct MoreAppsTests {
         #expect(s.home.read(".gitconfig") == Self.gitconfig)
         #expect(s.home.read(".config/alacritty/alacritty.toml") == Self.alacrittyConfig)
         #expect(s.home.read(".config/helix/config.toml") == Self.helixConfig)
+        #expect(s.home.read(".config/herdr/config.toml") == Self.herdrConfig)
         for path in [".config/btop/btop.conf", ".config/btop/themes/scene.theme", ".config/helix/themes/scene.toml", ".config/alacritty/scene.toml",
                      ".config/zed/themes/scene.json", ".config/kitty/scene-theme.conf", ".config/tmux/scene.conf",
                      ".config/bat/themes/scene-dark.tmTheme", ".config/git/scene-delta.gitconfig",
@@ -214,6 +225,31 @@ struct MoreAppsTests {
         _ = await engine.restoreOriginal()
         #expect(home.read(".config/borders/bordersrc") == rc)
         #expect(services.calls.last == "run borders active_color=0xffe1e3e4 inactive_color=0xff494d64")
+    }
+
+    /// herdr itself reads the fixture's config, when it is installed: "config: ok" means no complaint.
+    func herdrAccepts(_ s: Setup) throws {
+        guard let herdr = Processes.findExecutable("herdr", extraPaths: ["/opt/homebrew/bin"]) else { return }
+        let check = try Processes.run(herdr.path, ["config", "check"], environment: ["XDG_CONFIG_HOME": s.home.path(".config").path])
+        #expect(check.stdout.contains("config: ok"), "\(check.stdout) \(check.stderr)")
+    }
+
+    @Test func herdrGetsOneLookInThemeCustomOrBothLooksWithItsOwnSwitching() async throws {
+        let s = try setup()
+        _ = try await apply(s, "aetheria", mode: .system)
+        let one = try #require(s.home.read(".config/herdr/config.toml"))
+        #expect(one.contains("name = \"catppuccin\" # mine") && one.contains("auto_switch = false"))
+        #expect(one.contains("[theme.custom]\naccent = \"#be3f50\"") && !one.contains("[theme.custom.dark]"))
+        try herdrAccepts(s)
+
+        _ = try await apply(s, "catppuccin", mode: .system)
+        let both = try #require(s.home.read(".config/herdr/config.toml"))
+        #expect(both.contains("auto_switch = true") && both.contains("dark_name = \"catppuccin\"") && both.contains("light_name = \"catppuccin-latte\""))
+        #expect(both.contains("[theme.custom.dark]") && both.contains("[theme.custom.light]"))
+        try herdrAccepts(s)
+
+        _ = await s.engine.restoreOriginal()
+        #expect(s.home.read(".config/herdr/config.toml") == Self.herdrConfig)
     }
 
     @Test func afterXcodeQuitsSceneSetsItsThemeAgainButKeepsAThemeTheUserPicked() async throws {

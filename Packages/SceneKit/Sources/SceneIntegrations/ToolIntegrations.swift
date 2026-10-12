@@ -57,6 +57,68 @@ public struct TmuxIntegration: Integration {
     }
 }
 
+// MARK: - herdr
+
+/// herdr, the agent multiplexer: its interface colors as `[theme.custom]` tokens in config.toml, over a built-in base
+/// theme. A theme with both looks fills `[theme.custom.dark]` and `[theme.custom.light]` instead, and turns on herdr's
+/// own switching, which follows the terminal's Light/Dark. Each token is one key, so the user's comments and other
+/// settings stay, and Restore puts every key back.
+public struct HerdrIntegration: Integration {
+    public let id = "herdr"
+    public let displayName = "herdr"
+    public let kind = IntegrationKind.tool
+    public init() {}
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        guard let herdr = env.locateExecutable("herdr") else { return .notInstalled() }
+        var version: String?
+        if let result = try? await services.run(herdr.path, ["--version"], environment: nil), result.status == 0 {
+            version = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "herdr ", with: "")
+        }
+        // herdr reads $XDG_CONFIG_HOME/herdr/config.toml, which is ~/.config/herdr/config.toml unless set.
+        let config = env.xdgConfigHome.appendingPathComponent("herdr/config.toml")
+        var setup = SetupState.ready
+        if let version, let parsed = SemanticVersion(version), parsed < SemanticVersion(0, 9, 0) {
+            setup = .blocked("herdr \(version) is older than 0.9, the first version Scene was tested with. Run herdr update.")
+        } else if FileOps.exists(config) && !FileOps.isWritable(config) {
+            setup = .blocked("\(Operation.tilde(config.path)) is read-only.")
+        }
+        return Detection(installed: true, version: version, detail: Operation.tilde(config.path), setup: setup,
+                         context: ["herdr": herdr.path, "config": config.path])
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        let path = detection.context["config"]!
+        func set(_ table: String, _ key: String, _ value: String) -> Operation { .setConfigValue(path: path, table: table, key: key, value: value) }
+        func colors(_ v: ResolvedVariant, in table: String) -> [Operation] {
+            HerdrRenderer.tokens(v).map { set(table, $0.name, KeyValueDocument.quoted("#" + $0.color.hexStripped)) }
+        }
+        let variants = request.nativeVariants
+        if let dark = variants[.dark], let light = variants[.light] {
+            return IntegrationPlan(operations: [
+                set("theme", "name", KeyValueDocument.quoted(HerdrRenderer.base(request.effectiveAppearance))),
+                set("theme", "auto_switch", "true"),
+                set("theme", "dark_name", KeyValueDocument.quoted(HerdrRenderer.base(.dark))),
+                set("theme", "light_name", KeyValueDocument.quoted(HerdrRenderer.base(.light))),
+            ] + colors(dark, in: "theme.custom.dark") + colors(light, in: "theme.custom.light"),
+            notes: ["herdr switches between the two looks when your terminal reports a Light/Dark change."])
+        }
+        let v = request.current
+        return IntegrationPlan(operations: [
+            set("theme", "name", KeyValueDocument.quoted(HerdrRenderer.base(v.appearance))),
+            set("theme", "auto_switch", "false"),
+        ] + colors(v, in: "theme.custom"))
+    }
+
+    /// The running server reads config.toml again and asks its clients to reload.
+    public func reload(_ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> ReloadResult {
+        guard let herdr = detection.context["herdr"] else { return .notNeeded }
+        guard !services.processes(named: "herdr").isEmpty else { return .notRunning }
+        guard let result = try? await services.run(herdr, ["server", "reload-config"], environment: nil) else { return .failed("could not run herdr") }
+        return result.status == 0 ? .reloaded : .failed(result.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+}
+
 // MARK: - bat and delta
 
 public struct BatIntegration: Integration {
