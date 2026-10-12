@@ -24,4 +24,6 @@ Every value is a quoted string, one `key = "value"` per line.
 
 `dark.toml` and `light.toml` use the keys of Omarchy's `colors.toml`: `background`, `foreground`, `accent`, `red`, `green`, `yellow`, `blue`, `magenta`, and `cyan` are needed. `orange`, `selection`, `muted`, `dark_background`, `lighter_background`, `dark_foreground`, `bright_foreground`, and `bright_<color>` are filled in when missing. Three more keys set the macOS look: `accent_color` (`auto`, or a preset such as `green`), `icon_style` (`dark`, `default`, `clear`, or `tinted`), and `icon_tint` (`accent`, a preset, or `#hex`). The light look always uses the default icon style.
 
+A port of another project's theme, such as `aetheria/`, can keep that theme's exact colors over the ones Scene derives: `palette_<role>` (for example `palette_current_line`), `terminal_<key>` (`terminal_foreground`, `terminal_cursor_text`, and `terminal_color0` to `terminal_color15`), `syntax_<role>` (a color, then `bold`, `italic`, or `underline`, for example `"#126069 italic"`), and `border_active` and `border_inactive` for JankyBorders (one color, or two for a gradient, for example `"#e20342 #c8e967"`).
+
 Check a palette with `python3 Scripts/check-palette.py --table <folder>/dark.toml`.

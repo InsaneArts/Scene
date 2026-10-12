@@ -7,7 +7,8 @@ does not ship come from their upstream projects: Rosé Pine Main (rose-pine/pale
 (ghostty.conf.tpl, vscode-theme.json.tpl). Wallpapers and their provenance come from Themes/WALLPAPER_SOURCES.json.
 
 Scene's own themes live in Scripts/scene-palettes/<folder>/: theme.toml (name, summary, tags, credits) and dark.toml,
-light.toml, or both (the palette, in the Omarchy format, and the macOS look). See Scripts/scene-palettes/README.md.
+light.toml, or both (the palette, in the Omarchy format, and the macOS look). A port of another project's theme can
+also keep that theme's exact colors there. See Scripts/scene-palettes/README.md.
 """
 import json
 import os
@@ -61,6 +62,35 @@ def variant(p, system):
     }
 
 
+ANSI = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
+
+
+def camel(name):
+    head, *rest = name.split("_")
+    return head + "".join(word.capitalize() for word in rest)
+
+
+def port(v, p):
+    """A port keeps its original's exact colors over the ones Scene derives: palette_<role>, terminal_<key> (color0
+    to color15 for the ANSI colors), syntax_<role> (a color, then bold, italic, or underline), and border_active and
+    border_inactive (one color, or two for a gradient)."""
+    for key, value in p.items():
+        kind, _, name = key.partition("_")
+        if kind == "palette":
+            v["palette"][camel(name)] = value
+        elif kind == "terminal" and name.startswith("color"):
+            index = int(name[5:])
+            v["terminal"]["ansi"][ANSI[index] if index < 8 else "bright" + ANSI[index - 8].capitalize()] = value
+        elif kind == "terminal":
+            v["terminal"][camel(name)] = value
+        elif kind == "syntax":
+            color, *flags = value.split()
+            v["syntax"][camel(name)] = dict(color=color, **{flag: True for flag in flags}) if flags else color
+        elif kind == "border":
+            v.setdefault("borders", {})[name] = value.split()
+    return v
+
+
 def dark(accent="auto", icons="dark", tint=None):
     s = {"accentColor": accent, "iconStyle": icons}
     if tint:
@@ -103,7 +133,7 @@ def scene_themes():
                 p = complete(read(os.path.join(path, f"{look}.toml")))
                 system = (dark(p.get("accent_color", "auto"), p.get("icon_style", "dark"), p.get("icon_tint")) if look == "dark"
                           else light(p.get("accent_color", "auto")))
-                variants[look] = variant(p, system)
+                variants[look] = port(variant(p, system), p)
         author = {"name": about.get("author", "Scene")}
         if about.get("author_url"):
             author["url"] = about["author_url"]
