@@ -44,13 +44,21 @@ Before a theme touches anything, Scene lists each app and every file and setting
 | macOS look | Accent color, icon & widget style | Private calls in a helper, on tested macOS builds only (experimental) |
 | Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one |
 | Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file |
-| Command-line tools | tmux, bat and delta, btop | A theme file and one marked include line or config key |
+| Command-line tools | tmux, bat and delta, btop, herdr | A theme file and one marked include line or config key; herdr's color tokens in its config |
 
 Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set them to follow the system, and they switch with Light/Dark.
 
 ## Install
 
-There is no download yet. Build Scene from a clone:
+Once the first release is out, install Scene in Terminal:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/InsaneArts/Scene/main/install.sh | sh
+```
+
+It downloads the latest release, checks that Apple notarized it and that Scene's developer signed it, and puts Scene in Applications. Later updates come through Scene itself.
+
+Or build Scene from a clone:
 
 ```sh
 git clone https://github.com/InsaneArts/Scene.git
@@ -105,15 +113,15 @@ The theme shows in Scene's sidebar. The agent uses the same draft and checks as 
   <img src=".github/assets/themes.jpg" width="100%" alt="A wall of Scene's themes, captioned 75 themes." />
 </p>
 
-Scene comes with 75 themes. 21 are built from Omarchy's palettes, from Tokyo Night to Catppuccin, Gruvbox, and Rosé Pine. The other 54 are Scene's own, drawn from computing, science, and design: Phosphor, Amber, Mainframe, Teletext, Blueprint, Deep Field, Primary, Safelight, and more, 19 of them with a light look. Four remix old painting styles with computing, and take their colors from their paintings: Cold Aisle (a data center under a swirling starry sky), Deprecated (a Dutch still life of floppy disks and a guttering candle), Rain Bridge (a woodblock rain scene), and Marginalia (bugs in the margins of a manuscript).
+Scene comes with 76 themes. 21 are built from Omarchy's palettes, from Tokyo Night to Catppuccin, Gruvbox, and Rosé Pine. The other 54 are Scene's own, drawn from computing, science, and design: Phosphor, Amber, Mainframe, Teletext, Blueprint, Deep Field, Primary, Safelight, and more, 19 of them with a light look. Four remix old painting styles with computing, and take their colors from their paintings: Cold Aisle (a data center under a swirling starry sky), Deprecated (a Dutch still life of floppy disks and a guttering candle), Rain Bridge (a woodblock rain scene), and Marginalia (bugs in the margins of a manuscript). Aetheria, by Dizziee, comes from Omarchy's community, with its red-to-lime window borders for JankyBorders.
 
-The 75 are only a start. Open any theme in the Theme Maker to make your own version, or start a new one with Add Theme → New Theme…, and make as many as you want. If you make something beautiful and want others to install it, make it with the [agent skill](#make-a-theme-with-an-ai-agent) and put its folder on GitHub. Anyone can then install it with Add Theme → Install from GitHub.
+The 76 are only a start. Open any theme in the Theme Maker to make your own version, or start a new one with Add Theme → New Theme…, and make as many as you want. If you make something beautiful and want others to install it, make it with the [agent skill](#make-a-theme-with-an-ai-agent) and put its folder on GitHub. Anyone can then install it with Add Theme → Install from GitHub.
 
 ## Development
 
 ```sh
 open Scene.xcodeproj    # ⌘R runs the app, ⌘U runs the tests
-./Scripts/test.sh       # the same 174 tests from the command line
+./Scripts/test.sh       # the same 180 tests from the command line
 ```
 
 To make a theme, use the `scene-theme` skill in `.claude/skills/`. The core is a local package, `Packages/SceneKit`. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains how the code is written, [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) how to build, test, and release it, and [docs/STATUS.md](docs/STATUS.md) what is done and what is open. Agents start at [AGENTS.md](AGENTS.md).

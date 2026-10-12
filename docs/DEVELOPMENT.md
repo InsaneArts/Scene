@@ -115,6 +115,8 @@ gh release create v<version> dist/Scene-<version>.zip dist/appcast.xml --repo In
   --title "Scene <version>" --notes-file releases/<version>.md
 ```
 
+`install.sh` (`curl … | sh`) reads the same `appcast.xml` and installs the zip it lists first. It accepts the app only if `codesign` and Gatekeeper pass and the Team ID matches `TEAM_ID` in `release.sh`. To test it without a release, serve a folder with a zip and an appcast, and set `SCENE_FEED` to the appcast's URL and `SCENE_INSTALL_DIR` to a scratch folder.
+
 **The Sparkle key.** The private key was created on Sep 30, 2026 with `generate_keys --account Scene` and lives only in the login Keychain. Without it, no later update can be signed, and people would have to download Scene again by hand. Back it up to a safe place with `.build/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys --account Scene -x <file>`, and import it on another Mac with `-f <file>`. The tools appear after the first build resolves the Sparkle package.
 
 Notarization sends the app to Apple, so ask the user before running it. On Sep 28 the preflight failed from an agent session with "No Keychain password item found for profile: camus-notary", although builds 1 to 3 were notarized with that profile earlier that day. If that happens, the user runs `./Scripts/release.sh` in their own terminal.
