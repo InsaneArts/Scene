@@ -89,4 +89,25 @@ struct RendererTests {
         let result = try Processes.run(Self.nvim!.path, ["--headless", "-c", probe, "-c", "qa!"], environment: env)
         #expect(result.stdout == "scene #1e1e2e dark", "stdout: \(result.stdout) stderr: \(result.stderr)")
     }
+
+    @Test(.enabled(if: nvim != nil))
+    func neovimShimWinsOverAColorschemeSetAtStartupButNotOverALaterOne() throws {
+        let home = try FixtureHome()
+        let dataPath = home.path("support/Neovim/theme.json")
+        try home.write(".config/nvim/plugin/scene.lua", try NeovimRenderer.shim(dataPath: dataPath.path))
+        try home.write(".config/nvim/colors/scene.lua", NeovimRenderer.colorsFile)
+        try FileOps.write(try NeovimRenderer.dataFile(variants: [.dark: try Fixtures.theme("aetheria").variants[.dark]!]), to: dataPath)
+        let env = ["XDG_CONFIG_HOME": home.path(".config").path, "XDG_DATA_HOME": home.path(".local/share").path,
+                   "XDG_STATE_HOME": home.path(".local/state").path, "XDG_CACHE_HOME": home.path(".cache").path]
+        let probe = "lua io.stdout:write(vim.g.colors_name)"
+        // A plugin that sets its own colorscheme right after startup, as auto-dark-mode.nvim does.
+        let startup = try Processes.run(Self.nvim!.path, ["--headless", "-c", "colorscheme habamax",
+                                                          "-c", "lua vim.wait(1000, function() return vim.g.colors_name == 'scene' end)",
+                                                          "-c", probe, "-c", "qa!"], environment: env)
+        #expect(startup.stdout == "scene", "stdout: \(startup.stdout) stderr: \(startup.stderr)")
+        // After the first seconds, a colorscheme you pick stays. A zero guard stands in for the wait.
+        let later = try Processes.run(Self.nvim!.path, ["--headless", "--cmd", "let g:scene_startup_guard_ms = 0", "-c", "colorscheme habamax",
+                                                        "-c", "lua vim.wait(300)", "-c", probe, "-c", "qa!"], environment: env)
+        #expect(later.stdout == "habamax", "stdout: \(later.stdout) stderr: \(later.stderr)")
+    }
 }

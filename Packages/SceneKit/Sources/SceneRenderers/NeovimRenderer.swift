@@ -132,7 +132,7 @@ public enum NeovimRenderer {
         -- To detach, use Restore in Scene, or delete this file and colors/scene.lua.
         local data_path = [==[\(dataPath)]==]
         local uv = vim.uv or vim.loop
-        local state = { previous = nil, applied = false, busy = false }
+        local state = { previous = nil, applied = false, busy = false, expected = "scene" }
 
         local function read()
           local file = io.open(data_path, "r")
@@ -167,7 +167,11 @@ public enum NeovimRenderer {
             end
             local variant = data.variants[mode]
             local prefer = type(data.prefer) == "table" and data.prefer[mode] or nil
-            if prefer and pcall(vim.cmd.colorscheme, prefer) then state.applied = true return end
+            if prefer then
+              state.expected = prefer
+              if pcall(vim.cmd.colorscheme, prefer) then state.applied = true return end
+            end
+            state.expected = "scene"
             vim.cmd("highlight clear")
             if vim.fn.exists("syntax_on") == 1 then vim.cmd("syntax reset") end
             vim.g.colors_name = "scene"
@@ -191,6 +195,16 @@ public enum NeovimRenderer {
 
         apply()
         watch()
+
+        -- Plugins that pick a colorscheme at startup, such as LazyVim or auto-dark-mode.nvim, run after this file.
+        -- For a few seconds, Scene applies its theme again over them. A colorscheme picked later stays.
+        local guard_until = uv.now() + (tonumber(vim.g.scene_startup_guard_ms) or 5000)
+        vim.api.nvim_create_autocmd("ColorScheme", {
+          group = vim.api.nvim_create_augroup("Scene", { clear = true }),
+          callback = function(event)
+            if state.applied and event.match ~= state.expected and uv.now() < guard_until then vim.schedule(apply) end
+          end,
+        })
 
         """
     }
