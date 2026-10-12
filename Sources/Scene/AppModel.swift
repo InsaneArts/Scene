@@ -404,6 +404,20 @@ final class AppModel {
         }
     }
 
+    @ObservationIgnored private var quitObserver: NSObjectProtocol?
+
+    /// A running Xcode saves its own theme choice over Scene's. When Xcode quits, Scene sets its themes again, so Xcode
+    /// opens with them next time.
+    func startWatchingXcode() {
+        guard quitObserver == nil, Snapshot.folder == nil else { return }
+        quitObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification,
+                                                                         object: nil, queue: .main) { [weak self] note in
+            let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
+            guard app?.bundleIdentifier == XcodeIntegration.bundleID else { return }
+            Task { @MainActor in _ = await self?.engine.reassert("xcode", appDefaults: XcodeIntegration.defaultThemes) }
+        }
+    }
+
     /// Downloads a theme from a GitHub repository and installs it. Returns nil when it worked, otherwise the reason.
     func installFromGitHub(_ text: String) async -> String? {
         guard let repository = GitHubRepository(text) else { return "Enter a GitHub repository, such as https://github.com/owner/theme." }

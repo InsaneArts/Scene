@@ -201,6 +201,9 @@ public struct XcodeIntegration: Integration {
     static let domain = "com.apple.dt.Xcode"
     /// Xcode keeps one theme for Light and one for Dark, and switches with macOS.
     static let keys: [Appearance: String] = [.light: "XCFontAndColorCurrentTheme", .dark: "XCFontAndColorCurrentDarkTheme"]
+    /// The themes a running Xcode falls back to, and saves, when it cannot find the selected one. It loads its theme
+    /// list at launch, so Scene's new themes are unknown to it until it restarts (see `Engine.reassert`).
+    public static let defaultThemes: Set<String> = ["Default (Light).xccolortheme", "Default (Dark).xccolortheme"]
     public init() {}
 
     static func folder(_ env: SceneEnvironment) -> URL {

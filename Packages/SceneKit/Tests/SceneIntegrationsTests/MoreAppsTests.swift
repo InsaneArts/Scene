@@ -216,6 +216,28 @@ struct MoreAppsTests {
         #expect(services.calls.last == "run borders active_color=0xffe1e3e4 inactive_color=0xff494d64")
     }
 
+    @Test func afterXcodeQuitsSceneSetsItsThemeAgainButKeepsAThemeTheUserPicked() async throws {
+        let s = try setup()
+        _ = try await apply(s, "catppuccin", mode: .system)
+        let light = "com.apple.dt.Xcode#XCFontAndColorCurrentTheme", dark = "com.apple.dt.Xcode#XCFontAndColorCurrentDarkTheme"
+        // A running Xcode knows only the themes it loaded at launch. It writes back the one it started with, or its
+        // default when it cannot find Scene's new one.
+        s.services.prefs[light] = .string("Mine.xccolortheme")
+        s.services.prefs[dark] = .string("Default (Dark).xccolortheme")
+        let set = await s.engine.reassert("xcode", appDefaults: XcodeIntegration.defaultThemes)
+        #expect(Set(set) == ["pref:\(light)", "pref:\(dark)"])
+        #expect(s.services.prefs[light] == .string("Scene (Light).xccolortheme"))
+        #expect(s.services.prefs[dark] == .string("Scene (Dark).xccolortheme"))
+        // A theme the user picks in Xcode stays.
+        s.services.prefs[dark] = .string("Dusk.xccolortheme")
+        #expect(await s.engine.reassert("xcode", appDefaults: XcodeIntegration.defaultThemes).isEmpty)
+        #expect(s.services.prefs[dark] == .string("Dusk.xccolortheme"))
+        // Restore still puts back the user's own theme from before Scene.
+        s.services.prefs[dark] = .string("Scene (Dark).xccolortheme")
+        _ = await s.engine.restoreOriginal()
+        #expect(s.services.prefs[light] == .string("Mine.xccolortheme"))
+    }
+
     @Test func aThemesOwnBorderGradientReachesTheFileAndTheRunningInstance() async throws {
         let home = try FixtureHome()
         let borders = try home.write("bin/borders", "#!/bin/sh\n")

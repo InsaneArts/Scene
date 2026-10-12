@@ -193,6 +193,28 @@ public actor Engine {
 
     /// Restores what Scene changed, using the three-way rule: a value Scene wrote goes back to the
     /// original; a value someone changed after Scene stays as it is.
+    /// Some apps keep a setting in memory and write their own value back over Scene's, as a running Xcode does with its
+    /// theme when Scene selects a theme it has not loaded yet. After such an app quits, Scene sets its value again where
+    /// the setting is back at its value from before Scene, or at one of `appDefaults`. A value the user picked stays.
+    /// Only preferences count. Returns the resources it set.
+    public func reassert(_ integrationID: String, appDefaults: Set<String> = []) async -> [String] {
+        var resources: [String] = []
+        for entry in ledger.values.sorted(by: { $0.sequence < $1.sequence }) where entry.integration == integrationID {
+            guard case .setPreference = entry.operation else { continue }
+            let current = await state(of: entry.operation)
+            var stale = Self.matches(current, entry.original)
+            if case .plist(.string(let value)?) = current, appDefaults.contains(value) { stale = true }
+            guard stale, !Self.matches(current, entry.applied) else { continue }
+            do {
+                try await revert(entry.operation, to: entry.applied, fileBytes: nil)
+                resources.append(entry.resource)
+            } catch {
+                continue
+            }
+        }
+        return resources
+    }
+
     public func restoreOriginal(only integrationIDs: Set<String>? = nil,
                                 progress: @escaping @Sendable (String) -> Void = { _ in }) async -> [RestoreItem] {
         var items: [RestoreItem] = []

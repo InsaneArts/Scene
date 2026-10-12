@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             ThemeSwitcher.shared.model?.registerShortcuts()
             ThemeSwitcher.shared.model?.startFollowingAppearance()
             ThemeSwitcher.shared.model?.startWatchingLibrary()
+            ThemeSwitcher.shared.model?.startWatchingXcode()
             Updater.shared.start()
         }
     }
