@@ -1,0 +1,144 @@
+{
+  "$schema": "https://schema.scene.example/theme/1.json",
+  "format": 1,
+  "id": "scene/aetheria",
+  "version": "1.0.0",
+  "name": "Aetheria",
+  "summary": "Celestial teal, lime, and red on violet-black.",
+  "authors": [
+    {
+      "name": "Dizziee",
+      "url": "https://github.com/JJDizz1L"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/JJDizz1L/aetheria",
+  "tags": [
+    "dark",
+    "red",
+    "teal",
+    "omarchy"
+  ],
+  "requires": {
+    "scene": ">=1.0"
+  },
+  "variants": {
+    "dark": {
+      "palette": {
+        "background": "#0e091d",
+        "surface": "#0b0717",
+        "overlay": "#061f23",
+        "border": "#0c3f45",
+        "foreground": "#c8e967",
+        "muted": "#8cb319",
+        "accent": "#be3f50",
+        "selection": "#092f34",
+        "cursor": "#ff7f41",
+        "currentLine": "#061f23",
+        "search": "#0b415c",
+        "error": "#f93d3b",
+        "warning": "#ffbe74",
+        "success": "#7cd699",
+        "info": "#04c5f0"
+      },
+      "terminal": {
+        "background": "#0e091d",
+        "foreground": "#14b9b5",
+        "cursor": "#ff7f41",
+        "cursorText": "#0e091d",
+        "selectionBackground": "#14b9b5",
+        "selectionForeground": "#0e091d",
+        "ansi": {
+          "black": "#000000",
+          "red": "#c8e967",
+          "green": "#e20342",
+          "yellow": "#7cd699",
+          "blue": "#be3f50",
+          "magenta": "#9147a8",
+          "cyan": "#ff7f41",
+          "white": "#a60234",
+          "brightBlack": "#c53253",
+          "brightRed": "#ce4f48",
+          "brightGreen": "#f93d3b",
+          "brightYellow": "#fd3e6a",
+          "brightBlue": "#04c5f0",
+          "brightMagenta": "#6c032c",
+          "brightCyan": "#ffbe74",
+          "brightWhite": "#11aeb3"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#126069",
+          "italic": true
+        },
+        "keyword": "#9147a8",
+        "operator": "#a8d61f",
+        "punctuation": "#a8d61f",
+        "string": "#ff7f41",
+        "escape": "#04c5f0",
+        "number": "#ffbe74",
+        "constant": "#ffbe74",
+        "function": "#7cd699",
+        "type": "#e20342",
+        "builtin": "#7cd699",
+        "variable": "#c8e967",
+        "parameter": "#a8d61f",
+        "property": "#7cd699",
+        "tag": "#9147a8",
+        "attribute": "#fd3e6a",
+        "added": "#ff7f41",
+        "removed": "#f93d3b",
+        "changed": "#04c5f0"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "tinted",
+        "iconTint": "accent"
+      },
+      "borders": {
+        "active": [
+          "#e20342",
+          "#c8e967"
+        ],
+        "inactive": [
+          "#2a153c"
+        ]
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-cosmic-valley.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-neon-pyramids.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-sunset-tree.heic",
+          "fit": "fill"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "file": "wallpapers/dark-cosmic-valley.heic",
+      "license": "MIT",
+      "attribution": "From Aetheria by Dizziee",
+      "source": "https://github.com/JJDizz1L/aetheria"
+    },
+    {
+      "file": "wallpapers/dark-neon-pyramids.heic",
+      "license": "MIT",
+      "attribution": "From Aetheria by Dizziee",
+      "source": "https://github.com/JJDizz1L/aetheria"
+    },
+    {
+      "file": "wallpapers/dark-sunset-tree.heic",
+      "license": "MIT",
+      "attribution": "From Aetheria by Dizziee",
+      "source": "https://github.com/JJDizz1L/aetheria"
+    }
+  ]
+}

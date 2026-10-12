@@ -36,7 +36,7 @@ struct BundledThemeTests {
         .sorted()
 
     @Test func bundlesEveryTheme() {
-        #expect(Self.folders.count == 75, "\(Self.folders)")
+        #expect(Self.folders.count == 76, "\(Self.folders)")
     }
 
     @Test(arguments: folders)

@@ -216,6 +216,33 @@ struct MoreAppsTests {
         #expect(services.calls.last == "run borders active_color=0xffe1e3e4 inactive_color=0xff494d64")
     }
 
+    @Test func aThemesOwnBorderGradientReachesTheFileAndTheRunningInstance() async throws {
+        let home = try FixtureHome()
+        let borders = try home.write("bin/borders", "#!/bin/sh\n")
+        let rc = "borders active_color=0xff91c1fd inactive_color=0xff3c4857\n"
+        try home.write(".config/borders/bordersrc", rc)
+        let env = SceneEnvironment(home: home.url, locateApp: { _ in nil }, locateExecutable: { $0 == "borders" ? borders : nil })
+        let services = FakeServices()
+        services.running = ["borders": [4646]]
+        let engine = Engine(env: env, services: services, integrations: [BordersIntegration()])
+        let request = ApplyRequest(theme: try Fixtures.theme("aetheria"), mode: .system, systemIsDark: true)
+        _ = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["borders"])
+        // bordersrc is a shell script, so the gradient is quoted, and the shell accepts the file.
+        let written = try #require(home.read(".config/borders/bordersrc"))
+        #expect(written.contains("borders 'active_color=gradient(top_left=0xffe20342,bottom_right=0xffc8e967)' inactive_color=0xff2a153c\n"))
+        let shell = Process()
+        shell.executableURL = URL(fileURLWithPath: "/bin/sh")
+        shell.arguments = ["-n", home.path(".config/borders/bordersrc").path]
+        try shell.run()
+        shell.waitUntilExit()
+        #expect(shell.terminationStatus == 0)
+        // The running instance gets the gradient, read back from the file without the quotes.
+        #expect(services.calls.contains("run borders active_color=gradient(top_left=0xffe20342,bottom_right=0xffc8e967) inactive_color=0xff2a153c"))
+        _ = await engine.restoreOriginal()
+        #expect(home.read(".config/borders/bordersrc") == rc)
+        #expect(services.calls.last == "run borders active_color=0xff91c1fd inactive_color=0xff3c4857")
+    }
+
     @Test func bordersIsLeftAloneWhenItDoesNotRun() async throws {
         let home = try FixtureHome()
         let borders = try home.write("bin/borders", "#!/bin/sh\n")
