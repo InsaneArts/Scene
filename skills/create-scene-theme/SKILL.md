@@ -1,6 +1,6 @@
 ---
 name: create-scene-theme
-description: Designs a complete theme for Scene, the Mac app that themes the desktop, terminals, and code editors in one step, then builds and installs it with Scene. A theme is a readable palette for a dark look, a light look, or both, three wallpapers per look, and the macOS accent and icon style. Use when someone asks to make, design, remix, or port a Scene theme, or one theme for their Mac's wallpaper, terminal, and editor together.
+description: Designs a complete theme for Scene, the Mac app that themes the desktop, terminals, and code editors in one step, then builds and installs it with Scene; also installs a theme someone shared on GitHub. A theme is a readable palette for a dark look, a light look, or both, three wallpapers per look, and the macOS accent and icon style. Use when someone asks to make, design, remix, or port a Scene theme, or one theme for their Mac's wallpaper, terminal, and editor together, or to install a Scene or Omarchy theme from a GitHub repository.
 ---
 
 # Create a Scene theme
@@ -16,7 +16,17 @@ defaults read "$APP/Contents/Info.plist" SceneThemeCommands
 SCENE="$APP/Contents/MacOS/Scene"
 ```
 
-Check: `defaults read` prints `1`. Anything else means Scene is missing or too old to have the theme commands, and an old Scene would open its window instead of answering: stop, and point the person to github.com/InsaneArts/Scene/releases.
+Check: `defaults read` prints `1` or more to make a theme, and `2` or more to install one from GitHub. A smaller number or an error means Scene is missing or too old for the command, and an old Scene would open its window instead of answering: stop, and point the person to github.com/InsaneArts/Scene/releases.
+
+## Install a shared theme
+
+When the person names a GitHub repository instead of asking for a new theme, install it and skip steps 1 to 6:
+
+```sh
+"$SCENE" --install-theme <github.com/owner/repo or owner/repo>
+```
+
+It takes a Scene theme (`theme.json` at the top) or an Omarchy theme (`colors.toml`), the same as Add Theme → Install from GitHub in the app. Check: it prints `ok Installed`. An `error` line says what is wrong, for example a private repository or one with no theme in it. Then tell the person how to apply it (select it in Scene's sidebar, then Apply).
 
 ## 1. Brief
 

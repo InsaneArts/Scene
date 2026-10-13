@@ -107,6 +107,8 @@ Then ask your agent for a theme, for example "Make a Scene theme of a foggy harb
 
 The theme shows in Scene's sidebar. The agent uses the same draft and checks as the Theme Maker, so its theme also opens in the Theme Maker for changes by hand. The built folder has a README with every credit, so you can put it on GitHub as it is, and anyone can install it with Add Theme → Install from GitHub. The skill needs a Scene that has the Theme Maker. It checks this first, and stops if Scene is older.
 
+The skill also installs themes other people share. Ask your agent, for example, "Install the Scene theme github.com/owner/repo". It runs `Scene --install-theme`, which takes the same Scene and Omarchy theme repositories as Add Theme → Install from GitHub. This needs Scene 0.2.1 or later.
+
 ## Themes
 
 <p align="center">
