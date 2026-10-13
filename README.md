@@ -50,7 +50,7 @@ Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set 
 
 ## Install
 
-Once the first release is out, install Scene in Terminal:
+Install Scene in Terminal:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/InsaneArts/Scene/main/install.sh | sh

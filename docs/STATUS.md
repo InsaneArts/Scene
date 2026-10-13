@@ -27,6 +27,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 - herdr 0.9.0: apply and restore against a fixture home give back its config byte for byte, comments included, and herdr's own `herdr config check` accepts Scene's file for one look and for two.
 
+- Release 0.2.0 (build 5): `Scripts/release.sh` built, signed, and notarized it from the agent session, and it is published on GitHub with its appcast. `curl … install.sh | sh` against the published release installed 0.2.0, and Gatekeeper accepts it as Notarized Developer ID.
+
 ## Not verified
 
 - herdr's running server and clients switching colors on the real Mac after `herdr server reload-config`. herdr's own tests say a reload also reloads its clients.
@@ -38,10 +40,9 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - The redesigned UI on macOS 14 and 15. Liquid Glass falls back to a material there, and without the macOS 26 toolbar spacer the toolbar buttons may sit next to the sidebar.
 - In the redesigned UI: applying from the Apply sheet and its results page, the menu bar panel in the real menu bar, the switcher's backdrop on a second screen, and the status HUD. Snapshot mode never applies, and it renders the menu bar panel and the carousel in plain windows.
 - iTerm2 on a real Mac. It is not installed on the test Mac.
-- Notarizing an Xcode-built release. From the agent session, the preflight could not read the `camus-notary` profile.
 - The film's soundtrack, by ear. `Marketing/film/score.py` synthesizes it, and its levels were set by measured loudness and band levels only.
-- Updates end to end: Check for Updates… in a running app, and an update from a published release. The feed exists only after the first release is published.
-- `install.sh` with a published release, and the appcast that `generate_appcast` writes. The test used a hand-written appcast.
+- Updates end to end: Check for Updates… in a running 0.1.0 finding 0.2.0, and installing it.
+- The menu bar panel when Scene starts at login without its window. It now loads the themes when it opens; before, it stayed empty.
 - The new apps on the real Mac. No theme was applied to the real setup. The reloads (SIGUSR1 for kitty and Helix, SIGUSR2 for btop, `source-file` for tmux, colors sent to borders) are tested with fake processes only.
 - Warp, Alacritty, and Helix are not installed on the test Mac. Warp's order (theme files, a 1-second pause, then the setting) comes from reading Warp's source, not from running it.
 - Xcode: whether a running Xcode keeps Scene's theme settings when it quits. Scene asks for a restart.
