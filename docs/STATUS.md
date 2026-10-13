@@ -27,7 +27,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 - herdr 0.9.0: apply and restore against a fixture home give back its config byte for byte, comments included, and herdr's own `herdr config check` accepts Scene's file for one look and for two.
 
-- Release 0.2.0 (build 5): `Scripts/release.sh` built, signed, and notarized it from the agent session, and it is published on GitHub with its appcast. `curl … install.sh | sh` against the published release installed 0.2.0, and Gatekeeper accepts it as Notarized Developer ID.
+- Releases 0.2.0 (build 5) and 0.2.1 (build 6): `Scripts/release.sh` built, signed, and notarized them from the agent session, and they are published on GitHub with their appcasts. 0.2.1 installed through `install.sh` has `SceneThemeCommands` 2 and answers `--install-theme`. `curl … install.sh | sh` against the published release installed 0.2.0, and Gatekeeper accepts it as Notarized Developer ID.
 - `Scene --install-theme` from a Debug build installed row-huh/omarchy-ghost-pastel-theme from GitHub into a scratch library with its three backgrounds, and answered a missing repository with one `error` line (exit 1) and a wrong address with the usage (exit 2).
 
 ## Not verified
