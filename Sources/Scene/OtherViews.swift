@@ -513,6 +513,8 @@ struct MenuBarView: View {
         }
         .padding(12)
         .frame(width: 340)
+        // Scene can start at login without its window, which is where the library loads otherwise.
+        .task { if model.themes.isEmpty { await model.reload() } }
     }
 
     @ViewBuilder
