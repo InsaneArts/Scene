@@ -401,7 +401,11 @@ final class AppModel {
     func startWatchingLibrary() {
         guard libraryObserver == nil, Snapshot.folder == nil else { return }
         libraryObserver = DistributedNotificationCenter.default().addObserver(forName: Self.libraryChanged, object: nil, queue: .main) { [weak self] _ in
-            Task { @MainActor in await self?.reload() }
+            Task { @MainActor in
+                // A theme installed from the command line also saved where it came from.
+                self?.themeSources = UserDefaults.standard.dictionary(forKey: "themeSources") as? [String: String] ?? [:]
+                await self?.reload()
+            }
         }
     }
 

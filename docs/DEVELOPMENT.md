@@ -47,7 +47,7 @@ The app lands in `.build/Xcode/Build/Products/Debug/Scene.app`.
 | SceneSwitcherTests | Carousel selection and shortcut rules |
 | SceneLiveTests | The real Mac. Opt-in, and not in the scheme |
 
-The theme command line runs from a Debug build without a window: `.build/Xcode/Build/Products/Debug/Scene.app/Contents/MacOS/Scene --check-theme draft.json` (see ARCHITECTURE.md → Command line). Leave out `--install` unless the user agrees, because it adds the theme to their Scene library.
+The theme command line runs from a Debug build without a window: `.build/Xcode/Build/Products/Debug/Scene.app/Contents/MacOS/Scene --check-theme draft.json` (see ARCHITECTURE.md → Command line). Leave out `--install`, and don't run `--install-theme`, unless the user agrees, because both add a theme to their Scene library. `CFFIXED_USER_HOME=<folder>` moves the library to a scratch folder, but the theme's source still goes to the real `com.insanearts.scene` preferences.
 
 `./Scripts/test.sh` runs everything except SceneLiveTests through the Scene scheme. Two more tests are opt-in and change nothing on the Mac: `SCENE_NETWORK=1` downloads a real theme repository into a throwaway library (`SCENE_NETWORK_REPO=owner/repo` picks it, default `bjarneo/omarchy-aura-theme`), and `SCENE_OMARCHY_CORPUS=<folder>` imports every `colors.toml` in a folder. `swift test --package-path Packages/SceneKit` runs the same tests with Swift Package Manager (with `DEVELOPER_DIR` set).
 

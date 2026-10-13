@@ -163,6 +163,25 @@ struct ThemeDraftTests {
         #expect(ThemeTool.run(["Scene", "--build-theme", file.path], install: { _ in }, print: { output.append($0) }) == 2)
     }
 
+    @Test func commandLineInstallsAThemeFromGitHub() throws {
+        var output: [String] = []
+        var asked: [GitHubRepository] = []
+        let nord = try Fixtures.theme("nord")
+        let status = ThemeTool.run(["Scene", "--install-theme", "https://github.com/row-huh/omarchy-ghost-pastel-theme.git"], install: { _ in },
+                                   installRepository: { asked.append($0); return nord }, print: { output.append($0) })
+        #expect(status == 0)
+        #expect(asked == [GitHubRepository(owner: "row-huh", name: "omarchy-ghost-pastel-theme")])
+        #expect(output == ["ok      Installed Nord from https://github.com/row-huh/omarchy-ghost-pastel-theme in Scene"])
+
+        output = []
+        let failed = ThemeTool.run(["Scene", "--install-theme", "owner/empty"], install: { _ in },
+                                   installRepository: { _ in throw SceneError.invalid("owner/empty has no theme.json") }, print: { output.append($0) })
+        #expect(failed == 1)
+        #expect(output.count == 1 && output[0].hasPrefix("error   ") && output[0].contains("owner/empty has no theme.json"))
+        #expect(ThemeTool.run(["Scene", "--install-theme", "https://gitlab.com/a/b"], install: { _ in }, print: { _ in }) == 2)
+        #expect(ThemeTool.run(["Scene", "--install-theme"], install: { _ in }, print: { _ in }) == 2)
+    }
+
     @Test func bundledThemesReadWell() throws {
         for folder in ["tokyo-night", "catppuccin", "nord", "amber"] {
             for (appearance, variant) in try Fixtures.theme(folder).variants {

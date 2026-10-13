@@ -121,7 +121,7 @@ The 76 are only a start. Open any theme in the Theme Maker to make your own vers
 
 ```sh
 open Scene.xcodeproj    # ⌘R runs the app, ⌘U runs the tests
-./Scripts/test.sh       # the same 180 tests from the command line
+./Scripts/test.sh       # the same 181 tests from the command line
 ```
 
 To make a theme, use the `scene-theme` skill in `.claude/skills/`. The core is a local package, `Packages/SceneKit`. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains how the code is written, [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) how to build, test, and release it, and [docs/STATUS.md](docs/STATUS.md) what is done and what is open. Agents start at [AGENTS.md](AGENTS.md).

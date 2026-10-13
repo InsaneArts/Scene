@@ -25,8 +25,9 @@ struct SceneApp: App {
     @State private var model: AppModel
 
     init() {
-        // `Scene --check-theme` and `Scene --build-theme` run the theme command line and quit before any window opens.
-        if let status = ThemeTool.run(CommandLine.arguments, install: Self.install, print: { print($0) }) { exit(status) }
+        // `Scene --check-theme`, `--build-theme`, and `--install-theme` run the theme command line and quit before any window opens.
+        if let status = ThemeTool.run(CommandLine.arguments, install: Self.install, installRepository: Self.installRepository,
+                                      print: { print($0) }) { exit(status) }
         // Limit ImageIO to the formats themes may contain, for the lifetime of the process.
         if #available(macOS 14.2, *) {
             CGImageSourceSetAllowableTypes([UTType.png.identifier, UTType.jpeg.identifier, UTType.heic.identifier] as CFArray)
@@ -42,6 +43,26 @@ struct SceneApp: App {
                                    installedFolder: SceneEnvironment.live().appSupport.appendingPathComponent("Themes"))
         try library.importPackage(at: folder)
         DistributedNotificationCenter.default().postNotificationName(AppModel.libraryChanged, object: nil, userInfo: nil, deliverImmediately: true)
+    }
+
+    /// Installs a GitHub repository's theme from the command line, like Install from GitHub, and remembers its source
+    /// for Update.
+    static func installRepository(_ repository: GitHubRepository) throws -> Theme {
+        final class Download: @unchecked Sendable { var result: Result<Data, Error>? }
+        let download = Download(), done = DispatchSemaphore(value: 0)
+        Task.detached {
+            do { download.result = .success(try await repository.download()) } catch { download.result = .failure(error) }
+            done.signal()
+        }
+        done.wait()
+        let library = ThemeLibrary(bundledFolder: Locations.bundledThemes,
+                                   installedFolder: SceneEnvironment.live().appSupport.appendingPathComponent("Themes"))
+        let theme = try library.installRepository(archive: try download.result!.get(), repository: repository)
+        var sources = UserDefaults.standard.dictionary(forKey: "themeSources") as? [String: String] ?? [:]
+        sources[theme.id] = repository.url.absoluteString
+        UserDefaults.standard.set(sources, forKey: "themeSources")
+        DistributedNotificationCenter.default().postNotificationName(AppModel.libraryChanged, object: nil, userInfo: nil, deliverImmediately: true)
+        return theme
     }
 
     var body: some Scene {

@@ -28,7 +28,7 @@
 	<key>SUScheduledCheckInterval</key>
 	<integer>86400</integer>
 	<key>SceneThemeCommands</key>
-	<integer>1</integer>
+	<integer>2</integer>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

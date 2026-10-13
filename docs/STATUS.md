@@ -4,7 +4,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 ## Verified
 
-- 180 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
+- 181 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
 - The apps added after the MVP: kitty, Alacritty, Warp, Terminal, Zed, Xcode, Helix, tmux, bat and delta, btop, and JankyBorders. Apply and restore against fixture home folders give back every user file byte for byte. Where an app is installed on the test Mac, its own parser read Scene's output in a throwaway folder: kitty 0.44 (`kitty +runpy`), tmux 3.6b (a private server, which accepts every option even without `-q`), bat 0.26.1 and delta 0.19.2 (bat's cache and an included git config), and `plutil` for the Xcode themes. Python's `tomllib` read the Alacritty, Helix, and Warp TOML.
 - Install from GitHub: two community themes downloaded and installed into a throwaway library, `bjarneo/omarchy-aura-theme` (colors.toml) and `guilhermetk/omarchy-all-hallows-eve-theme` (only alacritty.toml). The importer reads 107 of the 108 colors.toml files of Omarchy's community themes. It refuses the other one, which has an invalid color (`#4A8B8Bi`).
 - Theme Maker, redesigned around sliders: the Swift palette builder gives the same hex values as `build_palette` in `Scripts/themekit.py` (three looks checked); a sweep of the slider ranges gives no palette-check errors; a palette from Amber's wallpapers reads well in both looks and is the same on every run; one slider move with the preview takes 0.52 ms in a Debug build and 0.23 ms in Release. The new window renders in snapshot mode, started from Amber.
@@ -28,6 +28,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - herdr 0.9.0: apply and restore against a fixture home give back its config byte for byte, comments included, and herdr's own `herdr config check` accepts Scene's file for one look and for two.
 
 - Release 0.2.0 (build 5): `Scripts/release.sh` built, signed, and notarized it from the agent session, and it is published on GitHub with its appcast. `curl … install.sh | sh` against the published release installed 0.2.0, and Gatekeeper accepts it as Notarized Developer ID.
+- `Scene --install-theme` from a Debug build installed row-huh/omarchy-ghost-pastel-theme from GitHub into a scratch library with its three backgrounds, and answered a missing repository with one `error` line (exit 1) and a wrong address with the usage (exit 2).
 
 ## Not verified
 

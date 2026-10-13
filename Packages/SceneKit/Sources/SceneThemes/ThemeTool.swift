@@ -6,17 +6,37 @@ import SceneFoundation
 ///
 ///     Scene --check-theme draft.json
 ///     Scene --build-theme draft.json <folder> [--install]
+///     Scene --install-theme <github-repository>
 ///
+/// The last one installs a Scene or Omarchy theme from GitHub, like Install from GitHub in the app.
 /// Each problem is one line that starts with `error` or `warning`. The exit status is 0 when the draft has no errors,
 /// 1 when it has errors, and 2 for a wrong command.
 public enum ThemeTool {
     public static let usage = """
     usage: Scene --check-theme <draft.json>
            Scene --build-theme <draft.json> <folder> [--install]
+           Scene --install-theme <github-repository>
     """
 
-    /// Runs a command, or returns nil when the arguments hold none. `install` adds a built theme folder to Scene.
-    public static func run(_ arguments: [String], install: (URL) throws -> Void, print: (String) -> Void) -> Int32? {
+    /// Runs a command, or returns nil when the arguments hold none. `install` adds a built theme folder to Scene, and
+    /// `installRepository` downloads a GitHub repository's theme and adds it.
+    public static func run(_ arguments: [String], install: (URL) throws -> Void,
+                           installRepository: (GitHubRepository) throws -> Theme = { _ in throw SceneError.failed("not available") },
+                           print: (String) -> Void) -> Int32? {
+        if let index = arguments.firstIndex(of: "--install-theme") {
+            guard let text = arguments.dropFirst(index + 1).first, let repository = GitHubRepository(text) else { print(usage); return 2 }
+            do {
+                let theme = try installRepository(repository)
+                print("ok      Installed \(theme.manifest.name) from \(repository.url.absoluteString) in Scene")
+                return 0
+            } catch let error as ThemeLoadError {
+                error.errors.forEach { print("error   \($0)") }
+                return 1
+            } catch {
+                print("error   \(error)")
+                return 1
+            }
+        }
         guard let index = arguments.firstIndex(where: { $0 == "--check-theme" || $0 == "--build-theme" }) else { return nil }
         let building = arguments[index] == "--build-theme"
         let rest = Array(arguments[(index + 1)...])
