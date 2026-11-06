@@ -418,7 +418,7 @@ public struct RexIntegration: Integration {
         guard !services.processes(bundleID: Self.bundleID).isEmpty else {
             return Detection(installed: true, version: version, setup: .blocked("Rex changes its theme only while it is open. Open Rex, then apply again."))
         }
-        return Detection(installed: true, version: version, detail: Operation.tilde(cli.path), context: ["cli": cli.path])
+        return Detection(installed: true, version: version, detail: "Imports scene-dark and scene-light into Rex", context: ["cli": cli.path])
     }
 
     public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
