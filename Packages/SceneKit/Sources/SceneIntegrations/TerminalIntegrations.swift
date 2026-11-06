@@ -391,3 +391,45 @@ public struct WarpIntegration: Integration {
         return Self.verifyFiles(plan)
     }
 }
+
+// MARK: - Rex
+
+/// Rex, Superlogical's terminal workspace. Its theme colors the whole window as well as the terminal. Scene writes a
+/// Ghostty theme file per look and imports it with Rex's own `client.theme.import` action, which runs in the open app.
+public struct RexIntegration: Integration {
+    public let id = "rex"
+    public let displayName = "Rex"
+    public let kind = IntegrationKind.terminal
+    public static let bundleID = "com.superlogical.rex"
+    public init() {}
+
+    /// The `rex` command inside Rex's server, which Rex updates itself. A terminal finds it on its PATH, but Scene does not.
+    static func cli(_ env: SceneEnvironment) -> URL? {
+        let bundled = env.home.appendingPathComponent("Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex")
+        return FileManager.default.isExecutableFile(atPath: bundled.path) ? bundled : env.locateExecutable("rex")
+    }
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        guard let app = env.locateApp(Self.bundleID) else { return .notInstalled() }
+        let version = Processes.appVersion(at: app)
+        guard let cli = Self.cli(env) else {
+            return Detection(installed: true, version: version, setup: .blocked("Scene cannot find the rex command. Open Rex once, then apply again."))
+        }
+        guard !services.processes(bundleID: Self.bundleID).isEmpty else {
+            return Detection(installed: true, version: version, setup: .blocked("Rex changes its theme only while it is open. Open Rex, then apply again."))
+        }
+        return Detection(installed: true, version: version, detail: Operation.tilde(cli.path), context: ["cli": cli.path])
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        let folder = env.appSupport.appendingPathComponent("Rex")
+        var ops: [Operation] = []
+        for (appearance, variant) in request.nativeVariants.sorted(by: { $0.key.rawValue < $1.key.rawValue }) {
+            // Rex names a theme after its file, so each look keeps one entry in Rex's list of custom themes.
+            let file = folder.appendingPathComponent(GhosttyRenderer.themeNames[appearance]!)
+            ops.append(.writeManagedFile(path: file.path, contents: Data(GhosttyRenderer.themeFile(variant, version: nil).utf8)))
+            ops.append(.importRexTheme(cli: detection.context["cli"]!, path: file.path, appearance: appearance))
+        }
+        return IntegrationPlan(operations: ops)
+    }
+}

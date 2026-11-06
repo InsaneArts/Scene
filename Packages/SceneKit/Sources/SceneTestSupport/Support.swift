@@ -93,6 +93,7 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
         let command = "\((executable as NSString).lastPathComponent) \(arguments.joined(separator: " "))"
         record("run \(command)")
         if let response = lock.withLock({ responses[command] }) { return response }
+        if (executable as NSString).lastPathComponent == "rex" { return rex(arguments) }
         if arguments.first == "--install-extension", let vsix = arguments.dropFirst().first {
             let name = (vsix as NSString).lastPathComponent   // scene-themes-<version>.vsix
             let version = name.replacingOccurrences(of: "scene-themes-", with: "").replacingOccurrences(of: ".vsix", with: "")
@@ -111,6 +112,50 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
         }
         if arguments.first == "--version" { return CLIResult(status: 0, stdout: "NVIM v0.11.5\n", stderr: "") }
         return CLIResult(status: 0, stdout: "", stderr: "")
+    }
+
+    /// Rex's built-in themes, by id, with their look.
+    public var rexBuiltInThemes = ["velvet-dusk": "dark", "merino-light": "light"]
+
+    /// Rex's theme actions as the open Rex app runs them. It keeps custom themes as JSON in its preferences, names an
+    /// import after its file, replaces a theme of the same name, and picks the look from the background.
+    func rex(_ arguments: [String]) -> CLIResult {
+        let domain = "com.superlogical.rex"
+        guard !processes(bundleID: domain).isEmpty else { return CLIResult(status: 1, stdout: "", stderr: "Error: no app client is connected") }
+        let args = Dictionary(arguments.compactMap { argument -> (String, String)? in
+            guard !argument.hasPrefix("--"), let eq = argument.firstIndex(of: "=") else { return nil }
+            return (String(argument[..<eq]), String(argument[argument.index(after: eq)...]))
+        }, uniquingKeysWith: { $1 })
+        return lock.withLock {
+            var themes: [[String: Any]] = []
+            if case .data(let data)? = prefs["\(domain)#Workspace.customThemes"] {
+                themes = (try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]) ?? []
+            }
+            switch arguments.dropFirst().first {
+            case "client.theme.import":
+                guard let path = args["path"], let text = try? String(contentsOfFile: path, encoding: .utf8),
+                      let line = text.split(separator: "\n").first(where: { $0.hasPrefix("background = ") }),
+                      let color = RGBA(hex: String(line.dropFirst("background = ".count))) else {
+                    return CLIResult(status: 1, stdout: "", stderr: "Error: Expected a UTF-8 Ghostty theme or iTerm color file.")
+                }
+                let name = (path as NSString).lastPathComponent, look = color.isDark ? "dark" : "light"
+                let id = themes.first { $0["name"] as? String == name }?["id"] as? String ?? "custom-\(UUID().uuidString)"
+                themes.removeAll { $0["id"] as? String == id }
+                let background = ["red": Double(color.r) / 255, "green": Double(color.g) / 255, "blue": Double(color.b) / 255, "alpha": 1]
+                themes.append(["id": id, "name": name, "appearance": look, "palette": ["background": background]])
+                prefs["\(domain)#Workspace.customThemes"] = .data(try! JSONSerialization.data(withJSONObject: themes))
+                prefs["\(domain)#Workspace.\(look)ThemeID"] = .string(id)
+            case "client.theme.change":
+                guard let name = args["name"],
+                      let look = rexBuiltInThemes[name] ?? themes.first(where: { $0["id"] as? String == name })?["appearance"] as? String else {
+                    return CLIResult(status: 1, stdout: "", stderr: "Error: no theme matches")
+                }
+                prefs["\(domain)#Workspace.\(look)ThemeID"] = .string(name)
+            default:
+                return CLIResult(status: 1, stdout: "", stderr: "Error: unknown action")
+            }
+            return CLIResult(status: 0, stdout: "null\n", stderr: "")
+        }
     }
 
     public func processes(bundleID: String) -> [pid_t] { lock.withLock { running[bundleID] ?? [] } }

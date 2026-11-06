@@ -6,7 +6,7 @@
   <img src=".github/assets/switcher.jpg" width="100%" alt="The Scene theme switcher over the desktop, with Cold Aisle selected" />
 </p>
 
-Scene gives your desktop, terminals, and code editors one theme in one step, the way [Omarchy](https://omarchy.org) does on Linux. It changes the wallpaper, Light/Dark, and the accent color, your terminal (Ghostty, iTerm2, kitty, Alacritty, Warp, or Terminal), your editor (VS Code, Cursor, Zed, Xcode, Neovim, Helix, and more), and tools like tmux and bat, all together. It can put your original setup back.
+Scene gives your desktop, terminals, and code editors one theme in one step, the way [Omarchy](https://omarchy.org) does on Linux. It changes the wallpaper, Light/Dark, and the accent color, your terminal (Ghostty, iTerm2, kitty, Alacritty, Warp, Rex, or Terminal), your editor (VS Code, Cursor, Zed, Xcode, Neovim, Helix, and more), and tools like tmux and bat, all together. It can put your original setup back.
 
 ## Switch from anywhere
 
@@ -42,7 +42,7 @@ Before a theme touches anything, Scene lists each app and every file and setting
 |---|---|---|
 | Desktop | Wallpaper, Light/Dark, JankyBorders | `NSWorkspace`; System Events, or a private call; one marked line in `bordersrc` |
 | macOS look | Accent color, icon & widget style | Private calls in a helper, on tested macOS builds only (experimental) |
-| Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one |
+| Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Rex, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one; for Rex, Scene's theme imported with Rex's own command while Rex is open |
 | Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file |
 | Command-line tools | tmux, bat and delta, btop, herdr | A theme file and one marked include line or config key; herdr's color tokens in its config |
 
@@ -123,7 +123,7 @@ The 76 are only a start. Open any theme in the Theme Maker to make your own vers
 
 ```sh
 open Scene.xcodeproj    # ⌘R runs the app, ⌘U runs the tests
-./Scripts/test.sh       # the same 181 tests from the command line
+./Scripts/test.sh       # the same 183 tests from the command line
 ```
 
 To make a theme, use the `scene-theme` skill in `.claude/skills/`. The core is a local package, `Packages/SceneKit`. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains how the code is written, [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) how to build, test, and release it, and [docs/STATUS.md](docs/STATUS.md) what is done and what is open. Agents start at [AGENTS.md](AGENTS.md).

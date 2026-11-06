@@ -369,6 +369,64 @@ struct MoreAppsTests {
         #expect(!FileManager.default.fileExists(atPath: home.path(".warp").path))
     }
 
+    /// A home with Rex and its `rex` command, and Rex showing its own themes.
+    func rexSetup(running: Bool) throws -> (home: FixtureHome, services: FakeServices, engine: Engine) {
+        let home = try FixtureHome()
+        let rex = try home.fakeApp("Rex Beta", version: "0.1.0")
+        let cli = try home.write("Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex", "#!/bin/sh\n")
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: cli.path)
+        let env = SceneEnvironment(home: home.url, locateApp: { $0 == RexIntegration.bundleID ? rex : nil }, locateExecutable: { _ in nil })
+        let services = FakeServices()
+        if running { services.running = [RexIntegration.bundleID: [1506]] }
+        services.prefs["com.superlogical.rex#Workspace.darkThemeID"] = .string("velvet-dusk")
+        services.prefs["com.superlogical.rex#Workspace.lightThemeID"] = .string("merino-light")
+        return (home, services, Engine(env: env, services: services, integrations: [RexIntegration()]))
+    }
+
+    @Test func rexImportsEachLookAndRestorePicksTheUsersThemesAgain() async throws {
+        let (home, services, engine) = try rexSetup(running: true)
+        func shown(_ look: String) -> (name: String, background: String)? {
+            guard case .string(let id)? = services.prefs["com.superlogical.rex#Workspace.\(look)ThemeID"],
+                  case .data(let data)? = services.prefs["com.superlogical.rex#Workspace.customThemes"],
+                  let themes = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]],
+                  let theme = themes.first(where: { $0["id"] as? String == id }),
+                  let color = (theme["palette"] as? [String: Any])?["background"] as? [String: Double] else { return nil }
+            let rgba = RGBA(r: UInt8((color["red"]! * 255).rounded()), g: UInt8((color["green"]! * 255).rounded()), b: UInt8((color["blue"]! * 255).rounded()))
+            return (theme["name"] as! String, rgba.hex)
+        }
+        let two = try Fixtures.theme("catppuccin")
+        let request = ApplyRequest(theme: two, mode: .system, systemIsDark: true)
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["rex"])
+        #expect(report.results.first?.outcome == .applied, "\(String(describing: report.results.first?.outcome))")
+        #expect(shown("dark")?.name == "scene-dark" && shown("dark")?.background == two.variants[.dark]!.terminal.background.hex)
+        #expect(shown("light")?.name == "scene-light" && shown("light")?.background == two.variants[.light]!.terminal.background.hex)
+        #expect(home.read("Library/Application Support/Scene/Rex/scene-dark")?.hasPrefix("# Managed by Scene") == true)
+        let darkID = services.prefs["com.superlogical.rex#Workspace.darkThemeID"]
+
+        // The next theme replaces Rex's scene-dark entry instead of adding one. One look leaves Rex's light theme as it is.
+        let one = try Fixtures.theme("tokyo-night")
+        let second = ApplyRequest(theme: one, mode: .system, systemIsDark: true)
+        _ = await engine.apply(second, planned: await engine.plan(second, detections: await engine.detectAll()), selected: ["rex"])
+        #expect(services.prefs["com.superlogical.rex#Workspace.darkThemeID"] == darkID)
+        #expect(shown("dark")?.background == one.variants[.dark]!.terminal.background.hex)
+        #expect(shown("light")?.name == "scene-light")
+
+        _ = await engine.restoreOriginal()
+        #expect(services.prefs["com.superlogical.rex#Workspace.darkThemeID"] == .string("velvet-dusk"))
+        #expect(services.prefs["com.superlogical.rex#Workspace.lightThemeID"] == .string("merino-light"))
+        #expect(!FileManager.default.fileExists(atPath: home.path("Library/Application Support/Scene/Rex/scene-dark").path))
+        #expect(services.calls.contains("run rex do client.theme.change name=velvet-dusk --autostart=false"))
+    }
+
+    @Test func rexIsLeftAloneWhileItIsClosed() async throws {
+        let (home, services, engine) = try rexSetup(running: false)
+        let request = ApplyRequest(theme: try Fixtures.theme("nord"), mode: .system, systemIsDark: true)
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["rex"])
+        #expect(report.results.first?.outcome == .skipped("Rex changes its theme only while it is open. Open Rex, then apply again."))
+        #expect(!services.calls.contains { $0.hasPrefix("run rex") })
+        #expect(!FileManager.default.fileExists(atPath: home.path("Library/Application Support/Scene/Rex").path))
+    }
+
     @Test func userChangeToTerminalProfilesIsKeptOnRestore() async throws {
         let s = try setup()
         _ = try await apply(s, "gruvbox", mode: .dark)

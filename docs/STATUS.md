@@ -4,7 +4,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 ## Verified
 
-- 181 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
+- 183 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
 - The apps added after the MVP: kitty, Alacritty, Warp, Terminal, Zed, Xcode, Helix, tmux, bat and delta, btop, and JankyBorders. Apply and restore against fixture home folders give back every user file byte for byte. Where an app is installed on the test Mac, its own parser read Scene's output in a throwaway folder: kitty 0.44 (`kitty +runpy`), tmux 3.6b (a private server, which accepts every option even without `-q`), bat 0.26.1 and delta 0.19.2 (bat's cache and an included git config), and `plutil` for the Xcode themes. Python's `tomllib` read the Alacritty, Helix, and Warp TOML.
 - Install from GitHub: two community themes downloaded and installed into a throwaway library, `bjarneo/omarchy-aura-theme` (colors.toml) and `guilhermetk/omarchy-all-hallows-eve-theme` (only alacritty.toml). The importer reads 107 of the 108 colors.toml files of Omarchy's community themes. It refuses the other one, which has an invalid color (`#4A8B8Bi`).
 - Theme Maker, redesigned around sliders: the Swift palette builder gives the same hex values as `build_palette` in `Scripts/themekit.py` (three looks checked); a sweep of the slider ranges gives no palette-check errors; a palette from Amber's wallpapers reads well in both looks and is the same on every run; one slider move with the preview takes 0.52 ms in a Debug build and 0.23 ms in Release. The new window renders in snapshot mode, started from Amber.
@@ -45,6 +45,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Updates end to end: Check for Updates… in a running 0.1.0 finding 0.2.0, and installing it.
 - The menu bar panel when Scene starts at login without its window. It now loads the themes when it opens; before, it stayed empty.
 - The new apps on the real Mac. No theme was applied to the real setup. The reloads (SIGUSR1 for kitty and Helix, SIGUSR2 for btop, `source-file` for tmux, colors sent to borders) are tested with fake processes only.
+- Rex through Scene's engine. By hand on Rex Beta 0.1.0 (1642): `rex do client.theme.import` imported a Ghostty theme file, named it after the file, and selected it for its look; a second import of the same file replaced the theme and kept its id; `client.theme.change` put the user's themes back. The engine's use of this is covered with a simulated Rex only.
 - Warp, Alacritty, and Helix are not installed on the test Mac. Warp's order (theme files, a 1-second pause, then the setting) comes from reading Warp's source, not from running it.
 - Xcode: whether a running Xcode keeps Scene's theme settings when it quits. Scene asks for a restart.
 - Terminal: a running Terminal can write its own profiles back when you edit a profile in its settings. Scene then reports the change outside Scene.

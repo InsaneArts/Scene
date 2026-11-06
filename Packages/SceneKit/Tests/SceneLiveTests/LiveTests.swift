@@ -51,4 +51,30 @@ struct LiveTests {
         #expect(report.results.allSatisfy { if case .failed = $0.outcome { false } else { true } }, "a live apply failed")
         #expect(elapsed < 3, "apply took \(elapsed) s")
     }
+
+    /// Rex only, while the Rex app is open. Its theme files and the ledger stay in a temporary folder.
+    @Test func applyAndRestoreRex() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("scene-live-rex-\(UUID().uuidString.prefix(6))")
+        let live = SceneEnvironment.live()
+        let env = SceneEnvironment(home: live.home, appSupport: folder, xdgConfigHome: live.xdgConfigHome,
+                                   locateApp: live.locateApp, locateExecutable: live.locateExecutable)
+        let services = LiveSystemServices(tweaks: TweakRunner(helper: nil, policy: TweakPolicy(enabled: false, allowUntested: false)))
+        let engine = Engine(env: env, services: services, integrations: [RexIntegration()], store: EngineStore(root: folder))
+        let domain = "com.superlogical.rex"
+        let before = Appearance.allCases.map { services.preference(domain: domain, key: "Workspace.\($0.rawValue)ThemeID") }
+        let theme = try Fixtures.theme("catppuccin")
+        let request = ApplyRequest(theme: theme, mode: .system, systemIsDark: await services.appearance().dark)
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["rex"])
+        for result in report.results { print("LIVE apply \(result.name): \(result.outcome) \(result.operations)") }
+        #expect(report.results.first?.outcome == .applied)
+        for appearance in Appearance.allCases {
+            let shown = await engine.rexTheme(appearance)
+            print("LIVE Rex \(appearance): \(String(describing: shown))")
+            #expect(shown?.name == "scene-\(appearance.rawValue)" && shown?.background == theme.variants[appearance]!.terminal.background.hex)
+        }
+        try await Task.sleep(for: .seconds(3))   // time to look at Rex
+
+        for item in await engine.restoreOriginal() { print("LIVE restore \(item.resource): \(item.result)") }
+        #expect(Appearance.allCases.map { services.preference(domain: domain, key: "Workspace.\($0.rawValue)ThemeID") } == before)
+    }
 }

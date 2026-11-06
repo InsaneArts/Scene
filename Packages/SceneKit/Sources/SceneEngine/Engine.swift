@@ -327,6 +327,8 @@ public actor Engine {
             return .appearance(dark: a.dark, auto: a.auto)
         case .installEditorExtension(let cli, _, let id, _):
             return .extensionVersion(await installedExtensionVersion(cli: cli, id: id))
+        case .importRexTheme(_, _, let appearance):
+            return .plist(services.preference(domain: Self.rexDomain, key: Self.rexKey(appearance)))
         case .setTweak(let id, _):
             return .tweak((try? await services.tweakGet(id)) ?? .null)
         case .pause:
@@ -396,6 +398,19 @@ public actor Engine {
                 throw SceneError.failed("the editor did not report Scene Themes \(version) as installed")
             }
             return .extensionVersion(version)
+        case .importRexTheme(let cli, let path, let appearance):
+            try await runRex(cli, ["do", "client.theme.import", "path=\(path)"])
+            // Rex saves the import in its preferences. Wait until the look names the imported theme with the file's background.
+            let name = (path as NSString).lastPathComponent
+            let background = FileOps.read(URL(fileURLWithPath: path)).flatMap { data in
+                String(decoding: data, as: UTF8.self).split(separator: "\n").first { $0.hasPrefix("background = ") }
+                    .map { $0.dropFirst("background = ".count).lowercased() }
+            }
+            for _ in 0..<30 {
+                if let theme = rexTheme(appearance), theme.name == name, theme.background == background { return .plist(.string(theme.id)) }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            throw SceneError.failed("Rex did not select \(name) as its \(appearance.rawValue) theme")
         case .setTweak(let id, let value):
             let readBack = try await services.tweakSet(id, value)
             return .tweak(readBack)
@@ -466,6 +481,16 @@ public actor Engine {
                 let result = try await services.run(cli, ["--uninstall-extension", id], environment: nil)
                 if result.status != 0 { throw SceneError.failed("uninstall failed: \(result.stderr.prefix(200))") }
             }
+        case (.importRexTheme(let cli, _, let appearance), .plist(let value)):
+            guard case .string(let id)? = value else {
+                throw SceneError.failed("Rex had no \(appearance.rawValue) theme before Scene. Pick one in Rex Settings → Themes.")
+            }
+            try await runRex(cli, ["do", "client.theme.change", "name=\(id)"])
+            for _ in 0..<30 {
+                if services.preference(domain: Self.rexDomain, key: Self.rexKey(appearance)) == .string(id) { return }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            throw SceneError.failed("Rex did not switch back to \(id)")
         case (.setTweak(let id, _), .tweak(let value)):
             _ = try await services.tweakSet(id, value)
         default:
@@ -505,6 +530,29 @@ public actor Engine {
             if parts.count == 2, parts[0].lowercased() == id.lowercased() { return parts[1] }
         }
         return nil
+    }
+
+    static let rexDomain = "com.superlogical.rex"
+    static func rexKey(_ appearance: Appearance) -> String { "Workspace.\(appearance.rawValue)ThemeID" }
+
+    /// Runs an action in the Rex app. It fails when Rex is not open, and never starts a Rex server.
+    func runRex(_ cli: String, _ arguments: [String]) async throws {
+        let result = try await services.run(cli, arguments + ["--autostart=false"], environment: nil)
+        guard result.status == 0 else {
+            throw SceneError.failed("rex \(arguments[1]) failed: \(result.stderr.trimmingCharacters(in: .whitespacesAndNewlines).prefix(300))")
+        }
+    }
+
+    /// The custom theme Rex shows for a look, from Rex's preferences, with its background as #rrggbb.
+    func rexTheme(_ appearance: Appearance) -> (id: String, name: String, background: String)? {
+        guard case .string(let id)? = services.preference(domain: Self.rexDomain, key: Self.rexKey(appearance)),
+              case .data(let data)? = services.preference(domain: Self.rexDomain, key: "Workspace.customThemes"),
+              let themes = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]],
+              let theme = themes.first(where: { $0["id"] as? String == id }), let name = theme["name"] as? String,
+              let color = (theme["palette"] as? [String: Any])?["background"] as? [String: Any],
+              let r = color["red"] as? Double, let g = color["green"] as? Double, let b = color["blue"] as? Double else { return nil }
+        let byte = { (value: Double) in Int((value * 255).rounded()) }
+        return (id, name, String(format: "#%02x%02x%02x", byte(r), byte(g), byte(b)))
     }
 
     /// Compares states, ignoring backup bookkeeping.
