@@ -25,20 +25,21 @@ public enum Processes {
         process.standardOutput = out
         process.standardError = err
         process.standardInput = FileHandle.nullDevice
-        let group = DispatchGroup()
-        group.enter()
-        process.terminationHandler = { _ in group.leave() }
+        // Read while the command runs, so a full pipe cannot block it.
+        let outReader = PipeReader(out.fileHandleForReading), errReader = PipeReader(err.fileHandleForReading)
+        let exited = DispatchSemaphore(value: 0)
+        process.terminationHandler = { _ in exited.signal() }
         try process.run()
-        // Read before waiting so a full pipe cannot block the child.
-        let outData = out.fileHandleForReading.readDataToEndOfFile()
-        let errData = err.fileHandleForReading.readDataToEndOfFile()
-        if group.wait(timeout: .now() + timeout) == .timedOut {
+        if exited.wait(timeout: .now() + timeout) == .timedOut {
             process.terminate()
+            _ = outReader.finish(by: .now()); _ = errReader.finish(by: .now())
             throw SceneError.failed("\(URL(fileURLWithPath: executable).lastPathComponent) timed out")
         }
+        // A child the command left running keeps the pipes open, so wait for the rest of the output only briefly.
+        let deadline = DispatchTime.now() + 0.5
         return CLIResult(status: process.terminationStatus,
-                         stdout: String(decoding: outData, as: UTF8.self),
-                         stderr: String(decoding: errData, as: UTF8.self))
+                         stdout: String(decoding: outReader.finish(by: deadline), as: UTF8.self),
+                         stderr: String(decoding: errReader.finish(by: deadline), as: UTF8.self))
     }
 
     /// PIDs of running GUI apps with a bundle identifier.
@@ -97,5 +98,33 @@ public enum Processes {
     public static var osVersion: String {
         let v = ProcessInfo.processInfo.operatingSystemVersion
         return "\(v.majorVersion).\(v.minorVersion).\(v.patchVersion)"
+    }
+}
+
+/// Collects what a pipe delivers until it closes.
+private final class PipeReader: @unchecked Sendable {
+    private let handle: FileHandle
+    private let lock = NSLock()
+    private var data = Data()
+    private let closed = DispatchSemaphore(value: 0)
+
+    init(_ handle: FileHandle) {
+        self.handle = handle
+        handle.readabilityHandler = { [lock, closed] handle in
+            let chunk = handle.availableData
+            if chunk.isEmpty {
+                handle.readabilityHandler = nil
+                closed.signal()
+            } else {
+                lock.withLock { self.data.append(chunk) }
+            }
+        }
+    }
+
+    /// The output so far, after waiting until `deadline` at most for the pipe to close.
+    func finish(by deadline: DispatchTime) -> Data {
+        _ = closed.wait(timeout: deadline)
+        handle.readabilityHandler = nil
+        return lock.withLock { data }
     }
 }
