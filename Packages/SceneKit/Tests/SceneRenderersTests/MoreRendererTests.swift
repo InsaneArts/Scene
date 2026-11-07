@@ -30,6 +30,47 @@ struct MoreRendererTests {
                 "stdout: \(result.stdout) stderr: \(result.stderr)")
     }
 
+    /// A theme from `kitten themes` stays included above Scene's. None of its colors may show through,
+    /// as its titlebar color did before Scene wrote `macos_titlebar_color`.
+    @Test(.enabled(if: FileManager.default.isExecutableFile(atPath: kitty)))
+    func kittyHidesEveryColorOfTheUsersTheme() throws {
+        let home = try FixtureHome()
+        let v = try #require(try Fixtures.theme("tokyo-night").variants[.dark])
+        // Every macOS color option that more than a few of kitty's bundled themes set.
+        let options = ["background", "foreground", "selection_background", "selection_foreground", "cursor", "cursor_text_color",
+                       "url_color", "active_border_color", "inactive_border_color", "bell_border_color", "visual_bell_color",
+                       "macos_titlebar_color", "cursor_trail_color", "tab_bar_background", "tab_bar_margin_color",
+                       "active_tab_background", "active_tab_foreground", "inactive_tab_background", "inactive_tab_foreground",
+                       "mark1_foreground", "mark1_background", "mark2_foreground", "mark2_background", "mark3_foreground", "mark3_background"]
+                    + (0..<16).map { "color\($0)" }
+        let theme = try home.write("kitty/current-theme.conf", options.map { "\($0) #ff00ff" }.joined(separator: "\n") + "\n")
+        try home.write("kitty/scene-theme.conf", KittyRenderer.themeFile(v))
+        let both = try home.write("kitty/kitty.conf", "# BEGIN_KITTY_THEME\ninclude current-theme.conf\n# END_KITTY_THEME\ninclude scene-theme.conf\n")
+        let sceneOnly = try home.write("kitty/scene-only.conf", "include scene-theme.conf\n")
+        let probe = """
+            from kitty.config import load_config; import sys
+            theme, both, scene = sys.argv[-3:]
+            keys = [line.split()[0] for line in open(theme) if line.strip()]
+            a, b = load_config(both), load_config(scene)
+            print('checked', len(keys), 'differ:', *[k for k in keys if getattr(a, k) != getattr(b, k)])
+            """
+        let result = try Processes.run(Self.kitty, ["+runpy", probe, theme.path, both.path, sceneOnly.path],
+                                       environment: ["KITTY_CONFIG_DIRECTORY": home.path("kitty").path])
+        #expect(result.stdout.trimmingCharacters(in: .whitespacesAndNewlines) == "checked \(options.count) differ:",
+                "stdout: \(result.stdout) stderr: \(result.stderr)")
+    }
+
+    @Test func kittyMarkTextReadsOnItsBackground() throws {
+        for folder in ["tokyo-night", "gruvbox", "catppuccin", "flexoki", "everforest"] {
+            for v in try Fixtures.theme(folder).variants.values {
+                for mark in [v.terminal.ansi[6], v.terminal.ansi[3], v.terminal.ansi[5]] {
+                    let text = KittyRenderer.readableText(on: mark, preferred: v.terminal.background)
+                    #expect(text.contrast(with: mark) >= 4.5, "\(folder) \(v.appearance) \(mark.hex)")
+                }
+            }
+        }
+    }
+
     @Test(.enabled(if: tmux != nil))
     func tmuxAcceptsEveryOption() throws {
         let home = try FixtureHome()
