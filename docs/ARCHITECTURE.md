@@ -96,7 +96,7 @@ The flow is detect, plan, apply, verify, and later undo or restore.
 
 | id | Changes | How |
 |---|---|---|
-| `wallpaper` | Every display's wallpaper | Copies the picked image to `Wallpapers/<theme>-<file>` and sets it per display. Each image gets its own path, because Scene verifies a wallpaper by its path |
+| `wallpaper` | Every display's wallpaper | Copies the picked image to `Wallpapers/<theme>-<file>` and sets it per display, on every Space: `WallpaperStore` writes the image into macOS's wallpaper store (`com.apple.wallpaper/Store/Index.plist`) and restarts WallpaperAgent, then `NSWorkspace` sets the Space on screen. Each image gets its own path, because Scene verifies a wallpaper by its path |
 | `appearance` | Light/Dark | The private SkyLight call when the experimental tier allows it, otherwise System Events (needs the Automation permission). Only when the request forces an appearance |
 | `accent` | Accent color | Helper call. `auto` maps `palette.accent` to the nearest macOS preset |
 | `iconStyle` | Icon & widget style | Helper call |

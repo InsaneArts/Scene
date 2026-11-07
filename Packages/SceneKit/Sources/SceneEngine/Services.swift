@@ -62,6 +62,7 @@ public final class LiveSystemServices: SystemServices, @unchecked Sendable {
     }
 
     public func setWallpaper(displayID: UInt32, path: String, fit: WallpaperFit) async throws {
+        await setWallpaperOnAllSpaces(displayID: displayID, path: path)
         // macOS can drop a set that follows another one closely, so read back, and set once more if needed.
         for _ in 0..<2 {
             try await setWallpaperOnce(displayID: displayID, path: path, fit: fit)
@@ -70,6 +71,22 @@ public final class LiveSystemServices: SystemServices, @unchecked Sendable {
                 try await Task.sleep(for: .milliseconds(100))
             }
         }
+    }
+
+    /// NSWorkspace sets only the Space on screen. The other Spaces come from the wallpaper store, which
+    /// WallpaperAgent reads when it starts, so write the store, then restart the agent before the NSWorkspace set.
+    /// Best effort: if the store is missing or unreadable, only the current Space changes, as before.
+    func setWallpaperOnAllSpaces(displayID: UInt32, path: String) async {
+        let store = WallpaperStore.indexURL
+        guard let uuid = CGDisplayCreateUUIDFromDisplayID(displayID)?.takeRetainedValue(),
+              let uuidString = CFUUIDCreateString(nil, uuid) as String?,
+              let data = try? Data(contentsOf: store),
+              let updated = try? WallpaperStore.spreading(data, displayUUID: uuidString, image: URL(fileURLWithPath: path))
+        else { return }
+        // One rolling backup of the store as macOS left it.
+        try? data.write(to: store.appendingPathExtension("scene-backup"), options: .atomic)
+        guard (try? updated.write(to: store, options: .atomic)) != nil else { return }
+        _ = try? await run("/bin/launchctl", ["kickstart", "-k", "gui/\(getuid())/com.apple.wallpaper.agent"], environment: nil)
     }
 
     func setWallpaperOnce(displayID: UInt32, path: String, fit: WallpaperFit) async throws {
