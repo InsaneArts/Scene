@@ -88,19 +88,21 @@ public final class LiveSystemServices: SystemServices, @unchecked Sendable {
     public func setWallpaperStore(_ data: Data) async throws {
         let url = WallpaperStore.indexURL
         let previous = try Data(contentsOf: url)
+        let agents = Processes.pids(named: "WallpaperAgent")
         try data.write(to: url, options: .atomic)
-        let result = try await run("/bin/launchctl", ["kickstart", "-k", "gui/\(getuid())/com.apple.wallpaper.agent"], environment: nil)
-        guard result.status == 0 else {
+        // Quit the agent, and launchd starts it again. macOS 27 refuses `launchctl kickstart` for it under SIP.
+        guard !agents.isEmpty, Processes.signal(SIGTERM, to: agents) == agents.count else {
             // A running agent would write its own copy back over the new store, so keep the store it has.
             try? previous.write(to: url, options: .atomic)
-            throw SceneError.failed("could not restart WallpaperAgent: \(result.stderr.prefix(200))")
+            throw SceneError.failed("could not quit WallpaperAgent")
         }
-        // Wait until the new agent shows a wallpaper on every display, so a check right after reads the new store.
+        // Wait until a new agent shows a wallpaper on every display, so a check right after reads the new store.
         for _ in 0..<30 {
+            try await Task.sleep(for: .milliseconds(100))
+            guard !Set(Processes.pids(named: "WallpaperAgent")).subtracting(agents).isEmpty else { continue }
             var shown = true
             for id in await displays() where await wallpaper(displayID: id) == nil { shown = false }
             if shown { return }
-            try await Task.sleep(for: .milliseconds(100))
         }
     }
 

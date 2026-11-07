@@ -206,6 +206,17 @@ struct EngineTests {
         #expect(images["Displays/UUID-2"] == s.home.path("Pictures/original-2.jpg").path)
     }
 
+    @Test func aFailedStoreWritePutsTheSpaceOnScreenBack() async throws {
+        let s = try setup()
+        try addWallpaperStore(s)
+        s.services.failWallpaperStore = true
+        let report = try await apply(s, "catppuccin", mode: .dark, wallpaper: true)
+        if case .failed? = outcome(report, "wallpaper") {} else { Issue.record("expected wallpaper failure, got \(String(describing: outcome(report, "wallpaper")))") }
+        #expect(s.services.wallpapers[1] == s.home.path("Pictures/original-1.heic").path)
+        #expect(s.services.wallpapers[2] == s.home.path("Pictures/original-2.jpg").path)
+        #expect(await s.engine.ledgerEntries().allSatisfy { $0.integration != "wallpaper" })
+    }
+
     @Test func everySpaceStaysOffWhenTheTweakIsOff() async throws {
         let s = try setup()
         try addWallpaperStore(s)

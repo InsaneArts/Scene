@@ -69,6 +69,7 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public var wallpaperStoreData: Data?
     public var currentSpace = "S1"
     public var wallpaperAgentRestarts = 0
+    public var failWallpaperStore = false
     public var extensions: [String: String] = [:]   // id -> version
     /// Canned results for commands, keyed by "<executable name> <arguments>".
     public var responses: [String: CLIResult] = [:]
@@ -106,6 +107,7 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public func wallpaperStore() -> Data? { lock.withLock { wallpaperStoreData } }
     public func setWallpaperStore(_ data: Data) async throws {
         record("wallpaper store")
+        if failWallpaperStore { throw SceneError.failed("injected wallpaper store failure") }
         lock.withLock {
             wallpaperStoreData = data
             wallpaperAgentRestarts += 1

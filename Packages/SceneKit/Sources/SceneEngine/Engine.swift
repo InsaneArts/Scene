@@ -403,7 +403,8 @@ public actor Engine {
             try await services.setWallpaper(displayID: id, path: path, fit: fit)
             return .wallpaper(path: path)
         case .setWallpaperOnAllSpaces(let displays, let uuids, let path, let fit):
-            let original = services.wallpaperStore()
+            var shown: [UInt32: String] = [:]
+            for id in displays { shown[id] = await services.wallpaper(displayID: id) }
             do {
                 for id in displays { try await services.setWallpaper(displayID: id, path: path, fit: fit) }
                 // macOS saves the Space on screen in its store with the placement it chose. Copy that to every other Space.
@@ -416,8 +417,11 @@ public actor Engine {
                 }
                 throw SceneError.failed("macOS did not save the new wallpaper in its wallpaper store")
             } catch {
-                // The engine records nothing for a failed operation, so put the Space on screen back here.
-                if let original { try? await services.setWallpaperStore(original) }
+                // The engine records nothing for a failed operation, so put the Space on screen back here. The store
+                // is as it was: `setWallpaperStore` keeps the old store when it fails.
+                for (id, previous) in shown where FileManager.default.fileExists(atPath: previous) {
+                    try? await services.setWallpaper(displayID: id, path: previous, fit: fit)
+                }
                 throw error
             }
         case .setAppearance(let dark):
