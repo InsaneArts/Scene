@@ -11,7 +11,12 @@ public struct TweakCatalog: Sendable {
         "appearance": ["25G83"],
         "accent": ["25G83"],
         "iconStyle": ["25G83"],
+        // 26B123 (macOS 27.2): LiveTests.applyAndRestoreEverySpace set and restored all 60 Space entries.
+        "wallpaperSpaces": ["26B123"],
     ]
+
+    /// Tweaks that Scene does itself, without the helper: `wallpaperSpaces` writes macOS's wallpaper store.
+    public static let inApp: Set<String> = ["wallpaperSpaces"]
 
     public static func isTested(_ id: String, build: String) -> Bool {
         testedBuilds[id]?.contains(build) ?? false
@@ -43,10 +48,12 @@ public final class TweakRunner: @unchecked Sendable {
     public func availability(_ id: String) -> TweakAvailability {
         let policy = self.policy
         guard policy.enabled else { return .disabled("Experimental settings are off in Settings") }
-        guard let helper, FileManager.default.isExecutableFile(atPath: helper.path) else { return .disabled("The scene-tweak helper is missing") }
+        let inApp = TweakCatalog.inApp.contains(id)
+        guard inApp || helper.map({ FileManager.default.isExecutableFile(atPath: $0.path) }) == true else { return .disabled("The scene-tweak helper is missing") }
         guard TweakCatalog.isTested(id, build: build) || policy.allowUntested else {
             return .disabled("Not yet tested on macOS \(Processes.osVersion) (\(build))")
         }
+        if inApp { return .available }
         let checks = lock.withLock { symbolCheck } ?? {
             let result = (try? runHelper(["check"])).flatMap { value -> [String: Bool]? in
                 guard case .object(let members) = value else { return nil }

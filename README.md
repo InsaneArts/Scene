@@ -40,7 +40,7 @@ Before a theme touches anything, Scene lists each app and every file and setting
 
 | | Apps | How |
 |---|---|---|
-| Desktop | Wallpaper, Light/Dark, JankyBorders | `NSWorkspace`; System Events, or a private call; one marked line in `bordersrc` |
+| Desktop | Wallpaper, Light/Dark, JankyBorders | `NSWorkspace`, and macOS's wallpaper store for the other Spaces (experimental); System Events, or a private call; one marked line in `bordersrc` |
 | macOS look | Accent color, icon & widget style | Private calls in a helper, on tested macOS builds only (experimental) |
 | Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Rex, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one; for Rex, Scene's theme imported with Rex's own command while Rex is open |
 | Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file |

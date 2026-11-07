@@ -17,9 +17,16 @@ public struct WallpaperIntegration: Integration {
 
     public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
         let displays = await services.displays()
+        var context = ["displays": displays.map(String.init).joined(separator: ",")]
+        // Experimental: every Space, through macOS's wallpaper store.
+        let uuids = displays.compactMap { services.displayUUID($0) }
+        if services.tweakAvailability("wallpaperSpaces") == .available, uuids.count == displays.count,
+           let store = services.wallpaperStore(), WallpaperStore.images(store, displays: uuids) != nil {
+            context["spaces"] = uuids.joined(separator: ",")
+        }
         return Detection(installed: !displays.isEmpty,
                          detail: displays.count == 1 ? "1 display" : "\(displays.count) displays",
-                         context: ["displays": displays.map(String.init).joined(separator: ",")])
+                         context: context)
     }
 
     public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
@@ -32,7 +39,14 @@ public struct WallpaperIntegration: Integration {
         let destination = env.appSupport.appendingPathComponent("Wallpapers/\(safeID)-\(wallpaper.name)")
         let data = try Data(contentsOf: wallpaper.url)
         var operations: [Operation] = [.writeManagedFile(path: destination.path, contents: data)]
-        for id in detection.context["displays", default: ""].split(separator: ",").compactMap({ UInt32($0) }) {
+        let displays = detection.context["displays", default: ""].split(separator: ",").compactMap { UInt32($0) }
+        if let uuids = detection.context["spaces"] {
+            operations.append(.setWallpaperOnAllSpaces(displays: displays, uuids: uuids.split(separator: ",").map(String.init),
+                                                       imagePath: destination.path, fit: wallpaper.fit))
+            return IntegrationPlan(operations: operations,
+                                   notes: ["Every Space of each display gets the wallpaper (experimental). Restarting WallpaperAgent can make the desktop flash once."])
+        }
+        for id in displays {
             operations.append(.setWallpaper(displayID: id, imagePath: destination.path, fit: wallpaper.fit))
         }
         return IntegrationPlan(operations: operations, notes: ["macOS changes the current Space of each display"])
@@ -43,6 +57,12 @@ public struct WallpaperIntegration: Integration {
             if case let .setWallpaper(id, path, _) = op {
                 let actual = await services.wallpaper(displayID: id)
                 if actual != path { return .mismatch("Display \(id) shows \(actual.map { ($0 as NSString).lastPathComponent } ?? "no wallpaper"), not the theme's wallpaper") }
+            }
+            if case let .setWallpaperOnAllSpaces(displays, uuids, path, _) = op {
+                for id in displays where await services.wallpaper(displayID: id) != path { return .mismatch("Display \(id) does not show the theme's wallpaper") }
+                let images = services.wallpaperStore().flatMap { WallpaperStore.images($0, displays: uuids) } ?? [:]
+                let others = images.values.filter { $0 != path }.count
+                if images.isEmpty || others > 0 { return .mismatch("\(others) Spaces still show another wallpaper") }
             }
         }
         return Self.verifyFiles(plan)

@@ -64,6 +64,12 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public var tweaks: [String: JSONValue] = ["accent": .number(4), "iconStyle": .object([JSONMember("style", .string("RegularLight")), JSONMember("tint", .string("None")), JSONMember("custom", .null)])]
     public var tweaksAvailable = true
     public var failWallpaper = false
+    /// macOS's wallpaper store, or nil for none. `setWallpaper` writes the entry of `currentSpace`, as macOS does, and
+    /// `setWallpaperStore` shows that entry again, as a restarted WallpaperAgent does.
+    public var wallpaperStoreData: Data?
+    public var currentSpace = "S1"
+    public var wallpaperAgentRestarts = 0
+    public var failWallpaperStore = false
     public var extensions: [String: String] = [:]   // id -> version
     /// Canned results for commands, keyed by "<executable name> <arguments>".
     public var responses: [String: CLIResult] = [:]
@@ -80,7 +86,45 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public func setWallpaper(displayID: UInt32, path: String, fit: WallpaperFit) async throws {
         record("wallpaper \(displayID)")
         if failWallpaper { throw SceneError.failed("injected wallpaper failure") }
-        lock.withLock { wallpapers[displayID] = path }
+        lock.withLock {
+            wallpapers[displayID] = path
+            guard let data = wallpaperStoreData, var root = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
+                  var spaces = root["Spaces"] as? [String: Any], var space = spaces[currentSpace] as? [String: Any] else { return }
+            let uuid = "UUID-\(displayID)"
+            let desktop: [String: Any] = ["Content": Self.wallpaperContent(path, fit: fit), "LastSet": Date(), "LastUse": Date()]
+            if var displays = space["Displays"] as? [String: Any], displays[uuid] != nil {
+                displays[uuid] = ["Desktop": desktop]
+                space["Displays"] = displays
+            } else {
+                space["Default"] = ["Desktop": desktop]
+            }
+            spaces[currentSpace] = space
+            root["Spaces"] = spaces
+            wallpaperStoreData = try? PropertyListSerialization.data(fromPropertyList: root, format: .binary, options: 0)
+        }
+    }
+    public func displayUUID(_ displayID: UInt32) -> String? { "UUID-\(displayID)" }
+    public func wallpaperStore() -> Data? { lock.withLock { wallpaperStoreData } }
+    public func setWallpaperStore(_ data: Data) async throws {
+        record("wallpaper store")
+        if failWallpaperStore { throw SceneError.failed("injected wallpaper store failure") }
+        lock.withLock {
+            wallpaperStoreData = data
+            wallpaperAgentRestarts += 1
+            for id in wallpapers.keys {
+                let uuid = "UUID-\(id)"
+                let image = WallpaperStore.images(data, displays: [uuid])?.first { $0.key == "Spaces/\(currentSpace)/Displays/\(uuid)" || $0.key == "Spaces/\(currentSpace)/Default" }
+                if let path = image?.value, path.hasPrefix("/") { wallpapers[id] = path }
+            }
+        }
+    }
+
+    /// A wallpaper store entry's content, the way macOS writes it for an image.
+    public static func wallpaperContent(_ path: String, fit: WallpaperFit = .fill) -> [String: Any] {
+        let configuration = try! PropertyListSerialization.data(
+            fromPropertyList: ["type": "imageFile", "url": ["relative": URL(fileURLWithPath: path).absoluteString]], format: .binary, options: 0)
+        return ["Choices": [["Configuration": configuration, "Files": [Any](), "Provider": "com.apple.wallpaper.choice.image"]],
+                "EncodedOptionValues": Data("placement \(fit.rawValue)".utf8), "Shuffle": "$null"]
     }
     public func appearance() async -> AppearanceState { lock.withLock { appearanceState } }
     public func setAppearance(dark: Bool) async throws { record("appearance \(dark)"); lock.withLock { appearanceState = AppearanceState(dark: dark, auto: false) } }

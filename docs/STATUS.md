@@ -30,6 +30,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 - Releases 0.2.0 (build 5), 0.2.1 (build 6) and 0.2.2 (build 7, Rex): `Scripts/release.sh` built, signed, and notarized them from the agent session, and they are published on GitHub with their appcasts. The live feed lists build 7, and the published 0.2.2 zip matches the build's SHA-256 and passes `codesign`, Gatekeeper (Notarized Developer ID) and `stapler validate`. 0.2.1 installed through `install.sh` has `SceneThemeCommands` 2 and answers `--install-theme`. `curl … install.sh | sh` against the published release installed 0.2.0, and Gatekeeper accepts it as Notarized Developer ID.
 - `Scene --install-theme` from a Debug build installed row-huh/omarchy-ghost-pastel-theme from GitHub into a scratch library with its three backgrounds, and answered a missing repository with one `error` line (exit 1) and a wrong address with the usage (exit 2).
+- The wallpaper of every Space (experimental `wallpaperSpaces`, from PR #1) on macOS 27.2 (26B123): `LiveTests.applyAndRestoreEverySpace` set the wallpaper in all 60 Space entries of the test Mac's display, and Restore put every entry back, compared with a copy of the store taken before. `launchctl kickstart` of WallpaperAgent is refused there under SIP, so Scene quits the agent instead.
 
 ## Not verified
 
@@ -50,6 +51,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Xcode: whether a running Xcode keeps Scene's theme settings when it quits. Scene asks for a restart.
 - Terminal: a running Terminal can write its own profiles back when you edit a profile in its settings. Scene then reports the change outside Scene.
 - Following macOS Light/Dark on a real switch, and the switcher's search on the real screen.
+- The wallpaper of every Space on screen, Space by Space. The live test checks the store and the restarted agent, not what each Space shows.
 - In the running app: dragging the Theme Maker's sliders, Shuffle, From Wallpaper, Undo, setting a color by hand, Save to Scene, Export Folder…, and dropping images on the wallpaper slots. `--install` with the real library (a test covers it with a fake library).
 - The skill in a real agent session started by someone who asks for a theme.
 

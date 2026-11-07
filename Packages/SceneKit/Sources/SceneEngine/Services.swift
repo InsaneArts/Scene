@@ -14,6 +14,12 @@ public protocol SystemServices: Sendable {
     func displays() async -> [UInt32]
     func wallpaper(displayID: UInt32) async -> String?
     func setWallpaper(displayID: UInt32, path: String, fit: WallpaperFit) async throws
+    /// The display's UUID, which keys it in macOS's wallpaper store.
+    func displayUUID(_ displayID: UInt32) -> String?
+    /// macOS's wallpaper store (`WallpaperStore.indexURL`), or nil when Scene cannot read it.
+    func wallpaperStore() -> Data?
+    /// Writes the wallpaper store and restarts WallpaperAgent, which reads the store only when it starts.
+    func setWallpaperStore(_ data: Data) async throws
     func appearance() async -> AppearanceState
     func setAppearance(dark: Bool) async throws
     func setAutoAppearance() async throws
@@ -69,6 +75,34 @@ public final class LiveSystemServices: SystemServices, @unchecked Sendable {
                 if await wallpaper(displayID: displayID) == path { return }
                 try await Task.sleep(for: .milliseconds(100))
             }
+        }
+    }
+
+    public func displayUUID(_ displayID: UInt32) -> String? {
+        guard let uuid = CGDisplayCreateUUIDFromDisplayID(displayID)?.takeRetainedValue() else { return nil }
+        return CFUUIDCreateString(nil, uuid) as String?
+    }
+
+    public func wallpaperStore() -> Data? { try? Data(contentsOf: WallpaperStore.indexURL) }
+
+    public func setWallpaperStore(_ data: Data) async throws {
+        let url = WallpaperStore.indexURL
+        let previous = try Data(contentsOf: url)
+        let agents = Processes.pids(named: "WallpaperAgent")
+        try data.write(to: url, options: .atomic)
+        // Quit the agent, and launchd starts it again. macOS 27 refuses `launchctl kickstart` for it under SIP.
+        guard !agents.isEmpty, Processes.signal(SIGTERM, to: agents) == agents.count else {
+            // A running agent would write its own copy back over the new store, so keep the store it has.
+            try? previous.write(to: url, options: .atomic)
+            throw SceneError.failed("could not quit WallpaperAgent")
+        }
+        // Wait until a new agent shows a wallpaper on every display, so a check right after reads the new store.
+        for _ in 0..<30 {
+            try await Task.sleep(for: .milliseconds(100))
+            guard !Set(Processes.pids(named: "WallpaperAgent")).subtracting(agents).isEmpty else { continue }
+            var shown = true
+            for id in await displays() where await wallpaper(displayID: id) == nil { shown = false }
+            if shown { return }
         }
     }
 

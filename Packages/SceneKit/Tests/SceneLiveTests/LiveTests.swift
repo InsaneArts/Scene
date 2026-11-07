@@ -77,4 +77,32 @@ struct LiveTests {
         for item in await engine.restoreOriginal() { print("LIVE restore \(item.resource): \(item.result)") }
         #expect(Appearance.allCases.map { services.preference(domain: domain, key: "Workspace.\($0.rawValue)ThemeID") } == before)
     }
+
+    /// The wallpaper of every Space, through macOS's wallpaper store. Needs SCENE_LIVE_TWEAKS=1 too, and restarts
+    /// WallpaperAgent twice. On success, add this Mac's build to `TweakCatalog.testedBuilds["wallpaperSpaces"]`.
+    @Test(.enabled(if: ProcessInfo.processInfo.environment["SCENE_LIVE_TWEAKS"] == "1"))
+    func applyAndRestoreEverySpace() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("scene-live-spaces-\(UUID().uuidString.prefix(6))")
+        let live = SceneEnvironment.live()
+        let env = SceneEnvironment(home: live.home, appSupport: folder, xdgConfigHome: live.xdgConfigHome,
+                                   locateApp: live.locateApp, locateExecutable: live.locateExecutable)
+        let services = LiveSystemServices(tweaks: TweakRunner(helper: nil, policy: TweakPolicy(enabled: true, allowUntested: true)))
+        let engine = Engine(env: env, services: services, integrations: [WallpaperIntegration()], store: EngineStore(root: folder))
+        let uuids = await services.displays().compactMap { services.displayUUID($0) }
+        let before = try #require(services.wallpaperStore().flatMap { WallpaperStore.images($0, displays: uuids) })
+        print("LIVE \(before.count) Space entries on \(uuids.count) displays, build \(Processes.osBuild)")
+        let home = try FixtureHome()
+        let theme = try Fixtures.themeWithWallpaper("catppuccin", in: home)
+        let request = ApplyRequest(theme: theme, mode: .dark, systemIsDark: true)
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["wallpaper"])
+        for result in report.results { print("LIVE apply \(result.name): \(result.outcome) \(result.operations)") }
+        #expect(report.results.first?.outcome == .applied)
+        let applied = try #require(services.wallpaperStore().flatMap { WallpaperStore.images($0, displays: uuids) })
+        #expect(Set(applied.values).count == 1, "\(applied)")
+        try await Task.sleep(for: .seconds(4))   // time to switch Spaces and look
+
+        for item in await engine.restoreOriginal() { print("LIVE restore \(item.resource): \(item.result)") }
+        let restored = try #require(services.wallpaperStore().flatMap { WallpaperStore.images($0, displays: uuids) })
+        #expect(restored == before)
+    }
 }

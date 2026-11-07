@@ -48,6 +48,9 @@ public enum Operation: Codable, Sendable, Equatable {
     /// One key in a TOML-style file. `value` is raw TOML text that Scene renders.
     case setConfigValue(path: String, table: String?, key: String, value: String?)
     case setWallpaper(displayID: UInt32, imagePath: String, fit: WallpaperFit)
+    /// Sets the wallpaper of every Space of the displays (experimental): the Space on screen as `setWallpaper` does, then
+    /// the others in macOS's wallpaper store, which is keyed by the displays' `uuids`.
+    case setWallpaperOnAllSpaces(displays: [UInt32], uuids: [String], imagePath: String, fit: WallpaperFit)
     case setAppearance(dark: Bool)
     case installEditorExtension(cli: String, packagePath: String, extensionID: String, version: String)
     /// Imports a Ghostty theme file into the running Rex app with its `rex` command. Rex names the theme after the
@@ -68,6 +71,7 @@ public enum Operation: Codable, Sendable, Equatable {
         case .setPreferenceEntry(let domain, let key, let entry, _): "pref:\(domain)#\(key)/\(entry)"
         case .setConfigValue(let path, let table, let key, _): "conf:\(path)#\(table.map { $0 + "." } ?? "")\(key)"
         case .setWallpaper(let id, _, _): "wallpaper:\(id)"
+        case .setWallpaperOnAllSpaces: "wallpaper:spaces"
         case .setAppearance: "appearance"
         case .installEditorExtension(let cli, _, let id, _): "extension:\(cli)#\(id)"
         case .importRexTheme(_, _, let appearance): "rex:\(appearance.rawValue)"
@@ -86,6 +90,7 @@ public enum Operation: Codable, Sendable, Equatable {
         case .setPreferenceEntry(let domain, let key, let entry, let value): value == nil ? "Remove “\(entry)” from \(key) in \(domain)" : "Set “\(entry)” in \(key) in \(domain)"
         case .setConfigValue(let path, _, let key, let value): value == nil ? "Remove \(key) from \(Self.tilde(path))" : "Set \(key) in \(Self.tilde(path))"
         case .setWallpaper(let id, let path, _): "Set wallpaper of display \(id) to \((path as NSString).lastPathComponent)"
+        case .setWallpaperOnAllSpaces(_, _, let path, _): "Set the wallpaper of every Space to \((path as NSString).lastPathComponent) in macOS's wallpaper store, and restart WallpaperAgent (experimental)"
         case .setAppearance(let dark): "Switch macOS to \(dark ? "Dark" : "Light")"
         case .installEditorExtension(let cli, _, _, let version): "Install Scene Themes \(version) with \((cli as NSString).lastPathComponent)"
         case .importRexTheme(_, let path, let appearance): "Import \((path as NSString).lastPathComponent) into Rex as its \(appearance.rawValue) theme"
@@ -109,6 +114,8 @@ public enum ResourceState: Codable, Sendable, Equatable {
     /// The raw text of a key in a TOML-style file, or nil when the file does not set it.
     case configValue(String?)
     case wallpaper(path: String?)
+    /// What each Space shows, from `WallpaperStore.images`. `backup` names the copy of the Spaces' wallpapers from before Scene.
+    case wallpaperSpaces(images: [String: String], backup: String?)
     case appearance(dark: Bool, auto: Bool)
     case extensionVersion(String?)
     case tweak(JSONValue)
