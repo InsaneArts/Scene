@@ -61,7 +61,10 @@ xattr -cr "$APP"
 find "$APP" -name '._*' -delete
 
 if [[ -z "$APP_IDENTITY" ]]; then
-  CODESIGN_ARGS=(--force --options runtime --sign "-")
+  # No hardened runtime for ad-hoc builds. Its library validation needs the app and Sparkle.framework
+  # to share a Team ID, and an ad-hoc signature has none, so dyld refuses Sparkle and Scene can't launch.
+  # Only notarization needs the hardened runtime, and only Developer ID builds are notarized.
+  CODESIGN_ARGS=(--force --sign "-")
 else
   CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$APP_IDENTITY")
 fi
