@@ -526,7 +526,7 @@ struct MenuBarView: View {
             HStack(alignment: .bottom) {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(model.history.isEmpty ? "No theme yet" : "Current theme").font(.caption).opacity(0.8)
-                    Text(model.history.last?.themeName ?? "Pick one below").font(.title3.weight(.semibold))
+                    Text((model.history.currentTheme ?? model.history.last)?.themeName ?? "Pick one below").font(.title3.weight(.semibold))
                 }
                 Spacer()
                 if model.isWorking { ProgressView().controlSize(.small).environment(\.colorScheme, .dark) }
