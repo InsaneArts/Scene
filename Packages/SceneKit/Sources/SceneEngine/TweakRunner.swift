@@ -11,8 +11,8 @@ public struct TweakCatalog: Sendable {
         "appearance": ["25G83"],
         "accent": ["25G83"],
         "iconStyle": ["25G83"],
-        // Not verified live yet: SCENE_LIVE=1 SCENE_LIVE_TWEAKS=1 runs LiveTests.applyAndRestoreEverySpace.
-        "wallpaperSpaces": [],
+        // 26B123 (macOS 27.2): LiveTests.applyAndRestoreEverySpace set and restored all 60 Space entries.
+        "wallpaperSpaces": ["26B123"],
     ]
 
     /// Tweaks that Scene does itself, without the helper: `wallpaperSpaces` writes macOS's wallpaper store.
