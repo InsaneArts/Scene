@@ -39,6 +39,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 - Pressing the global shortcuts on the real desktop: the switcher (⌃⇧⌘Space), and Next Background (⌃⌥⌘Space) changing the real wallpaper, followed by Undo.
 - Recording a shortcut in Settings, and clicking Stop Managing (it also turns the app's switch off on the Apps page).
+- Your scripts (#2) in the running app: adding one with Add…, and a script recoloring a real tool. The tests run real scripts through the engine in a fixture home, and the Scripts tab renders in snapshot mode.
 - The redesigned UI on macOS 14 and 15. Liquid Glass falls back to a material there, and without the macOS 26 toolbar spacer the toolbar buttons may sit next to the sidebar.
 - In the redesigned UI: applying from the Apply sheet and its results page, the menu bar panel in the real menu bar, the switcher's backdrop on a second screen, and the status HUD. Snapshot mode never applies, and it renders the menu bar panel and the carousel in plain windows.
 - iTerm2 on a real Mac. It is not installed on the test Mac.

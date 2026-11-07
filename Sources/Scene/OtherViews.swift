@@ -246,7 +246,7 @@ struct ManagedItems: View {
 
 // MARK: - Settings
 
-enum SettingsTab: Hashable { case general, shortcuts, experimental }
+enum SettingsTab: Hashable { case general, shortcuts, scripts, experimental }
 
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
@@ -257,6 +257,7 @@ struct SettingsView: View {
         TabView(selection: $model.settingsTab) {
             GeneralSettings().frame(width: 540, height: 440).tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
             ShortcutSettings().frame(width: 540, height: 500).tabItem { Label("Shortcuts", systemImage: "keyboard") }.tag(SettingsTab.shortcuts)
+            ScriptSettings().frame(width: 540, height: 400).tabItem { Label("Scripts", systemImage: "scroll") }.tag(SettingsTab.scripts)
             ExperimentalSettings().frame(width: 540, height: 330).tabItem { Label("Experimental", systemImage: "flask") }.tag(SettingsTab.experimental)
         }
     }
@@ -334,6 +335,57 @@ struct ShortcutSettings: View {
                 if !last.isEmpty { Text("to").foregroundStyle(.secondary).padding(.horizontal, 3) }
                 ForEach(alternative + last, id: \.self) { Keycap(key: $0) }
             }
+        }
+    }
+}
+
+/// Your own scripts, which Scene runs after each theme with the colors in their environment.
+struct ScriptSettings: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        Form {
+            Section {
+                if model.userScripts.isEmpty {
+                    Text("No scripts").foregroundStyle(.secondary)
+                }
+                ForEach(model.userScripts, id: \.self) { path in
+                    LabeledContent {
+                        Button { model.userScripts.removeAll { $0 == path } } label: { Image(systemName: "minus.circle") }
+                            .buttonStyle(.borderless).help("Remove \((path as NSString).lastPathComponent)")
+                    } label: {
+                        Text((path as NSString).lastPathComponent)
+                        if FileManager.default.isExecutableFile(atPath: path) {
+                            Text(Operation.tilde(path))
+                        } else {
+                            Text("Missing or not executable. Run chmod +x on it.").foregroundStyle(.orange)
+                        }
+                    }
+                }
+            } header: {
+                HStack {
+                    Text("Run after each theme")
+                    Spacer()
+                    Button("Add…") { add() }
+                }
+            } footer: {
+                Text("Scene writes ~/.config/scene/theme.json, then runs each script with the theme's colors in SCENE_ variables, such as SCENE_ACCENT and SCENE_ANSI_1. After Restore, SCENE_EVENT is restore and the file is gone. Scripts run as you, with Scene's permissions, and stop after 10 seconds.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    func add() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = true
+        panel.prompt = "Add"
+        panel.message = "Choose scripts to run after each theme. Each needs to be executable."
+        guard panel.runModal() == .OK else { return }
+        for url in panel.urls where !model.userScripts.contains(url.path) && !url.path.contains("\n") {
+            model.userScripts.append(url.path)
         }
     }
 }

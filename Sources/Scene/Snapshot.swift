@@ -104,7 +104,7 @@ enum Snapshot {
         }
         // The Settings window, one tab at a time.
         openSettings()
-        for tab in [SettingsTab.general, .shortcuts, .experimental] {
+        for tab in [SettingsTab.general, .shortcuts, .scripts, .experimental] {
             model.settingsTab = tab
             try? await Task.sleep(for: .seconds(1.2))
             capture("9-settings-\(tab)")

@@ -45,6 +45,9 @@ Before a theme touches anything, Scene lists each app and every file and setting
 | Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Rex, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one; for Rex, Scene's theme imported with Rex's own command while Rex is open |
 | Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file |
 | Command-line tools | tmux, bat and delta, btop, herdr | A theme file and one marked include line or config key; herdr's color tokens in its config |
+| Your scripts | Any tool you recolor yourself | `~/.config/scene/theme.json`, and each script you list in Settings → Scripts, run with the colors in `SCENE_` variables |
+
+A script gets `SCENE_EVENT` (`apply`, or `restore` after Restore), `SCENE_THEME_FILE`, `SCENE_THEME_ID`, `SCENE_APPEARANCE`, the 15 interface colors such as `SCENE_BACKGROUND` and `SCENE_ACCENT`, and `SCENE_ANSI_0` to `SCENE_ANSI_15`. Scene runs it without a shell, as you, after Apply, Undo, and a Light/Dark switch, but not after Next Background, and stops it after 10 seconds.
 
 Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set them to follow the system, and they switch with Light/Dark.
 

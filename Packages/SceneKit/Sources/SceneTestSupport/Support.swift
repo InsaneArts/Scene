@@ -89,9 +89,13 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public func preference(domain: String, key: String) -> PlistValue? { lock.withLock { prefs["\(domain)#\(key)"] } }
     public func setPreference(domain: String, key: String, value: PlistValue?) throws { lock.withLock { prefs["\(domain)#\(key)"] = value } }
 
-    public func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult {
+    /// The environment of each command run, in order.
+    public var environments: [[String: String]] = []
+
+    public func run(_ executable: String, _ arguments: [String], environment: [String: String]?, timeout: TimeInterval) async throws -> CLIResult {
         let command = "\((executable as NSString).lastPathComponent) \(arguments.joined(separator: " "))"
         record("run \(command)")
+        lock.withLock { environments.append(environment ?? [:]) }
         if let response = lock.withLock({ responses[command] }) { return response }
         if (executable as NSString).lastPathComponent == "rex" { return rex(arguments) }
         if arguments.first == "--install-extension", let vsix = arguments.dropFirst().first {

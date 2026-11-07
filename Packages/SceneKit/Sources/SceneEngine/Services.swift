@@ -20,7 +20,7 @@ public protocol SystemServices: Sendable {
     func canRestoreAuto() -> Bool
     func preference(domain: String, key: String) -> PlistValue?
     func setPreference(domain: String, key: String, value: PlistValue?) throws
-    func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult
+    func run(_ executable: String, _ arguments: [String], environment: [String: String]?, timeout: TimeInterval) async throws -> CLIResult
     /// Running processes of this user, by app bundle id or by executable name.
     func processes(bundleID: String) -> [pid_t]
     func processes(named name: String) -> [pid_t]
@@ -29,6 +29,13 @@ public protocol SystemServices: Sendable {
     func tweakAvailability(_ id: String) -> TweakAvailability
     func tweakGet(_ id: String) async throws -> JSONValue
     func tweakSet(_ id: String, _ value: JSONValue) async throws -> JSONValue
+}
+
+public extension SystemServices {
+    /// Runs a command with a two-minute timeout.
+    func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult {
+        try await run(executable, arguments, environment: environment, timeout: 120)
+    }
 }
 
 public enum TweakAvailability: Sendable, Equatable {
@@ -131,8 +138,8 @@ public final class LiveSystemServices: SystemServices, @unchecked Sendable {
 
     // MARK: Processes and tweaks
 
-    public func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult {
-        try await Task.detached { try Processes.run(executable, arguments, environment: environment, timeout: 120) }.value
+    public func run(_ executable: String, _ arguments: [String], environment: [String: String]?, timeout: TimeInterval) async throws -> CLIResult {
+        try await Task.detached { try Processes.run(executable, arguments, environment: environment, timeout: timeout) }.value
     }
 
     public func processes(bundleID: String) -> [pid_t] { Processes.pids(bundleID: bundleID) }

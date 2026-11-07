@@ -50,6 +50,13 @@ final class AppModel {
     var themeSources: [String: String] {
         didSet { UserDefaults.standard.set(themeSources, forKey: "themeSources") }
     }
+    /// The user's own scripts. Scene runs them after each theme and after Restore. Only scripts listed here ever run.
+    var userScripts: [String] {
+        didSet {
+            UserDefaults.standard.set(userScripts, forKey: "userScripts")
+            Task { await refreshSystemState() }
+        }
+    }
     /// When macOS switches Light/Dark, the current theme switches to its other look.
     var followSystemAppearance: Bool {
         didSet { UserDefaults.standard.set(followSystemAppearance, forKey: "followSystemAppearance") }
@@ -130,6 +137,7 @@ final class AppModel {
         favoriteThemes = Set(defaults.stringArray(forKey: "favoriteThemes") ?? [])
         themeSources = defaults.dictionary(forKey: "themeSources") as? [String: String] ?? [:]
         followSystemAppearance = defaults.bool(forKey: "followSystemAppearance")
+        userScripts = defaults.stringArray(forKey: "userScripts") ?? []
         themeAuthor = defaults.string(forKey: "themeAuthor") ?? NSFullUserName()
         backgroundChoices = defaults.dictionary(forKey: "backgroundChoices") as? [String: String] ?? [:]
         switcherShortcut = Self.loadShortcut("switcherShortcut", default: .omarchyDefault)
@@ -143,7 +151,7 @@ final class AppModel {
                                            IconStyleIntegration(), GhosttyIntegration(), ITermIntegration(), KittyIntegration(),
                                            AlacrittyIntegration(), WarpIntegration(), RexIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
             + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(),
-               HerdrIntegration()]
+               HerdrIntegration(), UserScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "userScripts") ?? [] })]
         engine = Engine(env: env, services: LiveSystemServices(tweaks: tweaks), integrations: integrations)
     }
 

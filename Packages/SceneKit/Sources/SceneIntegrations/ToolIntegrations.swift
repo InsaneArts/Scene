@@ -217,3 +217,62 @@ public struct BtopIntegration: Integration {
         return services.signal(SIGUSR2, to: pids) > 0 ? .reloaded : .failed("could not signal btop")
     }
 }
+
+// MARK: - Your scripts
+
+/// The user's own scripts, from the list in Settings. Scene writes `scene/theme.json` in the XDG config folder and runs
+/// each listed script after it, with the colors in its environment. Only the user lists scripts; a theme never can.
+public struct UserScriptsIntegration: Integration {
+    public let id = "scripts"
+    public let displayName = "Your scripts"
+    public let kind = IntegrationKind.tool
+    /// A script that takes longer is stopped and reported.
+    public static let timeout: TimeInterval = 10
+    let scripts: @Sendable () -> [String]
+
+    public init(scripts: @escaping @Sendable () -> [String]) { self.scripts = scripts }
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        let scripts = self.scripts().filter { !$0.contains("\n") }
+        guard !scripts.isEmpty else { return .notInstalled() }
+        let file = env.xdgConfigHome.appendingPathComponent("scene/theme.json")
+        let missing = scripts.filter { !FileManager.default.isExecutableFile(atPath: $0) }
+        return Detection(installed: true, detail: scripts.map { ($0 as NSString).lastPathComponent }.joined(separator: ", "),
+                         conflicts: missing.map { "\(Operation.tilde($0)) is missing or not executable" },
+                         context: ["file": file.path, "scripts": scripts.joined(separator: "\n")])
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        let theme = request.theme
+        let data = try ThemeFileRenderer.file(themeID: theme.id, version: theme.manifest.version, mode: request.mode.rawValue,
+                                              appearance: request.effectiveAppearance, variants: theme.variants)
+        let names = detection.context["scripts", default: ""].split(separator: "\n").map { Operation.tilde(String($0)) }
+        return IntegrationPlan(operations: [.writeManagedFile(path: detection.context["file"]!, contents: data)],
+                               conflicts: detection.conflicts,
+                               notes: ["Then runs \(names.joined(separator: ", ")) with the theme's colors."])
+    }
+
+    /// Runs every script, also after Restore, when the file is gone and `SCENE_EVENT` is `restore`.
+    public func reload(_ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> ReloadResult {
+        guard let file = detection.context["file"] else { return .notNeeded }
+        var environment = ["SCENE_THEME_FILE": file, "SCENE_EVENT": "restore"]
+        if let data = FileOps.read(URL(fileURLWithPath: file)), let colors = ThemeFileRenderer.environment(data) {
+            environment.merge(colors) { $1 }
+            environment["SCENE_EVENT"] = "apply"
+        }
+        var failures: [String] = []
+        for script in detection.context["scripts", default: ""].split(separator: "\n").map(String.init) {
+            let name = (script as NSString).lastPathComponent
+            do {
+                let result = try await services.run(script, [], environment: environment, timeout: Self.timeout)
+                if result.status != 0 {
+                    let message = result.stderr.trimmingCharacters(in: .whitespacesAndNewlines).prefix(200)
+                    failures.append("\(name) exited with status \(result.status)\(message.isEmpty ? "" : ": \(message)")")
+                }
+            } catch {
+                failures.append("\(name): \(error)")
+            }
+        }
+        return failures.isEmpty ? .reloaded : .needsUserAction(failures.joined(separator: "\n"))
+    }
+}
