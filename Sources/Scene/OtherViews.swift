@@ -1,4 +1,6 @@
+import AppKit
 import SceneEngine
+import SceneIntegrations
 import SceneSwitcher
 import SceneThemes
 import SwiftUI
@@ -13,7 +15,8 @@ struct AppsView: View {
     var body: some View {
         let integrations = model.engine.integrations
         let installed = integrations.filter { model.detections[$0.id]?.installed ?? false }
-        let missing = integrations.filter { !(model.detections[$0.id]?.installed ?? false) }
+        // Your scripts are not an app, so they are not listed as missing.
+        let missing = integrations.filter { !(model.detections[$0.id]?.installed ?? false) && $0.id != "scripts" }
         PageScroll(title: "Apps", subtitle: "What Scene found on this Mac. A theme changes only the apps that are on.") {
             ForEach([IntegrationKind.system, .terminal, .editor, .tool, .experimental], id: \.self) { kind in
                 let items = installed.filter { $0.kind == kind }
@@ -246,7 +249,7 @@ struct ManagedItems: View {
 
 // MARK: - Settings
 
-enum SettingsTab: Hashable { case general, shortcuts, experimental }
+enum SettingsTab: Hashable { case general, shortcuts, scripts, experimental }
 
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
@@ -257,6 +260,7 @@ struct SettingsView: View {
         TabView(selection: $model.settingsTab) {
             GeneralSettings().frame(width: 540, height: 440).tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
             ShortcutSettings().frame(width: 540, height: 500).tabItem { Label("Shortcuts", systemImage: "keyboard") }.tag(SettingsTab.shortcuts)
+            ScriptSettings().frame(width: 540, height: 400).tabItem { Label("Scripts", systemImage: "terminal") }.tag(SettingsTab.scripts)
             ExperimentalSettings().frame(width: 540, height: 330).tabItem { Label("Experimental", systemImage: "flask") }.tag(SettingsTab.experimental)
         }
     }
@@ -335,6 +339,54 @@ struct ShortcutSettings: View {
                 ForEach(alternative + last, id: \.self) { Keycap(key: $0) }
             }
         }
+    }
+}
+
+/// The user's own scripts, which run after each theme change with the theme's colors.
+struct ScriptSettings: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        Form {
+            Section {
+                if model.scripts.isEmpty {
+                    Text("No scripts yet.").foregroundStyle(.secondary)
+                }
+                ForEach(model.scripts, id: \.self) { path in
+                    let problem = ScriptsIntegration.problem(path)
+                    LabeledContent {
+                        Button(role: .destructive) { model.scripts.removeAll { $0 == path } } label: { Image(systemName: "minus.circle") }
+                            .buttonStyle(.borderless)
+                            .help("Remove")
+                    } label: {
+                        Text((path as NSString).lastPathComponent)
+                        if let problem {
+                            Label(problem, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+                        } else {
+                            Text(SceneEngine.Operation.tilde(path))
+                        }
+                    }
+                }
+                Button("Add Script…", action: add)
+            } header: {
+                Text("After each theme change")
+            } footer: {
+                Text("Scene runs these after Apply, Undo, and Restore, and when the theme follows Light/Dark. Each one gets the colors of the look on screen in variables such as SCENE_ACCENT and SCENE_ANSI_1, and SCENE_THEME_FILE, the path of a JSON file with both looks. SCENE_EVENT is apply, or restore when Scene puts your setup back. Scripts run without a shell and with a short PATH, so call programs by their full path. A script must be executable, and only you may change it. Turn the scripts off on the Apps page.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    func add() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = true
+        panel.showsHiddenFiles = true
+        panel.message = "Choose scripts to run after each theme change."
+        panel.prompt = "Add"
+        guard panel.runModal() == .OK else { return }
+        for url in panel.urls where !model.scripts.contains(url.path) { model.scripts.append(url.path) }
     }
 }
 

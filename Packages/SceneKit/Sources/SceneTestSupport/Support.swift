@@ -70,6 +70,8 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     /// Pretend running processes, keyed by bundle id or executable name. Nothing real is ever signaled.
     public var running: [String: [pid_t]] = [:]
     public var calls: [String] = []
+    /// The environment of the last run of each executable, by name.
+    public var environments: [String: [String: String]?] = [:]
 
     public init() {}
 
@@ -89,9 +91,10 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
     public func preference(domain: String, key: String) -> PlistValue? { lock.withLock { prefs["\(domain)#\(key)"] } }
     public func setPreference(domain: String, key: String, value: PlistValue?) throws { lock.withLock { prefs["\(domain)#\(key)"] = value } }
 
-    public func run(_ executable: String, _ arguments: [String], environment: [String: String]?) async throws -> CLIResult {
+    public func run(_ executable: String, _ arguments: [String], environment: [String: String]?, timeout: TimeInterval) async throws -> CLIResult {
         let command = "\((executable as NSString).lastPathComponent) \(arguments.joined(separator: " "))"
         record("run \(command)")
+        lock.withLock { environments[(executable as NSString).lastPathComponent] = environment }
         if let response = lock.withLock({ responses[command] }) { return response }
         if (executable as NSString).lastPathComponent == "rex" { return rex(arguments) }
         if arguments.first == "--install-extension", let vsix = arguments.dropFirst().first {
