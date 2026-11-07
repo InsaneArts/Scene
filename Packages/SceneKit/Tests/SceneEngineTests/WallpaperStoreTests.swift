@@ -1,47 +1,76 @@
 import Foundation
 @testable import SceneEngine
+import SceneTestSupport
 import Testing
 
 @Suite("Wallpaper on every Space")
 struct WallpaperStoreTests {
-    func image(_ node: Any?) throws -> String? {
-        let desktop = (node as? [String: Any])?["Desktop"] as? [String: Any]
-        let choice = ((desktop?["Content"] as? [String: Any])?["Choices"] as? [[String: Any]])?.first
-        guard let data = choice?["Configuration"] as? Data else { return nil }
-        let config = try PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any]
-        return (config?["url"] as? [String: Any])?["relative"] as? String
-    }
+    static let old = "/Users/me/Pictures/old.jpg"
+    static let scene = "/Users/me/Library/Application Support/Scene/Wallpapers/scene-amber-dark.png"
 
-    @Test func setsEverySpaceOfTheDisplayAndLeavesOtherDisplays() throws {
-        let old: [String: Any] = ["Desktop": ["Content": ["Choices": [Any]()]]]
-        let store: [String: Any] = [
-            "SystemDefault": old,
-            "Displays": ["D1": old, "D2": old],
+    static func desktop(_ path: String) -> [String: Any] { ["Desktop": ["Content": FakeServices.wallpaperContent(path)]] }
+
+    /// Two displays. S1 has entries for both; S2 has one for D2 only, so D1 shows S2's Default there; S3 is new and has
+    /// no Default yet.
+    static func store() throws -> Data {
+        let root: [String: Any] = [
+            "SystemDefault": desktop(old),
+            "Displays": ["D1": desktop(old), "D2": desktop(old)],
             "Spaces": [
-                "S1": ["Default": old, "Displays": ["D1": old, "D2": old]],
-                "S2": ["Default": old, "Displays": ["D2": old]],
+                "S1": ["Default": desktop(old), "Displays": ["D1": desktop(old), "D2": desktop(old)]],
+                "S2": ["Default": desktop("/Users/me/Pictures/s2.jpg"), "Displays": ["D2": desktop(old)]],
+                "S3": [String: Any](),
             ],
         ]
-        let data = try PropertyListSerialization.data(fromPropertyList: store, format: .binary, options: 0)
-        let url = URL(fileURLWithPath: "/tmp/a b.heic")
-        let out = try #require(try WallpaperStore.spreading(data, displayUUID: "D1", image: url))
-        let root = try #require(try PropertyListSerialization.propertyList(from: out, format: nil) as? [String: Any])
-        let spaces = try #require(root["Spaces"] as? [String: [String: Any]])
-        let s1 = try #require(spaces["S1"]?["Displays"] as? [String: Any])
-        let s2 = try #require(spaces["S2"]?["Displays"] as? [String: Any])
+        return try PropertyListSerialization.data(fromPropertyList: root, format: .binary, options: 0)
+    }
 
-        #expect(try image(s1["D1"]) == url.absoluteString)
-        #expect(try image(s1["D2"]) == nil)
-        #expect(try image(spaces["S1"]?["Default"]) == nil)
-        // S2 has no entry for D1, so D1 shows S2's Default there.
-        #expect(try image(spaces["S2"]?["Default"]) == url.absoluteString)
-        #expect(try image(s2["D2"]) == nil)
-        #expect(try image((root["Displays"] as? [String: Any])?["D1"]) == url.absoluteString)
-        #expect(try image(root["SystemDefault"]) == url.absoluteString)
+    /// The store after macOS set `scene` on S1 of D1 with the theme's placement.
+    static func afterMacOSSetTheSpaceOnScreen() throws -> Data {
+        var root = try #require(try PropertyListSerialization.propertyList(from: store(), format: nil) as? [String: Any])
+        root = WallpaperStore.setting(root, "Spaces/S1/Displays/D1", ["Desktop": ["Content": FakeServices.wallpaperContent(scene, fit: .center)]])
+        return try PropertyListSerialization.data(fromPropertyList: root, format: .binary, options: 0)
+    }
+
+    @Test func spreadsTheSpaceOnScreenToEveryEntryOfTheDisplay() throws {
+        let out = try #require(try WallpaperStore.spreading(Self.afterMacOSSetTheSpaceOnScreen(), displays: ["D1"], imagePath: Self.scene))
+        let images = try #require(WallpaperStore.images(out, displays: ["D1"]))
+        #expect(images == ["Spaces/S1/Displays/D1": Self.scene, "Spaces/S2/Default": Self.scene, "Spaces/S3/Default": Self.scene,
+                           "Displays/D1": Self.scene, "SystemDefault": Self.scene])
+        // The other display keeps its own wallpaper, and every copy keeps the placement macOS chose.
+        #expect(WallpaperStore.images(out, displays: ["D2"])?["Spaces/S1/Displays/D2"] == Self.old)
+        let root = try #require(try WallpaperStore.read(out))
+        let content = WallpaperStore.node(root, "Spaces/S2/Default")?["Desktop"].flatMap { ($0 as? [String: Any])?["Content"] as? [String: Any] }
+        #expect(content?["EncodedOptionValues"] as? Data == Data("placement center".utf8))
+    }
+
+    @Test func waitsUntilMacOSHasSetTheSpaceOnScreen() throws {
+        #expect(try WallpaperStore.spreading(Self.store(), displays: ["D1"], imagePath: Self.scene) == nil)
     }
 
     @Test func unknownStoreIsLeftAlone() throws {
         let data = try PropertyListSerialization.data(fromPropertyList: ["Other": 1], format: .binary, options: 0)
-        #expect(try WallpaperStore.spreading(data, displayUUID: "D1", image: URL(fileURLWithPath: "/x.jpg")) == nil)
+        #expect(WallpaperStore.images(data, displays: ["D1"]) == nil)
+        #expect(try WallpaperStore.spreading(data, displays: ["D1"], imagePath: "/x.jpg") == nil)
+    }
+
+    @Test func restoreBringsBackEachSpaceAndKeepsTheOnesSomeoneChanged() throws {
+        let before = try Self.store()
+        let backup = try #require(try WallpaperStore.backup(before, displays: ["D1"]))
+        var spread = try #require(try WallpaperStore.spreading(Self.afterMacOSSetTheSpaceOnScreen(), displays: ["D1"], imagePath: Self.scene))
+        // After Scene, the user picks a wallpaper for S2.
+        var root = try #require(try WallpaperStore.read(spread))
+        root = WallpaperStore.setting(root, "Spaces/S2/Default", Self.desktop("/Users/me/Pictures/mine.jpg"))
+        spread = try PropertyListSerialization.data(fromPropertyList: root, format: .binary, options: 0)
+
+        let restored = try #require(try WallpaperStore.restoring(spread, displays: ["D1"], sceneImage: Self.scene, backup: backup))
+        let images = try #require(WallpaperStore.images(restored, displays: ["D1"]))
+        #expect(images["Spaces/S1/Displays/D1"] == Self.old)
+        #expect(images["Spaces/S2/Default"] == "/Users/me/Pictures/mine.jpg")
+        #expect(images["Displays/D1"] == Self.old && images["SystemDefault"] == Self.old)
+        // S3 had no wallpaper before Scene, so it has none again.
+        #expect(images["Spaces/S3/Default"] == nil)
+        let restoredRoot = try #require(try WallpaperStore.read(restored))
+        #expect(WallpaperStore.node(restoredRoot, "Spaces/S3") != nil)
     }
 }

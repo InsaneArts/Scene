@@ -150,6 +150,73 @@ struct EngineTests {
         #expect(await s.engine.ledgerEntries().allSatisfy { $0.integration != "wallpaper" })
     }
 
+    /// Display 1 and 2 have their own entries in Space S1, the one on screen. S2 has none, so both show its Default.
+    func addWallpaperStore(_ s: Setup) throws {
+        let one = s.services.wallpapers[1]!, two = s.services.wallpapers[2]!
+        func entry(_ path: String) -> [String: Any] { ["Desktop": ["Content": FakeServices.wallpaperContent(path)]] }
+        let store: [String: Any] = [
+            "SystemDefault": entry(one),
+            "Displays": ["UUID-1": entry(one), "UUID-2": entry(two)],
+            "Spaces": [
+                "S1": ["Default": entry(one), "Displays": ["UUID-1": entry(one), "UUID-2": entry(two)]],
+                "S2": ["Default": entry("/Users/me/Pictures/s2.jpg")],
+            ],
+        ]
+        s.services.wallpaperStoreData = try PropertyListSerialization.data(fromPropertyList: store, format: .binary, options: 0)
+    }
+
+    func spaceImages(_ s: Setup) throws -> [String: String] {
+        let data = try #require(s.services.wallpaperStoreData)
+        return try #require(WallpaperStore.images(data, displays: ["UUID-1", "UUID-2"]))
+    }
+
+    @Test func everySpaceGetsTheWallpaperAndRestoreBringsEachOneBack() async throws {
+        let s = try setup()
+        try addWallpaperStore(s)
+        let before = try spaceImages(s)
+        let report = try await apply(s, "catppuccin", mode: .dark, wallpaper: true)
+        #expect(outcome(report, "wallpaper") == .applied)
+        #expect(report.results.first { $0.id == "wallpaper" }?.operations.last?.contains("every Space") == true)
+        let applied = try spaceImages(s)
+        #expect(applied.count == 6 && applied.values.allSatisfy { $0.hasSuffix("scene-catppuccin-dark-1.png") }, "\(applied)")
+        #expect(s.services.wallpaperAgentRestarts == 1)
+
+        _ = try await apply(s, "gruvbox", mode: .light, wallpaper: true)
+        #expect(try spaceImages(s).values.allSatisfy { $0.hasSuffix("scene-gruvbox-light-1.png") })
+        _ = await s.engine.restoreOriginal()
+        #expect(try spaceImages(s) == before)
+        #expect(s.services.wallpapers[1] == s.home.path("Pictures/original-1.heic").path)
+        #expect(await s.engine.ledgerEntries().isEmpty)
+    }
+
+    @Test func restoreKeepsASpaceChangedAfterScene() async throws {
+        let s = try setup()
+        try addWallpaperStore(s)
+        _ = try await apply(s, "catppuccin", mode: .dark, wallpaper: true)
+        let data = try #require(s.services.wallpaperStoreData)
+        var root = try #require(try WallpaperStore.read(data))
+        root = WallpaperStore.setting(root, "Spaces/S2/Default", ["Desktop": ["Content": FakeServices.wallpaperContent("/Users/me/Pictures/mine.jpg")]])
+        s.services.wallpaperStoreData = try PropertyListSerialization.data(fromPropertyList: root, format: .binary, options: 0)
+
+        let items = await s.engine.restoreOriginal()
+        #expect(items.contains { $0.resource == "wallpaper:spaces" && $0.keptUserChange })
+        let images = try spaceImages(s)
+        #expect(images["Spaces/S2/Default"] == "/Users/me/Pictures/mine.jpg")
+        #expect(images["Spaces/S1/Displays/UUID-1"] == s.home.path("Pictures/original-1.heic").path)
+        #expect(images["Displays/UUID-2"] == s.home.path("Pictures/original-2.jpg").path)
+    }
+
+    @Test func everySpaceStaysOffWhenTheTweakIsOff() async throws {
+        let s = try setup()
+        try addWallpaperStore(s)
+        s.services.tweaksAvailable = false
+        let planned = await s.engine.plan(ApplyRequest(theme: try Fixtures.themeWithWallpaper("catppuccin", in: s.home), mode: .dark, systemIsDark: false),
+                                          detections: await s.engine.detectAll())
+        let wallpaper = try #require(planned.first { $0.id == "wallpaper" }?.plan)
+        #expect(!wallpaper.operations.contains { if case .setWallpaperOnAllSpaces = $0 { true } else { false } })
+        #expect(wallpaper.notes == ["macOS changes the current Space of each display"])
+    }
+
     @Test func chosenWallpaperIsShownAndUndoShowsThePreviousOne() async throws {
         let s = try setup()
         let theme = try Fixtures.themeWithWallpaper("catppuccin", in: s.home)

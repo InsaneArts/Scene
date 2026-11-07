@@ -27,6 +27,16 @@ struct TweakTests {
         if case .disabled = runner.availability("accent") {} else { Issue.record("expected disabled when experimental settings are off") }
     }
 
+    @Test func wallpaperOnEverySpaceNeedsNoHelperButATestedBuild() throws {
+        let runner = TweakRunner(helper: nil, build: "99Z999")
+        #expect(runner.availability("wallpaperSpaces") == .disabled("Not yet tested on macOS \(Processes.osVersion) (99Z999)"))
+        runner.policy = TweakPolicy(enabled: true, allowUntested: true)
+        #expect(runner.availability("wallpaperSpaces") == .available)
+        #expect(runner.availability("accent") == .disabled("The scene-tweak helper is missing"))
+        runner.policy = TweakPolicy(enabled: false, allowUntested: true)
+        if case .disabled = runner.availability("wallpaperSpaces") {} else { Issue.record("expected disabled when experimental settings are off") }
+    }
+
     @Test func missingPrivateCallTurnsTweakOff() throws {
         let home = try FixtureHome()
         let url = try home.write("helper.sh", "#!/bin/sh\necho '{\"ok\":true,\"value\":{\"accent\":false,\"appearance\":true,\"iconStyle\":true}}'\n")

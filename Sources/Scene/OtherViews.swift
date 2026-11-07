@@ -345,22 +345,22 @@ struct ExperimentalSettings: View {
         @Bindable var model = model
         Form {
             Section {
-                Toggle("Change accent color, icon style, and Light/Dark with private macOS calls", isOn: $model.experimentalEnabled)
+                Toggle("Change accent color, icon style, Light/Dark, and the wallpaper of every Space with private macOS calls and files", isOn: $model.experimentalEnabled)
                 Toggle("Allow on macOS versions Scene has not tested", isOn: $model.allowUntested)
                     .disabled(!model.experimentalEnabled)
             } footer: {
-                Text("These calls are what System Settings uses. They run in a separate helper, are checked before each use, and are read back after. Any macOS update can turn them off until Scene is updated.")
+                Text("These calls are what System Settings uses. They run in a separate helper, are checked before each use, and are read back after. The wallpaper of every Space is written into macOS's wallpaper store, and WallpaperAgent restarts to read it. Any macOS update can turn them off until Scene is updated.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("Status") {
-                ForEach(["appearance", "accent", "iconStyle"], id: \.self) { id in
+                ForEach(["appearance", "accent", "iconStyle", "wallpaperSpaces"], id: \.self) { id in
                     LabeledContent {
                         switch model.tweaks.availability(id) {
                         case .available: Label("Available", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
                         case .disabled(let reason): Text(reason).foregroundStyle(.secondary)
                         }
                     } label: {
-                        Label { Text(label(id)) } icon: { AppIcon(id: id, size: 20) }
+                        Label { Text(label(id)) } icon: { AppIcon(id: id == "wallpaperSpaces" ? "wallpaper" : id, size: 20) }
                     }
                 }
             }
@@ -372,6 +372,7 @@ struct ExperimentalSettings: View {
         switch id {
         case "appearance": "Light/Dark without a permission prompt"
         case "accent": "Accent color"
+        case "wallpaperSpaces": "Wallpaper on every Space"
         default: "Icon & widget style"
         }
     }

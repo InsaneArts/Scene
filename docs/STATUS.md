@@ -50,6 +50,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Xcode: whether a running Xcode keeps Scene's theme settings when it quits. Scene asks for a restart.
 - Terminal: a running Terminal can write its own profiles back when you edit a profile in its settings. Scene then reports the change outside Scene.
 - Following macOS Light/Dark on a real switch, and the switcher's search on the real screen.
+- The wallpaper of every Space (experimental `wallpaperSpaces`, from PR #1). Tests cover it with a fake wallpaper store. No macOS build is in its tested list, so it stays off unless "Allow on macOS versions Scene has not tested" is on. `LiveTests.applyAndRestoreEverySpace` checks a build.
 - In the running app: dragging the Theme Maker's sliders, Shuffle, From Wallpaper, Undo, setting a color by hand, Save to Scene, Export Folder…, and dropping images on the wallpaper slots. `--install` with the real library (a test covers it with a fake library).
 - The skill in a real agent session started by someone who asks for a theme.
 

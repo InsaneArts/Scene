@@ -232,6 +232,11 @@ public actor Engine {
                     try await revert(op, to: entry.original, fileBytes: nil, fromBackups: true)
                 } else if Self.matches(current, entry.original) {
                     result = "Already as before"
+                } else if case .setWallpaperOnAllSpaces = op {
+                    // Each Space that still shows Scene's wallpaper goes back. A Space someone changed keeps its wallpaper.
+                    try await revert(op, to: entry.original, fileBytes: nil, fromBackups: true)
+                    kept = true
+                    result = "Restored the Spaces that still showed Scene's wallpaper. Scene kept the Spaces you changed."
                 } else {
                     kept = true
                     result = "Changed after Scene applied its theme. Scene kept your change."
@@ -322,6 +327,9 @@ public actor Engine {
             return .configValue(document.value(forKey: (table.map { $0 + "." } ?? "") + key))
         case .setWallpaper(let id, _, _):
             return .wallpaper(path: await services.wallpaper(displayID: id))
+        case .setWallpaperOnAllSpaces(_, let uuids, _, _):
+            guard let data = services.wallpaperStore(), let images = WallpaperStore.images(data, displays: uuids) else { return .absent }
+            return .wallpaperSpaces(images: images, backup: nil)
         case .setAppearance:
             let a = await services.appearance()
             return .appearance(dark: a.dark, auto: a.auto)
@@ -340,6 +348,7 @@ public actor Engine {
         switch op {
         case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _), .setConfigValue(let path, _, _, _):
             return FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path)))
+        case .setWallpaperOnAllSpaces: return services.wallpaperStore()
         default: return nil
         }
     }
@@ -351,6 +360,11 @@ public actor Engine {
         case (.ensureAnchor(let path, _, _), .anchor(let block, _, let existed)):
             let backup = existed ? try FileOps.backup(URL(fileURLWithPath: path), into: store.backups) : nil
             return .anchor(block: block, fileBackup: backup, fileExisted: existed)
+        case (.setWallpaperOnAllSpaces(_, let uuids, _, _), .wallpaperSpaces(let images, _)):
+            guard let data = services.wallpaperStore(), let desktops = try WallpaperStore.backup(data, displays: uuids) else {
+                throw SceneError.failed("macOS's wallpaper store has a format Scene does not know")
+            }
+            return .wallpaperSpaces(images: images, backup: try FileOps.backup(desktops, named: "wallpaper-spaces.plist", into: store.backups))
         default:
             return current
         }
@@ -388,6 +402,24 @@ public actor Engine {
         case .setWallpaper(let id, let path, let fit):
             try await services.setWallpaper(displayID: id, path: path, fit: fit)
             return .wallpaper(path: path)
+        case .setWallpaperOnAllSpaces(let displays, let uuids, let path, let fit):
+            let original = services.wallpaperStore()
+            do {
+                for id in displays { try await services.setWallpaper(displayID: id, path: path, fit: fit) }
+                // macOS saves the Space on screen in its store with the placement it chose. Copy that to every other Space.
+                for _ in 0..<20 {
+                    if let data = services.wallpaperStore(), let spread = try WallpaperStore.spreading(data, displays: uuids, imagePath: path) {
+                        try await services.setWallpaperStore(spread)
+                        return await state(of: op)
+                    }
+                    try await Task.sleep(for: .milliseconds(100))
+                }
+                throw SceneError.failed("macOS did not save the new wallpaper in its wallpaper store")
+            } catch {
+                // The engine records nothing for a failed operation, so put the Space on screen back here.
+                if let original { try? await services.setWallpaperStore(original) }
+                throw error
+            }
         case .setAppearance(let dark):
             try await services.setAppearance(dark: dark)
             return .appearance(dark: dark, auto: false)
@@ -470,6 +502,16 @@ public actor Engine {
                 throw SceneError.failed("the previous wallpaper file no longer exists")
             }
             try await services.setWallpaper(displayID: id, path: path, fit: fit)
+        case (.setWallpaperOnAllSpaces(_, let uuids, let path, _), .wallpaperSpaces(_, let backup)):
+            if let bytes = fileBytes { try await services.setWallpaperStore(bytes); return }
+            guard fromBackups, let backup, let saved = FileOps.read(store.backups.appendingPathComponent(backup)) else {
+                throw SceneError.failed("Scene has no copy of the Spaces' wallpapers from before")
+            }
+            guard let data = services.wallpaperStore(),
+                  let restored = try WallpaperStore.restoring(data, displays: uuids, sceneImage: path, backup: saved) else {
+                throw SceneError.failed("macOS's wallpaper store has a format Scene does not know")
+            }
+            try await services.setWallpaperStore(restored)
         case (.setAppearance, .appearance(let dark, let auto)):
             try await services.setAppearance(dark: dark)
             if auto {
@@ -560,6 +602,7 @@ public actor Engine {
         switch (a, b) {
         case let (.file(h1, _), .file(h2, _)): h1 == h2
         case let (.anchor(b1, _, _), .anchor(b2, _, _)): b1 == b2
+        case let (.wallpaperSpaces(i1, _), .wallpaperSpaces(i2, _)): i1 == i2
         default: a == b
         }
     }

@@ -96,7 +96,7 @@ The flow is detect, plan, apply, verify, and later undo or restore.
 
 | id | Changes | How |
 |---|---|---|
-| `wallpaper` | Every display's wallpaper | Copies the picked image to `Wallpapers/<theme>-<file>` and sets it per display, on every Space: `WallpaperStore` writes the image into macOS's wallpaper store (`com.apple.wallpaper/Store/Index.plist`) and restarts WallpaperAgent, then `NSWorkspace` sets the Space on screen. Each image gets its own path, because Scene verifies a wallpaper by its path |
+| `wallpaper` | Every display's wallpaper | Copies the picked image to `Wallpapers/<theme>-<file>` and sets it per display with `NSWorkspace`, which changes the Space on screen. Each image gets its own path, because Scene verifies a wallpaper by its path. With the experimental tweak `wallpaperSpaces`, one `setWallpaperOnAllSpaces` operation replaces the per-display ones: it sets the Space on screen, copies what macOS saved for it in its wallpaper store (`com.apple.wallpaper/Store/Index.plist`) to every other Space of the display, and restarts WallpaperAgent, which reads the store only when it starts. Its state is what each Space shows, and its original is a backup of every Space's `Desktop` node. Restore puts back each Space that still shows Scene's wallpaper and keeps a Space the user changed |
 | `appearance` | Light/Dark | The private SkyLight call when the experimental tier allows it, otherwise System Events (needs the Automation permission). Only when the request forces an appearance |
 | `accent` | Accent color | Helper call. `auto` maps `palette.accent` to the nearest macOS preset |
 | `iconStyle` | Icon & widget style | Helper call |
@@ -123,6 +123,7 @@ The flow is detect, plan, apply, verify, and later undo or restore.
 - Private calls run only in the `scene-tweak` helper, a separate process, so a crash cannot take the app down. Commands: `check`, `get <id>`, and `set <id> <json>`, with JSON in and out. The ids are `appearance`, `accent`, and `iconStyle`.
 - The calls: SkyLight `SLSSetAppearanceThemeNotifying` and `SLSSetAppearanceThemeSwitchesAutomatically` (Light/Dark and Auto), AppKit `NSColorSetUserAccentColor` (accent), and `SLSIconAppearanceConfiguration` (icon style and tint; a custom tint is stored in `AppleIconAppearanceCustomTintColor`). The helper reads each value back after setting it and reverts it on a mismatch.
 - `TweakRunner` allows a call only when Settings has the tier on and the macOS build is in `TweakCatalog.testedBuilds` (now 25G83 for all three), unless "Allow on macOS versions Scene has not tested" is on. `Scripts/verify-tweaks.sh` tests a new macOS build.
+- `wallpaperSpaces` is in `TweakCatalog.inApp`: Scene writes the wallpaper store itself, so it needs no helper and no symbol check. `WallpaperStore` reads and writes the store's format as pure functions. No build is in its tested list yet; `SCENE_LIVE=1 SCENE_LIVE_TWEAKS=1` runs `LiveTests.applyAndRestoreEverySpace` on a new build.
 
 ## App (Sources/Scene)
 

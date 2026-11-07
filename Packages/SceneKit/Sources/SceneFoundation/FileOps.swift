@@ -69,8 +69,13 @@ public enum FileOps {
     public static func backup(_ url: URL, into folder: URL) throws -> String? {
         let target = resolvedTarget(url)
         guard let data = try? Data(contentsOf: target) else { return nil }
+        return try backup(data, named: target.lastPathComponent, into: folder)
+    }
+
+    /// Saves bytes into the backup folder and returns the backup's relative name.
+    public static func backup(_ data: Data, named name: String, into folder: URL) throws -> String {
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let name = "\(Int(Date().timeIntervalSince1970))-\(UUID().uuidString.prefix(8))-\(target.lastPathComponent)"
+        let name = "\(Int(Date().timeIntervalSince1970))-\(UUID().uuidString.prefix(8))-\(name)"
         try data.write(to: folder.appendingPathComponent(name), options: .atomic)
         return name
     }
