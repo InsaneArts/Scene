@@ -22,7 +22,7 @@ Press ⌃⇧⌘Space to show your themes over every screen. It is Omarchy's them
   <img src=".github/assets/film-backgrounds.png" width="100%" alt="Scene's window: the themes in the sidebar, and Tokyo Night's page with a desktop preview, three backgrounds to pick from, and Apply" />
 </p>
 
-Each theme has three backgrounds for its dark look and three for its light look. Pick one on the theme's page, which shows the theme on its own wallpaper, in its own light or dark look. Press ⌃⌥⌘Space to show the next one, like Omarchy's Super + Ctrl + Space. It changes only the wallpaper, and Undo brings the last one back.
+Each theme has three backgrounds for its dark look and three for its light look. Pick one on the theme's page, which shows the theme on its own wallpaper, in its own light or dark look. Press ⌃⌥⌘Space to show the next one, like Omarchy's Super + Ctrl + Space. To use any theme's background without its colors, click Set as Wallpaper on its page, or right-click a background. Both change only the wallpaper, and Undo brings the last one back. Your theme stays the current one, and with Light/Dark following on, its apps still switch with macOS while the wallpaper switches to its own theme's other look.
 
 ## See every change first
 

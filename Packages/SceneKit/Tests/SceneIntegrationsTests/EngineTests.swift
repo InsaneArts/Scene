@@ -220,7 +220,8 @@ struct EngineTests {
         func apply(systemIsDark: Bool, replacing: Bool) async {
             let request = ApplyRequest(theme: theme, mode: .system, systemIsDark: systemIsDark)
             let planned = await s.engine.plan(request, detections: await s.engine.detectAll())
-            _ = await s.engine.apply(request, planned: planned, selected: ["ghostty"], replacingLastHistory: replacing)
+            let newest = await s.engine.history().last?.id
+            _ = await s.engine.apply(request, planned: planned, selected: ["ghostty"], replacing: replacing ? newest : nil)
         }
         _ = try await self.apply(s, "gruvbox", mode: .dark)
         await apply(systemIsDark: false, replacing: false)
@@ -234,6 +235,52 @@ struct EngineTests {
         let history = await s.engine.history()
         #expect(history.map(\.themeName) == ["Gruvbox", "Catppuccin"])
         #expect(history.last?.appearance == .dark)
+    }
+
+    /// Set as Wallpaper with another theme's wallpaper, then macOS turns Light. The theme's apps and the wallpaper
+    /// each switch look in their own history entry, and Undo still steps back through both.
+    @Test func followingMacOSKeepsAWallpaperFromAnotherTheme() async throws {
+        let s = try setup()
+        let gruvbox = try Fixtures.themeWithWallpaper("gruvbox", in: s.home)
+        let catppuccin = try Fixtures.themeWithWallpaper("catppuccin", in: s.home)
+        let themes = [gruvbox.id: gruvbox, catppuccin.id: catppuccin]
+        func apply(_ theme: Theme, systemIsDark: Bool, only: Set<String>? = nil, without: String? = nil, replacing: String? = nil) async {
+            let request = ApplyRequest(theme: theme, mode: .system, systemIsDark: systemIsDark)
+            let planned = await s.engine.plan(request, detections: await s.engine.detectAll())
+            let selected = (only ?? Set(planned.filter { $0.plan != nil }.map(\.id))).subtracting([without].compactMap { $0 })
+            _ = await s.engine.apply(request, planned: planned, selected: selected, replacing: replacing)
+        }
+        await apply(gruvbox, systemIsDark: true)
+        await apply(catppuccin, systemIsDark: true, only: ["wallpaper"])
+        #expect(s.services.wallpapers[1]?.hasSuffix("scene-catppuccin-dark-1.png") == true)
+        var history = await s.engine.history()
+        #expect(history.currentTheme?.themeName == "Gruvbox")
+
+        // macOS turns Light: Gruvbox's apps without the wallpaper, then Catppuccin's light wallpaper.
+        let steps = history.followSteps(systemIsDark: false) { themes[$0]?.availableAppearances }
+        #expect(steps.map(\.apps) == [.rememberedWithoutWallpaper, .wallpaperOnly])
+        #expect(steps.map(\.entry.themeName) == ["Gruvbox", "Catppuccin"])
+        for step in steps {
+            let theme = try #require(themes[step.entry.themeID])
+            switch step.apps {
+            case .remembered: await apply(theme, systemIsDark: false, replacing: step.entry.id)
+            case .rememberedWithoutWallpaper: await apply(theme, systemIsDark: false, without: "wallpaper", replacing: step.entry.id)
+            case .wallpaperOnly: await apply(theme, systemIsDark: false, only: ["wallpaper"], replacing: step.entry.id)
+            }
+        }
+        #expect(s.services.wallpapers[1]?.hasSuffix("scene-catppuccin-light-1.png") == true)
+        #expect(s.home.read(".config/ghostty/themes/scene-light")?.contains("Managed by Scene: Gruvbox") == true)
+        history = await s.engine.history()
+        #expect(history.map(\.themeName) == ["Gruvbox", "Catppuccin"])
+        #expect(history.map(\.appearance) == [.light, .light])
+        #expect(history.first?.integrations.contains("wallpaper") == true, "Undo to Gruvbox must show its wallpaper again")
+        let followedAgain = history.followSteps(systemIsDark: false) { themes[$0]?.availableAppearances }
+        #expect(followedAgain.isEmpty)
+
+        // Undo goes back to Gruvbox, with its own wallpaper.
+        _ = await s.engine.undo(resolveTheme: { id, _ in themes[id] }, systemIsDark: false)
+        #expect(s.services.wallpapers[1]?.hasSuffix("scene-gruvbox-light-1.png") == true)
+        #expect(await s.engine.history().map(\.themeName) == ["Gruvbox"])
     }
 
     @Test func autoAppearanceIsRestored() async throws {

@@ -49,6 +49,45 @@ public struct HistoryEntry: Codable, Sendable, Identifiable {
     public func needsOtherLook(available: [Appearance], systemIsDark: Bool) -> Bool {
         available.count == 2 && appearance != (systemIsDark ? .dark : .light)
     }
+
+    /// The apply changed only the wallpaper: Next Background, Set as Wallpaper, or an Apply with only Wallpaper checked.
+    public var isWallpaperOnly: Bool { integrations == ["wallpaper"] }
+}
+
+/// One apply that following macOS Light/Dark makes. It takes the place of `entry` in the history.
+public struct FollowStep: Sendable {
+    public enum Apps: Sendable, Equatable {
+        /// The apps you chose to change with themes.
+        case remembered
+        /// Those apps without the wallpaper, because the wallpaper on screen came from another theme.
+        case rememberedWithoutWallpaper
+        case wallpaperOnly
+    }
+    public var entry: HistoryEntry
+    public var apps: Apps
+}
+
+extension Array where Element == HistoryEntry {
+    /// The newest entry that changed more than the wallpaper: the theme your apps show. Nil when Scene has only changed wallpapers.
+    public var currentTheme: HistoryEntry? { last { !$0.isWallpaperOnly } }
+
+    /// What following macOS Light/Dark applies. When the wallpaper came from another theme, the current theme's apps
+    /// and that wallpaper each switch look on their own, so the wallpaper stays and the apps keep following macOS.
+    /// - Parameter available: The looks of a theme, by id. Nil for a theme that is no longer installed.
+    public func followSteps(systemIsDark: Bool, available: (String) -> [Appearance]?) -> [FollowStep] {
+        func needsOtherLook(_ entry: HistoryEntry) -> Bool {
+            available(entry.themeID).map { entry.needsOtherLook(available: $0, systemIsDark: systemIsDark) } ?? false
+        }
+        guard let newest = last else { return [] }
+        let theme = currentTheme
+        if !newest.isWallpaperOnly || theme?.themeID == newest.themeID {
+            return needsOtherLook(newest) ? [FollowStep(entry: newest, apps: .remembered)] : []
+        }
+        var steps: [FollowStep] = []
+        if let theme, needsOtherLook(theme) { steps.append(FollowStep(entry: theme, apps: .rememberedWithoutWallpaper)) }
+        if needsOtherLook(newest) { steps.append(FollowStep(entry: newest, apps: .wallpaperOnly)) }
+        return steps
+    }
 }
 
 /// Persistence under ~/Library/Application Support/Scene. Every write is atomic.

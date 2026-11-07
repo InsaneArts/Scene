@@ -57,9 +57,10 @@ public actor Engine {
 
     // MARK: Apply
 
-    /// - Parameter replacingLastHistory: The apply replaces the newest history entry instead of adding one.
-    ///   Following macOS Light/Dark uses it, so Undo still goes back to the theme before.
-    public func apply(_ request: ApplyRequest, planned: [PlannedIntegration], selected: Set<String>, replacingLastHistory: Bool = false,
+    /// - Parameter replacing: The id of a history entry this apply takes the place of, instead of adding one.
+    ///   Following macOS Light/Dark uses it, so Undo still goes back to the theme before. The new entry keeps the
+    ///   old entry's apps as well, so Undo to it changes them all, even those this apply left out.
+    public func apply(_ request: ApplyRequest, planned: [PlannedIntegration], selected: Set<String>, replacing: String? = nil,
                       progress: @escaping @Sendable (String) -> Void = { _ in }) async -> ApplyReport {
         run = JournalRun(id: UUID().uuidString, themeID: request.theme.id, themeName: request.theme.manifest.name,
                          started: Date(), completed: false, steps: [])
@@ -82,10 +83,16 @@ public actor Engine {
         let succeeded = ordered.filter { $0.outcome.isSuccess || { if case .needsAction = $0.outcome { true } else { false } }($0) }.map(\.id)
         if !succeeded.isEmpty {
             var history = store.loadHistory()
-            if replacingLastHistory, !history.isEmpty { history.removeLast() }
-            history.append(HistoryEntry(id: UUID().uuidString, themeID: request.theme.id, themeVersion: request.theme.manifest.version,
-                                        themeName: request.theme.manifest.name, mode: request.mode, integrations: succeeded, date: Date(),
-                                        wallpaper: request.wallpaper?.name, appearance: request.effectiveAppearance))
+            var entry = HistoryEntry(id: UUID().uuidString, themeID: request.theme.id, themeVersion: request.theme.manifest.version,
+                                     themeName: request.theme.manifest.name, mode: request.mode, integrations: succeeded, date: Date(),
+                                     wallpaper: request.wallpaper?.name, appearance: request.effectiveAppearance)
+            if let replacing, let index = history.firstIndex(where: { $0.id == replacing }) {
+                let kept = history[index].integrations
+                entry.integrations = kept + succeeded.filter { !kept.contains($0) }
+                history[index] = entry
+            } else {
+                history.append(entry)
+            }
             try? store.saveHistory(history)
         }
         return ApplyReport(themeName: request.theme.manifest.name, results: ordered, date: Date())

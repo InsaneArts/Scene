@@ -236,7 +236,7 @@ struct ThemePage: View {
                     DesktopPreview(variant: variant, wallpaper: wallpaper?.url)
                         .frame(maxHeight: viewport.size.height * 0.6)
                         .shadow(color: .black.opacity(0.3), radius: 30, y: 16)
-                    if variant.wallpapers.count > 1 { BackgroundPicker(variant: variant) }
+                    if variant.wallpapers.count > 1 { BackgroundPicker(theme: theme, variant: variant) }
                     header(variant)
                     Divider()
                     ThemeCredits(theme: theme, variant: variant, wallpaper: wallpaper)
@@ -281,6 +281,12 @@ struct ThemePage: View {
                 Label(variant.appearance == .dark ? "Dark only" : "Light only", systemImage: variant.appearance == .dark ? "moon.fill" : "sun.max.fill")
                     .font(.callout).foregroundStyle(.secondary)
             }
+            if let wallpaper = model.wallpaper(for: variant) {
+                Button("Set as Wallpaper") { Task { await model.setWallpaper(wallpaper, of: theme) } }
+                    .buttonStyle(CapsuleButtonStyle(fill: .primary.opacity(0.1), label: .primary))
+                    .disabled(model.isWorking)
+                    .help("Show this background and change nothing else")
+            }
             Button("Apply…") { applying = theme }
                 .buttonStyle(CapsuleButtonStyle(fill: variant.interface.accent.color, label: variant.onAccent))
                 .keyboardShortcut(.defaultAction)
@@ -291,6 +297,7 @@ struct ThemePage: View {
 /// A variant's wallpapers. The picked one is what Apply, the switcher, and Next Background start from.
 struct BackgroundPicker: View {
     @Environment(AppModel.self) private var model
+    let theme: Theme
     let variant: ResolvedVariant
 
     var body: some View {
@@ -309,7 +316,11 @@ struct BackgroundPicker: View {
                 }
                 .buttonStyle(.plain)
                 .help(wallpaper.name)
+                .contextMenu {
+                    Button("Set as Wallpaper") { Task { await model.setWallpaper(wallpaper, of: theme) } }.disabled(model.isWorking)
+                }
                 .accessibilityLabel("Background \(index + 1) of \(variant.wallpapers.count)")
+                .accessibilityAction(named: "Set as Wallpaper") { Task { await model.setWallpaper(wallpaper, of: theme) } }
                 .accessibilityAddTraits(isPicked ? .isSelected : [])
             }
         }

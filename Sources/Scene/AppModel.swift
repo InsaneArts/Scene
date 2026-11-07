@@ -176,7 +176,8 @@ final class AppModel {
         theme.variants[appearance(for: theme)] ?? theme.variants.values.first!
     }
 
-    var currentThemeID: String? { history.last?.themeID }
+    /// The theme your apps show. A wallpaper set on its own does not change it.
+    var currentThemeID: String? { history.currentTheme?.themeID }
 
     // MARK: Loading
 
@@ -206,20 +207,39 @@ final class AppModel {
         return (request, await engine.plan(request, detections: detections))
     }
 
-    func apply(_ request: ApplyRequest, planned: [PlannedIntegration], selected: Set<String>, replacingLastHistory: Bool = false) async {
+    func apply(_ request: ApplyRequest, planned: [PlannedIntegration], selected: Set<String>, replacing: String? = nil) async {
         isWorking = true
         defer { isWorking = false; progress = "" }
-        lastReport = await engine.apply(request, planned: planned, selected: selected, replacingLastHistory: replacingLastHistory) { message in
+        lastReport = await engine.apply(request, planned: planned, selected: selected, replacing: replacing) { message in
             Task { @MainActor in self.progress = message }
         }
         await refreshSystemState()
     }
 
     /// Applies a theme with the remembered app choices. Used by the theme switcher and the menu bar extra.
-    func quickApply(_ theme: Theme, mode: AppearanceMode = .system, replacingLastHistory: Bool = false) async {
+    func quickApply(_ theme: Theme, mode: AppearanceMode = .system, apps: FollowStep.Apps = .remembered, replacing: String? = nil) async {
         let (request, planned) = await plan(theme, mode: mode)
-        let selected = Set(planned.filter { $0.plan != nil && !disabledIntegrations.contains($0.id) }.map(\.id))
-        await apply(request, planned: planned, selected: selected, replacingLastHistory: replacingLastHistory)
+        var selected = Set(planned.filter { $0.plan != nil && !disabledIntegrations.contains($0.id) }.map(\.id))
+        switch apps {
+        case .remembered: break
+        case .rememberedWithoutWallpaper: selected.remove("wallpaper")
+        case .wallpaperOnly: selected = ["wallpaper"]
+        }
+        guard !selected.isEmpty else { return }
+        await apply(request, planned: planned, selected: selected, replacing: replacing)
+    }
+
+    /// Shows one of a theme's wallpapers and changes nothing else. Undo brings the last one back.
+    func setWallpaper(_ wallpaper: Wallpaper, of theme: Theme) async {
+        guard !isWorking else { NSSound.beep(); return }
+        let variant = variant(for: theme)
+        choose(wallpaper, for: variant)
+        // The look on the theme's page. When it matches macOS, the wallpaper follows macOS Light/Dark like a theme does.
+        let mode: AppearanceMode = theme.availableAppearances.count < 2 || variant.appearance == (systemIsDark ? .dark : .light)
+            ? .system : (variant.appearance == .dark ? .dark : .light)
+        let (request, planned) = await plan(theme, mode: mode)
+        await apply(request, planned: planned, selected: ["wallpaper"])
+        if case .failed(let reason)? = lastReport?.results.first?.outcome { alert = "Scene could not change the wallpaper: \(reason)" }
     }
 
     // MARK: Following macOS Light/Dark
@@ -246,14 +266,18 @@ final class AppModel {
         }
     }
 
-    /// Applies the current theme's other look when macOS shows the other appearance. It replaces the newest
-    /// history entry, so Undo goes back to the theme before. A theme with one look never switches macOS back.
+    /// Applies the current theme's other look when macOS shows the other appearance. Each apply takes the place of
+    /// the history entry it follows, so Undo goes back to the theme before. A theme with one look never switches macOS back.
+    /// A wallpaper set from another theme stays: the theme's apps and the wallpaper each switch look on their own.
     func followAppearance() async {
         guard followSystemAppearance else { return }
         if themes.isEmpty { await reload() }
-        guard let entry = history.last, let theme = themes.first(where: { $0.id == entry.themeID }),
-              entry.needsOtherLook(available: theme.availableAppearances, systemIsDark: systemIsDark) else { return }
-        await quickApply(theme, mode: .system, replacingLastHistory: true)
+        let themes = self.themes
+        let steps = history.followSteps(systemIsDark: systemIsDark) { id in themes.first { $0.id == id }?.availableAppearances }
+        for step in steps {
+            guard let theme = themes.first(where: { $0.id == step.entry.themeID }) else { continue }
+            await quickApply(theme, mode: .system, apps: step.apps, replacing: step.entry.id)
+        }
     }
 
     func undo() async {
