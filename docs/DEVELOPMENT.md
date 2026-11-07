@@ -7,7 +7,7 @@ Scene runs on macOS 14 or later. Building needs Xcode 26 or later, because an ap
 ```sh
 open Scene.xcodeproj          # Scene scheme: ⌘R runs the app, ⌘U runs the SceneKit tests
 ./Scripts/test.sh             # the same 120 tests from the command line
-./Scripts/package_app.sh      # builds build/Scene.app (release, host architecture, ad-hoc signed)
+./Scripts/package_app.sh      # builds build/Scene.app (release, host architecture, ad-hoc signed, no hardened runtime)
 open build/Scene.app
 ```
 
