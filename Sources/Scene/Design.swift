@@ -212,6 +212,7 @@ struct AppIcon: View {
         case "neovim": ("chevron.left.forwardslash.chevron.right", Color(red: 0.45, green: 0.78, blue: 0.3), Color(red: 0.1, green: 0.5, blue: 0.3))
         case "ghostty", "iterm2", "kitty", "terminal", "alacritty", "warp", "rex": ("terminal.fill", Color(white: 0.45), Color(white: 0.2))
         case "helix": ("chevron.left.forwardslash.chevron.right", Color(red: 0.6, green: 0.45, blue: 0.95), Color(red: 0.35, green: 0.2, blue: 0.7))
+        case "doomemacs": ("chevron.left.forwardslash.chevron.right", Color(red: 0.7, green: 0.4, blue: 0.9), Color(red: 0.4, green: 0.2, blue: 0.7))
         case "btop": ("gauge.with.dots.needle.67percent", Color(red: 0.95, green: 0.5, blue: 0.35), Color(red: 0.75, green: 0.25, blue: 0.2))
         case "borders": ("square.dashed", Color(red: 0.4, green: 0.8, blue: 0.95), Color(red: 0.15, green: 0.5, blue: 0.8))
         case "tmux": ("rectangle.split.2x1.fill", Color(red: 0.3, green: 0.75, blue: 0.4), Color(red: 0.1, green: 0.45, blue: 0.2))

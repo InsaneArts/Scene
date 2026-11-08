@@ -150,7 +150,7 @@ final class AppModel {
         let integrations: [Integration] = [WallpaperIntegration(), AppearanceIntegration(), BordersIntegration(), AccentColorIntegration(),
                                            IconStyleIntegration(), GhosttyIntegration(), ITermIntegration(), KittyIntegration(),
                                            AlacrittyIntegration(), WarpIntegration(), RexIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
-            + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(),
+            + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(), DoomEmacsIntegration(),
                HerdrIntegration(), ScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "scripts") ?? [] })]
         engine = Engine(env: env, services: LiveSystemServices(tweaks: tweaks), integrations: integrations)
     }

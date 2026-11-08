@@ -53,6 +53,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - The menu bar panel when Scene starts at login without its window. It now loads the themes when it opens; before, it stayed empty.
 - Set as Wallpaper in the running app: the button and the context menu render in snapshot mode, and the engine side (history, following Light/Dark, Undo) is covered by tests, but no one has clicked them on the real desktop.
 - The new apps on the real Mac. No theme was applied to the real setup. The reloads (SIGUSR1 for Helix, SIGUSR2 for btop, `source-file` for tmux, colors sent to borders) are tested with fake processes only.
+- Doom Emacs on the real Mac: Emacs 30 loaded the generated `scene-dark` and `scene-light` themes and the loader in batch mode (`emacs -Q --batch`, in a throwaway folder), and switching between them left one theme enabled. Apply and restore against a fixture home give back `config.el` byte for byte. The `emacsclient` reload is tested with a fake process only, and no theme was applied to the real Doom config.
 - Warp, Alacritty, and Helix are not installed on the test Mac. Warp's order (theme files, a 1-second pause, then the setting) comes from reading Warp's source, not from running it.
 - Xcode: whether a running Xcode keeps Scene's theme settings when it quits. Scene asks for a restart.
 - Terminal: a running Terminal can write its own profiles back when you edit a profile in its settings. Scene then reports the change outside Scene.
