@@ -433,3 +433,72 @@ public struct RexIntegration: Integration {
         return IntegrationPlan(operations: ops)
     }
 }
+
+// MARK: - bateri
+
+/// bateri: a theme file per look in `themes/`, and the `[appearance]` keys of `settings.toml` that name them.
+/// bateri watches its config folder and repaints open windows when a file changes, so there is nothing to signal.
+public struct BateriIntegration: Integration {
+    public let id = "bateri"
+    public let displayName = "bateri"
+    public let kind = IntegrationKind.terminal
+    public static let bundleID = "dev.bateri.bateri"
+    public init() {}
+
+    /// bateri does not read XDG_CONFIG_HOME. Its folder is always ~/.config/bateri.
+    static func folder(_ env: SceneEnvironment) -> URL { env.home.appendingPathComponent(".config/bateri") }
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        guard let app = env.locateApp(Self.bundleID) else { return .notInstalled() }
+        let folder = Self.folder(env)
+        let settings = folder.appendingPathComponent("settings.toml")
+        var detail = Operation.tilde(settings.path)
+        var setup = SetupState.ready
+        if let data = FileOps.read(FileOps.resolvedTarget(settings)) {
+            let doc = KeyValueDocument(text: String(decoding: data, as: UTF8.self))
+            if let current = doc.value(forKey: "appearance.theme") { detail = "Current theme: \(current.trimmingCharacters(in: CharacterSet(charactersIn: "\"'")))" }
+            // Scene edits keys under an [appearance] header. In any other shape it would define the table or the key twice.
+            if doc.value(forKey: "appearance") != nil || doc.keys.contains(where: { $0.hasPrefix("[[appearance]].") || $0.hasPrefix("appearance.theme.") }) {
+                setup = .blocked("\(Operation.tilde(settings.path)) has no plain [appearance] section. Give it one, then apply again.")
+            }
+        }
+        if FileOps.exists(settings) && !FileOps.isWritable(settings) {
+            setup = .blocked("\(Operation.tilde(settings.path)) is read-only.")
+        }
+        // bateri cannot start watching a folder that did not exist when it opened.
+        let unwatched = !FileOps.exists(folder) && !services.processes(bundleID: Self.bundleID).isEmpty
+        return Detection(installed: true, version: Processes.appVersion(at: app), detail: detail, setup: setup,
+                         context: ["settings": settings.path, "unwatched": unwatched ? "1" : "0"])
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        let themes = Self.folder(env).appendingPathComponent("themes")
+        let settings = detection.context["settings"]!
+        let variants = request.nativeVariants
+        // The files come first: bateri reads a theme as soon as settings.toml names it.
+        var ops: [Operation] = variants.sorted { $0.key.rawValue < $1.key.rawValue }.map { appearance, variant in
+            .writeManagedFile(path: themes.appendingPathComponent(BateriRenderer.themeNames[appearance]! + ".toml").path,
+                              contents: Data(BateriRenderer.themeFile(variant).utf8))
+        }
+        func set(_ key: String, _ name: String) -> Operation {
+            .setConfigValue(path: settings, table: "appearance", key: key, value: KeyValueDocument.quoted(name))
+        }
+        if variants.count == 2 {
+            ops += [set("light_theme", BateriRenderer.themeNames[.light]!), set("dark_theme", BateriRenderer.themeNames[.dark]!),
+                    set("theme", "system")]
+        } else {
+            ops.append(set("theme", BateriRenderer.themeNames[variants.keys.first ?? request.effectiveAppearance]!))
+        }
+        let notes = detection.context["unwatched"] == "1" ? ["bateri is not watching ~/.config/bateri yet. Reopen it to see the theme."] : []
+        return IntegrationPlan(operations: ops, notes: notes)
+    }
+
+    public func verify(_ plan: IntegrationPlan, _ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> Verification {
+        for op in plan.operations {
+            guard case let .setConfigValue(path, table, key, value) = op else { continue }
+            let doc = KeyValueDocument(text: FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))).map { String(decoding: $0, as: UTF8.self) } ?? "")
+            if doc.value(forKey: (table.map { $0 + "." } ?? "") + key) != value { return .mismatch("\(key) was not saved") }
+        }
+        return Self.verifyFiles(plan)
+    }
+}
