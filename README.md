@@ -144,3 +144,7 @@ To make a theme, use the `scene-theme` skill in `.claude/skills/`. The core is a
 ## Credits
 
 Palettes: [Omarchy](https://github.com/omacom/omarchy) v4.0.4 (MIT), [rose-pine/palette](https://github.com/rose-pine/palette), and [sainnhe/gruvbox-material](https://github.com/sainnhe/gruvbox-material).
+
+## License
+
+Scene's code is under the [MIT License](LICENSE). The wallpapers are not: each one keeps the license listed next to it in its theme's `theme.json`.
