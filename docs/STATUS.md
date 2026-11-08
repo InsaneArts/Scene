@@ -4,6 +4,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 ## Verified
 
+- Rio 0.5.29 (2026-11-08): detected under Terminals, with its real app icon, version, and config path in a background snapshot. The warnings-as-errors app build passes with ad hoc signing. Fixture tests cover dark/light/system and single-look themes, adaptive selection, preserving an existing force-theme override, byte-for-byte Restore, preserving later user edits, existing theme files, missing files, and a custom RIO_CONFIG_HOME. Python’s tomllib accepts the generated config and theme files. The full test script has one unrelated failure, `RendererTests.ghosttyAcceptsRenderedFiles`: Ghostty reads the real Application Support config despite the fixture HOME and reports a forced light theme instead of the expected dual-look setting.
+
 - 191 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
 - The apps added after the MVP: kitty, Alacritty, Warp, Terminal, Zed, Xcode, Helix, tmux, bat and delta, btop, and JankyBorders. Apply and restore against fixture home folders give back every user file byte for byte. Where an app is installed on the test Mac, its own parser read Scene's output in a throwaway folder: kitty 0.44 (`kitty +runpy`), tmux 3.6b (a private server, which accepts every option even without `-q`), bat 0.26.1 and delta 0.19.2 (bat's cache and an included git config), and `plutil` for the Xcode themes. Python's `tomllib` read the Alacritty, Helix, and Warp TOML.
 - kitty 0.49.2 on the test Mac (2026-11-08), against a copy of a real kitty folder that uses a `kitten themes` theme (Desert Night): the engine detected it and wrote the theme, kitty's parser found no bad lines, a separate running kitty switched every color on SIGUSR1 and kept running, and Restore gave back the folder byte for byte. Before the fix, the old theme's `macos_titlebar_color` showed through; a test now checks that no color option of kitty's bundled themes shows through Scene's. The user's own kitty was not changed.
@@ -36,6 +38,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Your scripts (Settings → Scripts): the theme file, the `SCENE_…` variables, which files Scene refuses to run, apply, restore, a failing script, and a user's own `theme.json` given back by Restore are covered by tests with fake processes. `Processes.run` keeps its timeout while a process runs and returns within a second when a background child keeps the pipe open, with real processes. The Scripts tab of Settings and the Apps page render in snapshot mode, with one script that runs and one that is not executable.
 
 ## Not verified
+
+- Rio applying, reloading, following a real macOS Light/Dark change, and restoring in the running app. Reload behavior and palette fields were checked against Rio v0.5.29 source; no live Rio config was changed.
 
 - herdr's running server and clients switching colors on the real Mac after `herdr server reload-config`. herdr's own tests say a reload also reloads its clients.
 
