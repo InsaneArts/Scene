@@ -4,6 +4,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 ## Verified
 
+- ZapFast 0.21.1 (2026-11-08): detected under Tools in a background snapshot. Its JSON palette covers the 21 documented interface and chat colors. Fixture tests cover dark, light, system mode, apply and byte-for-byte Restore, existing palette files, missing settings, malformed settings, and keeping later user edits. The app builds with warnings as errors using ad hoc signing because the development certificate is unavailable. The full test script hits an unrelated Ghostty parser assertion: the installed Ghostty also reads the real Application Support config despite its fixture HOME, yielding `theme = scene-light` instead of the expected dual-look selection.
+
 - 191 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
 - The apps added after the MVP: kitty, Alacritty, Warp, Terminal, Zed, Xcode, Helix, tmux, bat and delta, btop, and JankyBorders. Apply and restore against fixture home folders give back every user file byte for byte. Where an app is installed on the test Mac, its own parser read Scene's output in a throwaway folder: kitty 0.44 (`kitty +runpy`), tmux 3.6b (a private server, which accepts every option even without `-q`), bat 0.26.1 and delta 0.19.2 (bat's cache and an included git config), and `plutil` for the Xcode themes. Python's `tomllib` read the Alacritty, Helix, and Warp TOML.
 - kitty 0.49.2 on the test Mac (2026-11-08), against a copy of a real kitty folder that uses a `kitten themes` theme (Desert Night): the engine detected it and wrote the theme, kitty's parser found no bad lines, a separate running kitty switched every color on SIGUSR1 and kept running, and Restore gave back the folder byte for byte. Before the fix, the old theme's `macos_titlebar_color` showed through; a test now checks that no color option of kitty's bundled themes shows through Scene's. The user's own kitty was not changed.
@@ -36,6 +38,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Your scripts (Settings → Scripts): the theme file, the `SCENE_…` variables, which files Scene refuses to run, apply, restore, a failing script, and a user's own `theme.json` given back by Restore are covered by tests with fake processes. `Processes.run` keeps its timeout while a process runs and returns within a second when a background child keeps the pipe open, with real processes. The Scripts tab of Settings and the Apps page render in snapshot mode, with one script that runs and one that is not executable.
 
 ## Not verified
+
+- ZapFast applying and restoring in the real app. Quit it before either action, then reopen it: `reload-themes` refreshes the in-memory selection without reading settings. Scene writes the current look; it does not configure native switching between two palettes.
 
 - herdr's running server and clients switching colors on the real Mac after `herdr server reload-config`. herdr's own tests say a reload also reloads its clients.
 

@@ -58,7 +58,7 @@ struct AppsView: View {
         case .system: "Desktop"
         case .terminal: "Terminals"
         case .editor: "Editors"
-        case .tool: "Command-line tools"
+        case .tool: "Tools"
         case .experimental: "macOS look · experimental"
         }
     }
