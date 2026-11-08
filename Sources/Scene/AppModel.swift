@@ -54,6 +54,13 @@ final class AppModel {
     var followSystemAppearance: Bool {
         didSet { UserDefaults.standard.set(followSystemAppearance, forKey: "followSystemAppearance") }
     }
+    /// Full paths of the user's scripts, which run after each theme change. `ScriptsIntegration` reads the setting itself.
+    var scripts: [String] {
+        didSet {
+            UserDefaults.standard.set(scripts, forKey: "scripts")
+            Task { await refreshSystemState() }
+        }
+    }
     /// The sidebar's search text.
     var searchText = ""
     /// The Install from GitHub sheet is open.
@@ -130,6 +137,7 @@ final class AppModel {
         favoriteThemes = Set(defaults.stringArray(forKey: "favoriteThemes") ?? [])
         themeSources = defaults.dictionary(forKey: "themeSources") as? [String: String] ?? [:]
         followSystemAppearance = defaults.bool(forKey: "followSystemAppearance")
+        scripts = defaults.stringArray(forKey: "scripts") ?? []
         themeAuthor = defaults.string(forKey: "themeAuthor") ?? NSFullUserName()
         backgroundChoices = defaults.dictionary(forKey: "backgroundChoices") as? [String: String] ?? [:]
         switcherShortcut = Self.loadShortcut("switcherShortcut", default: .omarchyDefault)
@@ -143,7 +151,7 @@ final class AppModel {
                                            IconStyleIntegration(), GhosttyIntegration(), ITermIntegration(), KittyIntegration(),
                                            AlacrittyIntegration(), WarpIntegration(), RexIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
             + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(),
-               HerdrIntegration()]
+               HerdrIntegration(), ScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "scripts") ?? [] })]
         engine = Engine(env: env, services: LiveSystemServices(tweaks: tweaks), integrations: integrations)
     }
 

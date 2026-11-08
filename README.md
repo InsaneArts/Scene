@@ -48,6 +48,19 @@ Before a theme touches anything, Scene lists each app and every file and setting
 
 Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set them to follow the system, and they switch with Light/Dark.
 
+### Your own scripts
+
+For a tool Scene doesn't know, add a script in Settings → Scripts. Scene runs it after each theme change, Undo, and Restore, and when the theme follows Light/Dark. The script gets the colors of the look on screen in variables, and the path of a JSON file with both looks:
+
+```sh
+#!/bin/sh
+# SCENE_EVENT is apply, or restore when Scene puts your setup back.
+[ "$SCENE_EVENT" = restore ] && exit 0
+echo "accent $SCENE_ACCENT on $SCENE_BACKGROUND, red $SCENE_ANSI_1"   # also SCENE_THEME_FILE, SCENE_APPEARANCE
+```
+
+The variables are `SCENE_THEME_ID`, `SCENE_APPEARANCE`, one per interface color (`SCENE_BACKGROUND`, `SCENE_SURFACE`, `SCENE_OVERLAY`, `SCENE_BORDER`, `SCENE_FOREGROUND`, `SCENE_MUTED`, `SCENE_ACCENT`, `SCENE_SELECTION`, `SCENE_CURSOR`, `SCENE_CURRENT_LINE`, `SCENE_SEARCH`, `SCENE_ERROR`, `SCENE_WARNING`, `SCENE_SUCCESS`, `SCENE_INFO`), and `SCENE_ANSI_0` to `SCENE_ANSI_15`, each as `#rrggbb`. The file is `~/.config/scene/theme.json`. Scripts run without a shell and with a short `PATH`, for 10 seconds at most. A script must be executable, and only you may change it and its folder. Scripts come only from Settings, never from a theme.
+
 ## Install
 
 Install Scene in Terminal:

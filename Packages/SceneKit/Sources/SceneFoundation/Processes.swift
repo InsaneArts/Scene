@@ -15,30 +15,54 @@ public struct CLIResult: Sendable {
 
 public enum Processes {
     /// Runs an executable with a timeout. Output is captured; nothing inherits Scene's terminal.
+    /// The timeout counts from the start, also while the process writes. A child that the process leaves running in
+    /// the background may keep the pipes open, so after the process exits Scene takes what is there within a second.
     public static func run(_ executable: String, _ arguments: [String], environment: [String: String]? = nil,
                            timeout: TimeInterval = 60) throws -> CLIResult {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
         if let environment { process.environment = ProcessInfo.processInfo.environment.merging(environment) { $1 } }
-        let out = Pipe(), err = Pipe()
-        process.standardOutput = out
-        process.standardError = err
+        let out = Output(), err = Output()
+        process.standardOutput = out.pipe
+        process.standardError = err.pipe
         process.standardInput = FileHandle.nullDevice
         let group = DispatchGroup()
         group.enter()
         process.terminationHandler = { _ in group.leave() }
         try process.run()
-        // Read before waiting so a full pipe cannot block the child.
-        let outData = out.fileHandleForReading.readDataToEndOfFile()
-        let errData = err.fileHandleForReading.readDataToEndOfFile()
         if group.wait(timeout: .now() + timeout) == .timedOut {
             process.terminate()
-            throw SceneError.failed("\(URL(fileURLWithPath: executable).lastPathComponent) timed out")
+            throw SceneError.failed("\(URL(fileURLWithPath: executable).lastPathComponent) timed out after \(String(format: "%g", timeout)) s")
         }
-        return CLIResult(status: process.terminationStatus,
-                         stdout: String(decoding: outData, as: UTF8.self),
-                         stderr: String(decoding: errData, as: UTF8.self))
+        let deadline = DispatchTime.now() + 1
+        return CLIResult(status: process.terminationStatus, stdout: out.text(by: deadline), stderr: err.text(by: deadline))
+    }
+
+    /// One pipe, read as data arrives, so a full pipe cannot block the child.
+    final class Output: @unchecked Sendable {
+        let pipe = Pipe()
+        private let lock = NSLock()
+        private var data = Data()
+        private let ended = DispatchSemaphore(value: 0)
+
+        init() {
+            pipe.fileHandleForReading.readabilityHandler = { [self] handle in
+                let chunk = handle.availableData
+                if chunk.isEmpty {
+                    handle.readabilityHandler = nil
+                    ended.signal()
+                } else {
+                    lock.withLock { data.append(chunk) }
+                }
+            }
+        }
+
+        /// What arrived until the pipe closed, or until the deadline.
+        func text(by deadline: DispatchTime) -> String {
+            _ = ended.wait(timeout: deadline)
+            return lock.withLock { String(decoding: data, as: UTF8.self) }
+        }
     }
 
     /// PIDs of running GUI apps with a bundle identifier.

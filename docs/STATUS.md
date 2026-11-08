@@ -33,6 +33,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - `Scene --install-theme` from a Debug build installed row-huh/omarchy-ghost-pastel-theme from GitHub into a scratch library with its three backgrounds, and answered a missing repository with one `error` line (exit 1) and a wrong address with the usage (exit 2).
 - The wallpaper of every Space (experimental `wallpaperSpaces`, from PR #1) on macOS 27.2 (26B123): `LiveTests.applyAndRestoreEverySpace` set the wallpaper in all 60 Space entries of the test Mac's display, and Restore put every entry back, compared with a copy of the store taken before. `launchctl kickstart` of WallpaperAgent is refused there under SIP, so Scene quits the agent instead.
 
+- Your scripts (Settings → Scripts): the theme file, the `SCENE_…` variables, which files Scene refuses to run, apply, restore, a failing script, and a user's own `theme.json` given back by Restore are covered by tests with fake processes. `Processes.run` keeps its timeout while a process runs and returns within a second when a background child keeps the pipe open, with real processes. The Scripts tab of Settings and the Apps page render in snapshot mode, with one script that runs and one that is not executable.
+
 ## Not verified
 
 - herdr's running server and clients switching colors on the real Mac after `herdr server reload-config`. herdr's own tests say a reload also reloads its clients.
@@ -43,6 +45,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Recording a shortcut in Settings, and clicking Stop Managing (it also turns the app's switch off on the Apps page).
 - The redesigned UI on macOS 14 and 15. Liquid Glass falls back to a material there, and without the macOS 26 toolbar spacer the toolbar buttons may sit next to the sidebar.
 - In the redesigned UI: applying from the Apply sheet and its results page, the menu bar panel in the real menu bar, the switcher's backdrop on a second screen, and the status HUD. Snapshot mode never applies, and it renders the menu bar panel and the carousel in plain windows.
+- Your scripts running from the app after a real theme change, and the Automation prompt a script's `osascript` brings up. On macOS it should name Scene, because Scene starts the script.
+- `PaletteRecipeTests.matchesScenesPythonBuilder` fails under `./Scripts/test.sh` on a Mac with macOS 27.0 beta: `/usr/bin/python3` prints nothing there. It passes under `swift test`, and fails in the same way without the scripts change.
 - iTerm2 on a real Mac. It is not installed on the test Mac.
 - The film's soundtrack, by ear. `Marketing/film/score.py` synthesizes it, and its levels were set by measured loudness and band levels only.
 - Updates end to end: Check for Updates… in a running 0.1.0 finding 0.2.0, and installing it.
