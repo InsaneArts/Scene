@@ -332,6 +332,11 @@ public actor Engine {
             guard let data = FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))) else { return .absent }
             let document = KeyValueDocument(text: String(decoding: data, as: UTF8.self))
             return .configValue(document.value(forKey: (table.map { $0 + "." } ?? "") + key))
+        case .setYAMLValue(let path, let keyPath, _):
+            guard let data = FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))) else { return .absent }
+            // A key the file does not set is nil, which `try?` would mix up with an unreadable file.
+            do { return .configValue(try YAMLDocument(text: String(decoding: data, as: UTF8.self)).value(at: keyPath)) }
+            catch { return .configValue("<unreadable>") }
         case .setWallpaper(let id, _, _):
             return .wallpaper(path: await services.wallpaper(displayID: id))
         case .setWallpaperOnAllSpaces(_, let uuids, _, _):
@@ -353,7 +358,8 @@ public actor Engine {
 
     func fileBytes(for op: Operation) -> Data? {
         switch op {
-        case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _), .setConfigValue(let path, _, _, _):
+        case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _), .setConfigValue(let path, _, _, _),
+             .setYAMLValue(let path, _, _):
             return FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path)))
         case .setWallpaperOnAllSpaces: return services.wallpaperStore()
         default: return nil
@@ -405,6 +411,9 @@ public actor Engine {
             return .plist(value)
         case .setConfigValue(let path, let table, let key, let value):
             try setConfig(path: path, table: table, key: key, value: value, deleteWhenEmpty: false)
+            return .configValue(value)
+        case .setYAMLValue(let path, let keyPath, let value):
+            try setYAML(path: path, keyPath: keyPath, value: value, deleteWhenEmpty: false)
             return .configValue(value)
         case .setWallpaper(let id, let path, let fit):
             try await services.setWallpaper(displayID: id, path: path, fit: fit)
@@ -508,6 +517,12 @@ public actor Engine {
         case (.setConfigValue(let path, let table, let key, _), .absent):
             // The file did not exist before Scene. Remove the key, and the file once nothing else is in it.
             try setConfig(path: path, table: table, key: key, value: nil, deleteWhenEmpty: true)
+        case (.setYAMLValue(let path, _, _), _) where fileBytes != nil:
+            try FileOps.write(fileBytes!, to: URL(fileURLWithPath: path))
+        case (.setYAMLValue(let path, let keyPath, _), .configValue(let value)):
+            try setYAML(path: path, keyPath: keyPath, value: value, deleteWhenEmpty: false)
+        case (.setYAMLValue(let path, let keyPath, _), .absent):
+            try setYAML(path: path, keyPath: keyPath, value: nil, deleteWhenEmpty: true)
         case (.setWallpaper(let id, _, let fit), .wallpaper(let path)):
             guard let path, FileManager.default.fileExists(atPath: path) else {
                 throw SceneError.failed("the previous wallpaper file no longer exists")
@@ -576,6 +591,15 @@ public actor Engine {
         else if document.text != text { try FileOps.write(document.text, to: url) }
     }
 
+    func setYAML(path: String, keyPath: [String], value: String?, deleteWhenEmpty: Bool) throws {
+        let url = URL(fileURLWithPath: path)
+        let text = FileOps.read(FileOps.resolvedTarget(url)).map { String(decoding: $0, as: UTF8.self) } ?? ""
+        var document = try YAMLDocument(text: text)
+        try document.set(value, at: keyPath)
+        if deleteWhenEmpty, document.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try FileOps.delete(url) }
+        else if document.text != text { try FileOps.write(document.text, to: url) }
+    }
+
     func installedExtensionVersion(cli: String, id: String) async -> String? {
         guard let result = try? await services.run(cli, ["--list-extensions", "--show-versions"], environment: nil) else { return nil }
         for line in result.stdout.split(separator: "\n") {
@@ -589,11 +613,29 @@ public actor Engine {
     static func rexKey(_ appearance: Appearance) -> String { "Workspace.\(appearance.rawValue)ThemeID" }
 
     /// Runs an action in the Rex app. It fails when Rex is not open, and never starts a Rex server.
+    /// Rex refuses a client action when more than one app is connected to its server, so Scene names this Mac's.
     func runRex(_ cli: String, _ arguments: [String]) async throws {
-        let result = try await services.run(cli, arguments + ["--autostart=false"], environment: nil)
+        let target = await rexAppClient(cli).map { ["-C", $0] } ?? []
+        let result = try await services.run(cli, target + arguments + ["--autostart=false"], environment: nil)
         guard result.status == 0 else {
             throw SceneError.failed("rex \(arguments[1]) failed: \(result.stderr.trimmingCharacters(in: .whitespacesAndNewlines).prefix(300))")
         }
+    }
+
+    /// The client id of the Rex app on this Mac, when more than one app is connected to the server: an app client on
+    /// the local socket whose process is the running Rex, the newest one if it connected more than once. Nil otherwise.
+    func rexAppClient(_ cli: String) async -> String? {
+        guard let result = try? await services.run(cli, ["client", "list", "--json", "--autostart=false"], environment: nil), result.status == 0,
+              let root = try? JSONSerialization.jsonObject(with: Data(result.stdout.utf8)) as? [String: Any],
+              let clients = root["clients"] as? [[String: Any]] else { return nil }
+        let apps = clients.filter { ($0["info"] as? [String: Any])?["kind"] as? String == "app" }
+        guard apps.count > 1 else { return nil }
+        let running = Set(services.processes(bundleID: Self.rexDomain))
+        let here = apps.filter { client in
+            guard let principal = client["principal"] as? [String: Any], let pid = principal["pid"] as? Int else { return false }
+            return principal["transport"] as? String == "unix" && running.contains(pid_t(pid))
+        }
+        return here.max { ($0["connected_at"] as? String ?? "") < ($1["connected_at"] as? String ?? "") }?["client_id"] as? String
     }
 
     /// The custom theme Rex shows for a look, from Rex's preferences, with its background as #rrggbb.

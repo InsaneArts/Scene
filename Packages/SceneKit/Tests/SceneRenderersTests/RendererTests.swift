@@ -32,7 +32,16 @@ struct RendererTests {
         let validate = try Processes.run(Self.ghostty, ["+validate-config", "--config-file=\(home.path(".config/ghostty/themes/scene-dark").path)"])
         #expect(validate.status == 0, "validate-config: \(validate.stdout) \(validate.stderr)")
         let show = try Processes.run(Self.ghostty, ["+show-config"], environment: ["XDG_CONFIG_HOME": home.path(".config").path, "HOME": home.url.path])
-        #expect(show.stdout.contains("theme = light:scene-light,dark:scene-dark"), "show-config: \(show.stdout)")
+        // On macOS, Ghostty also reads its config in Application Support, which HOME does not move, and `+show-config`
+        // takes no --config-file. When that real file sets a theme, it wins over the fixture's, so the check can't run.
+        let real = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/com.mitchellh.ghostty")
+        let realSetsTheme = ["config", "config.ghostty"].contains { name in
+            (try? String(contentsOf: real.appendingPathComponent(name), encoding: .utf8))?.split(separator: "\n")
+                .contains { $0.trimmingCharacters(in: .whitespaces).range(of: #"^theme\s*="#, options: .regularExpression) != nil } == true
+        }
+        if !realSetsTheme {
+            #expect(show.stdout.contains("theme = light:scene-light,dark:scene-dark"), "show-config: \(show.stdout)")
+        }
     }
 
     @Test func vscodeThemeIsCompleteJSON() throws {

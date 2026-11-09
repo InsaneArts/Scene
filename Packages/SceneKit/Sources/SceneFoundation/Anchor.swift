@@ -12,6 +12,8 @@ public enum Anchor {
     }
 
     /// Line range of an existing Scene block, including both markers.
+    /// A line is a marker when it contains the marker text anywhere, so a config that quotes Scene's markers, for example
+    /// from a copied block, is read as Scene's block: the next apply replaces it, and Restore removes it (#11).
     static func find(in lines: [String]) -> ClosedRange<Int>? {
         guard let start = lines.firstIndex(where: { $0.contains(">>> Scene: managed include") }),
               let stop = lines[start...].firstIndex(where: { $0.contains("<<< Scene <<<") }) else { return nil }
