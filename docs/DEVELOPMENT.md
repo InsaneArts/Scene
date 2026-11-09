@@ -54,6 +54,7 @@ The theme command line runs from a Debug build without a window: `.build/Xcode/B
 These change the real Mac, so run them only when the user agrees:
 
 - `SCENE_LIVE=1 swift test --package-path Packages/SceneKit --filter SceneLiveTests` applies Catppuccin to the real wallpaper, Ghostty, Neovim, and VS Code family apps, then restores them. With `SCENE_LIVE_TWEAKS=1` it also changes the accent color and icon style. It needs one Xcode build first, so the helper exists.
+- `SCENE_LIVE=1 swift test --package-path Packages/SceneKit --filter applyAndRestoreZapFast` applies Catppuccin Dark to a running ZapFast that already uses Scene's palette, for 5 seconds, then restores it. It does nothing when ZapFast is closed.
 - `SCENE_LIVE=1 swift test --package-path Packages/SceneKit --filter applyAndRestoreRex` applies Catppuccin to the open Rex app for 3 seconds, then puts Rex's own themes back. The whole `SceneLiveTests` filter runs it too.
 - `./Scripts/verify-tweaks.sh` changes Light/Dark, the accent color, and the icon style for a few seconds each, then puts every original value back. Run it on each new macOS build before adding the build to `TweakCatalog.testedBuilds`.
 
