@@ -217,3 +217,71 @@ public struct BtopIntegration: Integration {
         return services.signal(SIGUSR2, to: pids) > 0 ? .reloaded : .failed("could not signal btop")
     }
 }
+
+// MARK: - lazygit
+
+/// lazygit reads `config.yml` in its config folder: `~/Library/Application Support/lazygit` on macOS, or
+/// `$XDG_CONFIG_HOME/lazygit` when the shell sets that variable. Scene does not see the shell's variables, so it takes
+/// the folder where lazygit keeps its `state.yml` (the newer one if both have it), then one with a `config.yml`,
+/// and lazygit's default otherwise. Scene sets six `gui.theme` keys and keeps the rest of the file as it is.
+public struct LazygitIntegration: Integration {
+    public let id = "lazygit"
+    public let displayName = "lazygit"
+    public let kind = IntegrationKind.tool
+    public init() {}
+
+    static func folder(_ env: SceneEnvironment) -> URL {
+        let candidates = [env.xdgConfigHome.appendingPathComponent("lazygit"), env.path("Library/Application Support/lazygit")]
+        func modified(_ url: URL) -> Date? { (try? FileManager.default.attributesOfItem(atPath: url.path))?[.modificationDate] as? Date }
+        let used = candidates.compactMap { folder in modified(folder.appendingPathComponent("state.yml")).map { (folder, $0) } }
+        if let newest = used.max(by: { $0.1 < $1.1 }) { return newest.0 }
+        return candidates.first { FileOps.exists($0.appendingPathComponent("config.yml")) } ?? candidates[1]
+    }
+
+    static func keyPath(_ key: String) -> [String] { ["gui", "theme", key] }
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        guard let lazygit = env.locateExecutable("lazygit") else { return .notInstalled() }
+        let config = Self.folder(env).appendingPathComponent("config.yml")
+        var version: String?
+        if let result = try? await services.run(lazygit.path, ["--version"], environment: nil), result.status == 0,
+           let range = result.stdout.range(of: #"version=[0-9.]+"#, options: .regularExpression) {
+            version = String(result.stdout[range].dropFirst("version=".count))
+        }
+        var setup = SetupState.ready
+        if FileOps.exists(config) && !FileOps.isWritable(config) {
+            setup = .blocked("\(Operation.tilde(config.path)) is read-only.")
+        } else if let data = FileOps.read(FileOps.resolvedTarget(config)) {
+            do {
+                let document = try YAMLDocument(text: String(decoding: data, as: UTF8.self))
+                try document.check(Self.keyPath("activeBorderColor"))
+            } catch {
+                setup = .blocked("Scene can't edit \(Operation.tilde(config.path)), because \(error). Put gui and theme in plain blocks of keys, then apply again.")
+            }
+        }
+        return Detection(installed: true, version: version, detail: Operation.tilde(config.path), setup: setup, context: ["config": config.path])
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        let config = detection.context["config"]!
+        let operations: [Operation] = LazygitRenderer.theme(request.current).map {
+            .setYAMLValue(path: config, keyPath: Self.keyPath($0.key), value: $0.value)
+        }
+        return IntegrationPlan(operations: operations,
+                               notes: ["lazygit has one look, so it gets the look on screen. Its other colors are ANSI names that follow your terminal's theme."])
+    }
+
+    /// lazygit reads its config when it starts.
+    public func reload(_ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> ReloadResult {
+        services.processes(named: "lazygit").isEmpty ? .notRunning : .needsRestart("Open lazygit windows show the theme after a restart.")
+    }
+
+    public func verify(_ plan: IntegrationPlan, _ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> Verification {
+        for case let .setYAMLValue(path, keyPath, value) in plan.operations {
+            guard let data = FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))),
+                  let document = try? YAMLDocument(text: String(decoding: data, as: UTF8.self)),
+                  (try? document.value(at: keyPath)) == value else { return .mismatch("\(keyPath.last ?? "a key") was not saved") }
+        }
+        return .matches
+    }
+}
