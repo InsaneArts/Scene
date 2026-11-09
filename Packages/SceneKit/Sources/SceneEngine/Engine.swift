@@ -349,6 +349,9 @@ public actor Engine {
             return .extensionVersion(await installedExtensionVersion(cli: cli, id: id))
         case .importRexTheme(_, _, let appearance):
             return .plist(services.preference(domain: Self.rexDomain, key: Self.rexKey(appearance)))
+        case .setBbTheme(let cli, _):
+            // A theme id or nil, which is an unreadable answer: bb is not running, or its answer changed.
+            return .configValue(await bbThemeID(cli: cli) ?? "<unreadable>")
         case .setTweak(let id, _):
             return .tweak((try? await services.tweakGet(id)) ?? .null)
         case .pause:
@@ -463,6 +466,9 @@ public actor Engine {
                 try await Task.sleep(for: .milliseconds(100))
             }
             throw SceneError.failed("Rex did not select \(name) as its \(appearance.rawValue) theme")
+        case .setBbTheme(let cli, let id):
+            try await setBbTheme(cli: cli, id: id)
+            return .configValue(id)
         case .setTweak(let id, let value):
             let readBack = try await services.tweakSet(id, value)
             return .tweak(readBack)
@@ -559,6 +565,9 @@ public actor Engine {
                 try await Task.sleep(for: .milliseconds(100))
             }
             throw SceneError.failed("Rex did not switch back to \(id)")
+        case (.setBbTheme(let cli, _), .configValue(let value)):
+            guard let value, value != "<unreadable>" else { throw SceneError.failed("Scene could not read bb's theme before it changed it. Pick one with bb theme set.") }
+            try await setBbTheme(cli: cli, id: value)
         case (.setTweak(let id, _), .tweak(let value)):
             _ = try await services.tweakSet(id, value)
         default:
@@ -598,6 +607,22 @@ public actor Engine {
         try document.set(value, at: keyPath)
         if deleteWhenEmpty, document.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try FileOps.delete(url) }
         else if document.text != text { try FileOps.write(document.text, to: url) }
+    }
+
+    /// The id of the theme bb shows, from `bb theme show --json`, or nil when bb does not answer.
+    func bbThemeID(cli: String) async -> String? {
+        guard let result = try? await services.run(cli, ["theme", "show", "--json"], environment: nil), result.status == 0,
+              let root = try? JSONSerialization.jsonObject(with: Data(result.stdout.utf8)) as? [String: Any] else { return nil }
+        return root["themeId"] as? String
+    }
+
+    /// Selects a bb theme and reads it back. bb applies the theme live in every open window.
+    func setBbTheme(cli: String, id: String) async throws {
+        let result = try await services.run(cli, ["theme", "set", id], environment: nil)
+        guard result.status == 0 else {
+            throw SceneError.failed("bb theme set \(id) failed: \((result.stderr + result.stdout).trimmingCharacters(in: .whitespacesAndNewlines).prefix(300))")
+        }
+        guard await bbThemeID(cli: cli) == id else { throw SceneError.failed("bb did not report \(id) as its theme") }
     }
 
     func installedExtensionVersion(cli: String, id: String) async -> String? {
