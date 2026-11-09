@@ -151,7 +151,7 @@ final class AppModel {
                                            IconStyleIntegration(), GhosttyIntegration(), ITermIntegration(), KittyIntegration(),
                                            AlacrittyIntegration(), WarpIntegration(), RexIntegration(), BateriIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
             + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(),
-               HerdrIntegration(), ScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "scripts") ?? [] })]
+               HerdrIntegration(), LazygitIntegration(), ScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "scripts") ?? [] })]
         engine = Engine(env: env, services: LiveSystemServices(tweaks: tweaks), integrations: integrations)
     }
 
