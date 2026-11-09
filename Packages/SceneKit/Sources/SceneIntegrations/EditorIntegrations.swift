@@ -90,11 +90,13 @@ public struct NeovimIntegration: Integration {
     public init() {}
 
     public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
-        guard let nvim = env.locateExecutable("nvim") else { return .notInstalled() }
+        // Scene writes into the config folder and needs `nvim` only for its version, so either one is enough (#21).
         let config = env.xdgConfigHome.appendingPathComponent("nvim")
+        let nvim = env.locateExecutable("nvim")
+        guard nvim != nil || FileOps.exists(config) else { return .notInstalled() }
         let shim = config.appendingPathComponent("plugin/scene.lua")
         var version: String?
-        if let result = try? await services.run(nvim.path, ["--version"], environment: nil), result.status == 0 {
+        if let nvim, let result = try? await services.run(nvim.path, ["--version"], environment: nil), result.status == 0 {
             version = result.stdout.split(separator: "\n").first.map { String($0.replacingOccurrences(of: "NVIM v", with: "")) }
         }
         var conflicts: [String] = []

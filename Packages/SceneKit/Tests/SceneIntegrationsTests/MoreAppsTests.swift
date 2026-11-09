@@ -471,6 +471,17 @@ struct MoreAppsTests {
         #expect(services.prefs["com.superlogical.rex#Workspace.darkThemeID"] == .string("velvet-dusk"))
     }
 
+    /// Neovim from a version manager can sit where Scene does not look. Its config folder is enough (#21).
+    @Test func neovimIsFoundByItsConfigFolder() async throws {
+        let home = try FixtureHome()
+        let env = Fixtures.environment(home, apps: [:])
+        #expect(await NeovimIntegration().detect(env, FakeServices()).installed == false)
+        try home.write(".config/nvim/init.lua", "vim.cmd.colorscheme('habamax')\n")
+        let detection = await NeovimIntegration().detect(env, FakeServices())
+        #expect(detection.installed && detection.version == nil)
+        #expect(detection.context["config"] == home.path(".config/nvim").path)
+    }
+
     @Test func rexIsLeftAloneWhileItIsClosed() async throws {
         let (home, services, engine) = try rexSetup(running: false)
         let request = ApplyRequest(theme: try Fixtures.theme("nord"), mode: .system, systemIsDark: true)
