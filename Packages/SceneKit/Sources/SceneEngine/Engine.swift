@@ -332,6 +332,11 @@ public actor Engine {
             guard let data = FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))) else { return .absent }
             let document = KeyValueDocument(text: String(decoding: data, as: UTF8.self))
             return .configValue(document.value(forKey: (table.map { $0 + "." } ?? "") + key))
+        case .setYAMLValue(let path, let keyPath, _):
+            guard let data = FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))) else { return .absent }
+            // A key the file does not set is nil, which `try?` would mix up with an unreadable file.
+            do { return .configValue(try YAMLDocument(text: String(decoding: data, as: UTF8.self)).value(at: keyPath)) }
+            catch { return .configValue("<unreadable>") }
         case .setWallpaper(let id, _, _):
             return .wallpaper(path: await services.wallpaper(displayID: id))
         case .setWallpaperOnAllSpaces(_, let uuids, _, _):
@@ -353,7 +358,8 @@ public actor Engine {
 
     func fileBytes(for op: Operation) -> Data? {
         switch op {
-        case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _), .setConfigValue(let path, _, _, _):
+        case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _), .setConfigValue(let path, _, _, _),
+             .setYAMLValue(let path, _, _):
             return FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path)))
         case .setWallpaperOnAllSpaces: return services.wallpaperStore()
         default: return nil
@@ -405,6 +411,9 @@ public actor Engine {
             return .plist(value)
         case .setConfigValue(let path, let table, let key, let value):
             try setConfig(path: path, table: table, key: key, value: value, deleteWhenEmpty: false)
+            return .configValue(value)
+        case .setYAMLValue(let path, let keyPath, let value):
+            try setYAML(path: path, keyPath: keyPath, value: value, deleteWhenEmpty: false)
             return .configValue(value)
         case .setWallpaper(let id, let path, let fit):
             try await services.setWallpaper(displayID: id, path: path, fit: fit)
@@ -508,6 +517,12 @@ public actor Engine {
         case (.setConfigValue(let path, let table, let key, _), .absent):
             // The file did not exist before Scene. Remove the key, and the file once nothing else is in it.
             try setConfig(path: path, table: table, key: key, value: nil, deleteWhenEmpty: true)
+        case (.setYAMLValue(let path, _, _), _) where fileBytes != nil:
+            try FileOps.write(fileBytes!, to: URL(fileURLWithPath: path))
+        case (.setYAMLValue(let path, let keyPath, _), .configValue(let value)):
+            try setYAML(path: path, keyPath: keyPath, value: value, deleteWhenEmpty: false)
+        case (.setYAMLValue(let path, let keyPath, _), .absent):
+            try setYAML(path: path, keyPath: keyPath, value: nil, deleteWhenEmpty: true)
         case (.setWallpaper(let id, _, let fit), .wallpaper(let path)):
             guard let path, FileManager.default.fileExists(atPath: path) else {
                 throw SceneError.failed("the previous wallpaper file no longer exists")
@@ -572,6 +587,15 @@ public actor Engine {
         let text = String(decoding: data, as: UTF8.self)
         var document = KeyValueDocument(text: text)
         document.set(value, forKey: key, inTable: table)
+        if deleteWhenEmpty, document.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try FileOps.delete(url) }
+        else if document.text != text { try FileOps.write(document.text, to: url) }
+    }
+
+    func setYAML(path: String, keyPath: [String], value: String?, deleteWhenEmpty: Bool) throws {
+        let url = URL(fileURLWithPath: path)
+        let text = FileOps.read(FileOps.resolvedTarget(url)).map { String(decoding: $0, as: UTF8.self) } ?? ""
+        var document = try YAMLDocument(text: text)
+        try document.set(value, at: keyPath)
         if deleteWhenEmpty, document.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try FileOps.delete(url) }
         else if document.text != text { try FileOps.write(document.text, to: url) }
     }
