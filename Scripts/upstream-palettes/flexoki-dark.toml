@@ -1,0 +1,24 @@
+# Flexoki Dark, from kepano/flexoki (MIT, https://stephango.com/flexoki), in Omarchy's palette keys:
+# the base scale from black to 200, with the 400 accents Flexoki uses on dark backgrounds.
+# make-bundled-themes.py reads this file, and make-wallpaper.py draws the dark wallpapers from it.
+mode = "dark"
+
+accent = "#4385BE"
+selection = "#403E3C"
+muted = "#575653"
+
+background = "#100F0F"
+dark_background = "#1C1B1A"
+lighter_background = "#282726"
+
+foreground = "#CECDC3"
+dark_foreground = "#878580"
+bright_foreground = "#E6E4D9"
+
+red = "#D14D41"
+orange = "#DA702C"
+yellow = "#D0A215"
+green = "#879A39"
+cyan = "#3AA99F"
+blue = "#4385BE"
+magenta = "#CE5D97"
