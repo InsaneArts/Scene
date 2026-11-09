@@ -8,9 +8,10 @@ public enum EmacsRenderer {
     public static let names: [Appearance: String] = [.dark: "scene-dark", .light: "scene-light"]
     public static let loaderName = "scene.el"
 
-    public static func themeFile(_ v: ResolvedVariant) -> String {
+    /// `slot` names the theme and its file. It can differ from the variant's look: a theme with one look fills both slots.
+    public static func themeFile(_ v: ResolvedVariant, slot: Appearance) -> String {
         let ui = v.interface, t = v.terminal, s = v.syntax, bg = ui.background
-        let name = names[v.appearance]!
+        let name = names[slot]!
         func q(_ c: RGBA) -> String { "\"\(c.hex)\"" }
         func tint(_ c: RGBA, _ amount: Double) -> RGBA { c.mixed(over: bg, amount: amount) }
         func face(_ name: String, fg: RGBA? = nil, bg b: RGBA? = nil, bold: Bool = false, italic: Bool = false,

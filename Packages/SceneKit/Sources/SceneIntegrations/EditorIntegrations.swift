@@ -362,7 +362,7 @@ public struct DoomEmacsIntegration: Integration {
         var ops: [Operation] = []
         for slot in Appearance.allCases {
             ops.append(.writeManagedFile(path: themes.appendingPathComponent("\(EmacsRenderer.names[slot]!)-theme.el").path,
-                                         contents: Data(EmacsRenderer.themeFile(variants[slot] ?? fallback).utf8)))
+                                         contents: Data(EmacsRenderer.themeFile(variants[slot] ?? fallback, slot: slot).utf8)))
         }
         ops.append(.writeManagedFile(path: loader.path, contents: Data(try EmacsRenderer.loader(folder: themes.path, forced: request.forcedAppearance).utf8)))
         // Doom loads `doom-theme` after config.el, so this block runs last and then names the theme Doom loads.
