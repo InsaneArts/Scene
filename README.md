@@ -44,7 +44,9 @@ Before a theme touches anything, Scene lists each app and every file and setting
 | macOS look | Accent color, icon & widget style | Private calls in a helper, on tested macOS builds only (experimental) |
 | Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Rio, Rex, bateri, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one; for Rio, light/dark TOML themes with adaptive selection; for Rex, Scene's theme imported with Rex's own command while Rex is open; for bateri, a theme file per look and the theme keys in its settings |
 | Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file |
-| Command-line tools | tmux, bat and delta, btop, herdr, lazygit | A theme file and one marked include line or config key; herdr's color tokens in its config; lazygit's theme colors in its `config.yml` |
+| Tools | tmux, bat and delta, btop, herdr, lazygit, ZapFast | A theme file and one marked include line or config key; herdr's color tokens in its config; lazygit's theme colors in its `config.yml`; ZapFast gets a JSON palette and theme selection |
+
+ZapFast uses Scene’s current look. Quit ZapFast before applying or restoring, then reopen it: its theme reload command refreshes palettes but does not re-read the selected theme from settings.
 
 Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set them to follow the system, and they switch with Light/Dark.
 
