@@ -130,7 +130,7 @@ The flow is detect, plan, apply, verify, and later undo or restore.
 
 - Private calls run only in the `scene-tweak` helper, a separate process, so a crash cannot take the app down. Commands: `check`, `get <id>`, and `set <id> <json>`, with JSON in and out. The ids are `appearance`, `accent`, and `iconStyle`.
 - The calls: SkyLight `SLSSetAppearanceThemeNotifying` and `SLSSetAppearanceThemeSwitchesAutomatically` (Light/Dark and Auto), AppKit `NSColorSetUserAccentColor` (accent), and `SLSIconAppearanceConfiguration` (icon style and tint; a custom tint is stored in `AppleIconAppearanceCustomTintColor`). The helper reads each value back after setting it and reverts it on a mismatch.
-- `TweakRunner` allows a call only when Settings has the tier on and the macOS build is in `TweakCatalog.testedBuilds` (now 25G83 for all three), unless "Allow on macOS versions Scene has not tested" is on. `Scripts/verify-tweaks.sh` tests a new macOS build.
+- `TweakRunner` allows a call only when Settings has the tier on and the macOS build is in `TweakCatalog.testedBuilds` (now 25G83 and 26B123 for all three), unless "Allow on macOS versions Scene has not tested" is on. `Scripts/verify-tweaks.sh` tests a new macOS build.
 - `wallpaperSpaces` is in `TweakCatalog.inApp`: Scene writes the wallpaper store itself, so it needs no helper and no symbol check. `WallpaperStore` reads and writes the store's format as pure functions. Its tested list has 26B123 (macOS 27.2); `SCENE_LIVE=1 SCENE_LIVE_TWEAKS=1` runs `LiveTests.applyAndRestoreEverySpace` on a new build.
 
 ## App (Sources/Scene)

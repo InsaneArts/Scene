@@ -94,7 +94,7 @@ Requirements:
 
 - macOS 14 or newer
 - Xcode 26 or newer, to build
-- For accent color and icon style, a macOS build that Scene has tested (now macOS 26.6.2). Settings can allow other builds.
+- For accent color and icon style, a macOS build that Scene has tested (now macOS 26.6.2 and 27.2). Settings can allow other builds.
 
 Scene keeps running after you close its window, so the shortcuts keep working. Turn on Open Scene at login in Settings to keep them after a restart.
 

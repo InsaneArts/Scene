@@ -6,11 +6,11 @@ import SceneFoundation
 /// `scene-tweak` helper process, only on macOS builds where they passed a test.
 public struct TweakCatalog: Sendable {
     /// macOS builds on which each tweak passed the apply-and-restore suite.
-    /// 25G83 (macOS 26.6.2): Scripts/verify-tweaks.sh passed 7 of 7 checks, with every original value restored.
+    /// 25G83 (macOS 26.6.2) and 26B123 (macOS 27.2): Scripts/verify-tweaks.sh passed 7 of 7 checks, with every original value restored.
     public static let testedBuilds: [String: Set<String>] = [
-        "appearance": ["25G83"],
-        "accent": ["25G83"],
-        "iconStyle": ["25G83"],
+        "appearance": ["25G83", "26B123"],
+        "accent": ["25G83", "26B123"],
+        "iconStyle": ["25G83", "26B123"],
         // 26B123 (macOS 27.2): LiveTests.applyAndRestoreEverySpace set and restored all 60 Space entries.
         "wallpaperSpaces": ["26B123"],
     ]
