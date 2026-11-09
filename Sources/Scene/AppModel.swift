@@ -263,14 +263,21 @@ final class AppModel {
         }
     }
 
+    /// Nothing cancels a follow: one cut short would leave apps halfway, and the observation also fires when the look
+    /// stays the same, as when System Settings broadcasts it again after Scene changes the accent. A follow reads the
+    /// appearance when it applies, and follows again when macOS switched in the meantime.
     private func appearanceChanged() {
-        followTask?.cancel()
+        guard followTask == nil else { return }
         followTask = Task { @MainActor in
+            defer { followTask = nil }
             // Wait until macOS has finished switching, and until Scene is idle.
             try? await Task.sleep(for: .seconds(1))
-            while isWorking, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(500)) }
-            guard !Task.isCancelled else { return }
-            await followAppearance()
+            while isWorking { try? await Task.sleep(for: .milliseconds(500)) }
+            var dark: Bool
+            repeat {
+                dark = systemIsDark
+                await followAppearance()
+            } while systemIsDark != dark
         }
     }
 
