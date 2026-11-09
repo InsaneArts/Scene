@@ -27,6 +27,27 @@ import Testing
         #expect(Date().timeIntervalSince(start) < 2)
     }
 
+    /// mise puts tools where a GUI app's PATH does not reach (#21).
+    @Test func findsToolsThatMiseInstalled() throws {
+        let home = FileManager.default.temporaryDirectory.appendingPathComponent("scene-mise-\(UUID().uuidString.prefix(6))")
+        defer { try? FileManager.default.removeItem(at: home) }
+        func tool(_ path: String) throws {
+            let url = home.appendingPathComponent(".local/share/mise/\(path)")
+            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try "#!/bin/sh\n".write(to: url, atomically: true, encoding: .utf8)
+            try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: url.path)
+        }
+        try tool("installs/neovim/0.10.4/bin/nvim")
+        try tool("installs/neovim/0.11.5/bin/nvim")
+        try tool("installs/helix/latest/bin/hx")
+        try tool("installs/helix/25.07.1/bin/hx")
+        #expect(Processes.miseExecutable("nvim", home: home.path)?.path.hasSuffix("installs/neovim/0.11.5/bin/nvim") == true)
+        #expect(Processes.miseExecutable("hx", home: home.path)?.path.hasSuffix("installs/helix/latest/bin/hx") == true)
+        #expect(Processes.miseExecutable("btop", home: home.path) == nil)
+        try tool("shims/nvim")
+        #expect(Processes.miseExecutable("nvim", home: home.path)?.path.hasSuffix("shims/nvim") == true)
+    }
+
     /// A child left running in the background keeps the pipe open. The process has exited, so the call returns.
     @Test func returnsWhenABackgroundChildKeepsThePipe() throws {
         let start = Date()

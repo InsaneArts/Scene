@@ -101,6 +101,25 @@ public enum Processes {
             let url = URL(fileURLWithPath: dir).appendingPathComponent(name)
             if FileManager.default.isExecutableFile(atPath: url.path) { return url }
         }
+        return miseExecutable(name, home: NSHomeDirectory())
+    }
+
+    /// A tool that mise installed, which a GUI app does not find on its PATH (#21): mise's shim, then
+    /// `installs/<tool>/latest/bin/<name>`, then the newest version's `bin/<name>`.
+    public static func miseExecutable(_ name: String, home: String) -> URL? {
+        let fm = FileManager.default
+        let data = URL(fileURLWithPath: home).appendingPathComponent(".local/share/mise")
+        let shim = data.appendingPathComponent("shims/\(name)")
+        if fm.isExecutableFile(atPath: shim.path) { return shim }
+        let installs = data.appendingPathComponent("installs")
+        for tool in ((try? fm.contentsOfDirectory(atPath: installs.path)) ?? []).sorted() where !tool.hasPrefix(".") {
+            let folder = installs.appendingPathComponent(tool)
+            let versions = ((try? fm.contentsOfDirectory(atPath: folder.path)) ?? []).filter { !$0.hasPrefix(".") && $0 != "latest" }
+            for version in ["latest"] + versions.sorted(by: { $0.compare($1, options: .numeric) == .orderedDescending }) {
+                let url = folder.appendingPathComponent("\(version)/bin/\(name)")
+                if fm.isExecutableFile(atPath: url.path) { return url }
+            }
+        }
         return nil
     }
 
