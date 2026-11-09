@@ -23,21 +23,21 @@
   "variants": {
     "dark": {
       "palette": {
-        "background": "#100F0F",
-        "surface": "#1C1B1A",
+        "background": "#100f0f",
+        "surface": "#1c1b1a",
         "overlay": "#282726",
         "border": "#575653",
-        "foreground": "#CECDC3",
+        "foreground": "#cecdc3",
         "muted": "#878580",
-        "accent": "#4385BE",
-        "selection": "#403E3C",
-        "cursor": "#E6E4D9",
+        "accent": "#4385be",
+        "selection": "#403e3c",
+        "cursor": "#e6e4d9",
         "currentLine": "#1c1b1a",
         "search": "#4a3b11",
-        "error": "#D14D41",
-        "warning": "#D0A215",
-        "success": "#879A39",
-        "info": "#4385BE"
+        "error": "#d14d41",
+        "warning": "#d0a215",
+        "success": "#879a39",
+        "info": "#4385be"
       },
       "terminal": {
         "background": "@background",
@@ -45,24 +45,24 @@
         "cursor": "@cursor",
         "cursorText": "@background",
         "selectionBackground": "@selection",
-        "selectionForeground": "#E6E4D9",
+        "selectionForeground": "#e6e4d9",
         "ansi": {
-          "black": "#100F0F",
-          "red": "#D14D41",
-          "green": "#879A39",
-          "yellow": "#D0A215",
-          "blue": "#4385BE",
-          "magenta": "#CE5D97",
-          "cyan": "#3AA99F",
-          "white": "#CECDC3",
+          "black": "#100f0f",
+          "red": "#d14d41",
+          "green": "#879a39",
+          "yellow": "#d0a215",
+          "blue": "#4385be",
+          "magenta": "#ce5d97",
+          "cyan": "#3aa99f",
+          "white": "#cecdc3",
           "brightBlack": "#575653",
-          "brightRed": "#D14D41",
-          "brightGreen": "#879A39",
-          "brightYellow": "#D0A215",
-          "brightBlue": "#4385BE",
-          "brightMagenta": "#CE5D97",
-          "brightCyan": "#3AA99F",
-          "brightWhite": "#E6E4D9"
+          "brightRed": "#d14d41",
+          "brightGreen": "#879a39",
+          "brightYellow": "#d0a215",
+          "brightBlue": "#4385be",
+          "brightMagenta": "#ce5d97",
+          "brightCyan": "#3aa99f",
+          "brightWhite": "#e6e4d9"
         }
       },
       "syntax": {
@@ -70,30 +70,30 @@
           "color": "#878580",
           "italic": true
         },
-        "keyword": "#CE5D97",
-        "operator": "#4385BE",
+        "keyword": "#ce5d97",
+        "operator": "#4385be",
         "punctuation": "#878580",
-        "string": "#879A39",
-        "escape": "#CE5D97",
-        "number": "#DA702C",
-        "constant": "#DA702C",
-        "function": "#4385BE",
-        "type": "#D0A215",
-        "builtin": "#3AA99F",
-        "variable": "#CECDC3",
+        "string": "#879a39",
+        "escape": "#ce5d97",
+        "number": "#da702c",
+        "constant": "#da702c",
+        "function": "#4385be",
+        "type": "#d0a215",
+        "builtin": "#3aa99f",
+        "variable": "#cecdc3",
         "parameter": {
-          "color": "#3AA99F",
+          "color": "#3aa99f",
           "italic": true
         },
-        "property": "#3AA99F",
-        "tag": "#D14D41",
+        "property": "#3aa99f",
+        "tag": "#d14d41",
         "attribute": {
-          "color": "#3AA99F",
+          "color": "#3aa99f",
           "italic": true
         },
-        "added": "#879A39",
-        "removed": "#D14D41",
-        "changed": "#D0A215"
+        "added": "#879a39",
+        "removed": "#d14d41",
+        "changed": "#d0a215"
       },
       "system": {
         "accentColor": "auto",
@@ -101,15 +101,15 @@
       },
       "wallpapers": [
         {
-          "file": "wallpapers/dark-orb.png",
+          "file": "wallpapers/dark-flow.heic",
           "fit": "fill"
         },
         {
-          "file": "wallpapers/dark-ink-wave.png",
+          "file": "wallpapers/dark-topo.heic",
           "fit": "fill"
         },
         {
-          "file": "wallpapers/dark-cracked-paper.heic",
+          "file": "wallpapers/dark-aura.heic",
           "fit": "fill"
         }
       ]
@@ -217,22 +217,19 @@
   },
   "assets": [
     {
-      "file": "wallpapers/dark-orb.png",
-      "license": "NOASSERTION",
-      "attribution": "Omarchy",
-      "source": "https://github.com/omacom/omarchy/blob/v4.0.4/themes/flexoki-light/backgrounds/1-orb.png"
+      "file": "wallpapers/dark-flow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
     },
     {
-      "file": "wallpapers/dark-ink-wave.png",
-      "license": "NOASSERTION",
-      "attribution": "unknown (line art after Hokusai; linked by u/_Redstone (OP) from github.com/NathanGros/BigNats-hyprland-dotfiles)",
-      "source": "https://www.reddit.com/r/unixporn/comments/1kxiuo9/hyprland_my_light_rice_is_finished_so_i_thought/muv5wrx/"
+      "file": "wallpapers/dark-topo.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
     },
     {
-      "file": "wallpapers/dark-cracked-paper.heic",
-      "license": "NOASSERTION",
-      "attribution": "unknown (from the wallpaper collection of u/BlueSkyandDarkland (OP), github.com/krishna4a6av/Wallpapers)",
-      "source": "https://www.reddit.com/r/unixporn/comments/1ozt6di/hyprland_flexoki_slatemist_i_think_the_lighters/npdytyn/"
+      "file": "wallpapers/dark-aura.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
     },
     {
       "file": "wallpapers/light-orb.png",

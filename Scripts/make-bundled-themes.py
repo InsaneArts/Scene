@@ -3,7 +3,7 @@
 
 Palettes come from Omarchy v4.0.4 (MIT), vendored in Scripts/omarchy-palettes/. Three variants that Omarchy
 does not ship come from their upstream projects: Rosé Pine Main (rose-pine/palette), Gruvbox light
-(sainnhe/gruvbox-material, light, medium), and Flexoki Dark (kepano/flexoki). The role mapping follows Omarchy's own templates
+(sainnhe/gruvbox-material, light, medium), and Flexoki Dark (kepano/flexoki, in Scripts/upstream-palettes/). The role mapping follows Omarchy's own templates
 (ghostty.conf.tpl, vscode-theme.json.tpl). Wallpapers and their provenance come from Themes/WALLPAPER_SOURCES.json.
 
 Scene's own themes live in Scripts/scene-palettes/<folder>/: theme.toml (name, summary, tags, credits) and dark.toml,
@@ -113,11 +113,8 @@ GRUVBOX_LIGHT = complete(dict(accent="#45707a", selection="#dadec0", muted="#ddc
                               red="#c14a4a", yellow="#b47109", orange="#c35e0a", green="#6c782e", cyan="#4c7a5d", blue="#45707a",
                               magenta="#945e80"))
 
-# kepano/flexoki (MIT), dark: base black to 200, with the 400 accents Flexoki uses on dark backgrounds.
-FLEXOKI_DARK = complete(dict(accent="#4385BE", selection="#403E3C", muted="#575653", background="#100F0F", dark_background="#1C1B1A",
-                             lighter_background="#282726", foreground="#CECDC3", dark_foreground="#878580", bright_foreground="#E6E4D9",
-                             red="#D14D41", orange="#DA702C", yellow="#D0A215", green="#879A39", cyan="#3AA99F", blue="#4385BE",
-                             magenta="#CE5D97"))
+# kepano/flexoki (MIT), dark. It lives in a file because make-wallpaper.py draws Flexoki's dark wallpapers from it.
+FLEXOKI_DARK = complete(read(os.path.join(HERE, "upstream-palettes", "flexoki-dark.toml")))
 
 
 def theme(folder, name, summary, variants, homepage=None, tags=(), nvim=None):
