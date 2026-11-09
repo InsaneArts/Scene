@@ -43,6 +43,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 ## Not verified
 
+- Herdr app 0.1.14 applying through the running Scene app. The theme file format, live reload of an edited theme file, and `app.theme` picking it on the shown layout were checked by hand against a running Herdr app 0.1.14. Fixture tests cover dark, light, and both looks, byte-for-byte Restore, keeping later user edits, malformed settings, and the `app.theme` calls while Herdr runs.
+
 - Rio applying, reloading, following a real macOS Light/Dark change, and restoring in the running app. Reload behavior and palette fields were checked against Rio v0.5.29 source; no live Rio config was changed.
 - ZapFast applying and restoring in the real app. Quit it before either action, then reopen it: `reload-themes` refreshes the in-memory selection without reading settings. Scene writes the current look; it does not configure native switching between two palettes.
 

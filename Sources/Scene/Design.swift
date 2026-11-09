@@ -221,6 +221,7 @@ struct AppIcon: View {
         case "scripts": ("apple.terminal.fill", Color(white: 0.5), Color(white: 0.25))
         case "lazygit": ("arrow.triangle.branch", Color(red: 0.95, green: 0.45, blue: 0.3), Color(red: 0.75, green: 0.2, blue: 0.2))
         case "zapfast": ("bubble.left.and.bubble.right.fill", Color(red: 0.2, green: 0.8, blue: 0.45), Color(red: 0.1, green: 0.5, blue: 0.3))
+        case "herdr-app": ("macwindow", Color(red: 0.95, green: 0.6, blue: 0.3), Color(red: 0.8, green: 0.35, blue: 0.15))
         case "herdr": ("rectangle.split.3x1.fill", Color(red: 0.95, green: 0.6, blue: 0.3), Color(red: 0.8, green: 0.35, blue: 0.15))
         default: ("curlybraces", Color(red: 0.3, green: 0.6, blue: 1), Color(red: 0.1, green: 0.35, blue: 0.85))
         }
