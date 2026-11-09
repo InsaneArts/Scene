@@ -311,3 +311,82 @@ public struct HelixIntegration: Integration {
         return services.signal(SIGUSR1, to: pids) > 0 ? .reloaded : .failed("could not signal Helix")
     }
 }
+
+// MARK: - Doom Emacs
+
+public struct DoomEmacsIntegration: Integration {
+    public let id = "doomemacs"
+    public let displayName = "Doom Emacs"
+    public let kind = IntegrationKind.editor
+    public init() {}
+
+    /// Doom reads `~/.config/doom` when it exists, and `~/.doom.d` otherwise.
+    static func configFolder(_ env: SceneEnvironment) -> URL? {
+        [env.xdgConfigHome.appendingPathComponent("doom"), env.home.appendingPathComponent(".doom.d")]
+            .first { FileOps.exists($0.appendingPathComponent("init.el")) || FileOps.exists($0.appendingPathComponent("config.el")) }
+    }
+
+    static func themeFolder(_ folder: URL) -> URL { folder.appendingPathComponent("themes") }
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        guard let folder = Self.configFolder(env) else { return .notInstalled() }
+        var version: String?
+        if let emacs = env.locateExecutable("emacs"),
+           let result = try? await services.run(emacs.path, ["--version"], environment: nil), result.status == 0 {
+            version = result.stdout.split(separator: "\n").first.map { String($0.replacingOccurrences(of: "GNU Emacs ", with: "")) }
+        }
+        let config = folder.appendingPathComponent("config.el")
+        var setup = SetupState.ready
+        var conflicts: [String] = []
+        if FileOps.exists(config) && !FileOps.isWritable(config) {
+            setup = .blocked("\(Operation.tilde(config.path)) is read-only. Add this to it: (load \"\(Self.themeFolder(folder).path)/\(EmacsRenderer.loaderName)\")")
+        }
+        if let data = FileOps.read(FileOps.resolvedTarget(config)) {
+            let text = String(decoding: data, as: UTF8.self)
+            let patterns = ["ns-system-appearance", "auto-dark", "circadian", "load-theme"]
+            if patterns.contains(where: text.contains) {
+                conflicts.append("Your config loads themes itself (load-theme or a system appearance hook). Scene's block runs last, but a hook that fires at a Light/Dark switch can load another theme over Scene's.")
+            }
+        }
+        var context = ["folder": folder.path, "config": config.path]
+        if let client = env.locateExecutable("emacsclient") { context["emacsclient"] = client.path }
+        return Detection(installed: true, version: version, detail: Operation.tilde(folder.path), setup: setup, conflicts: conflicts, context: context)
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        let folder = URL(fileURLWithPath: detection.context["folder"]!)
+        let themes = Self.themeFolder(folder)
+        let variants = request.nativeVariants
+        guard let fallback = variants[.dark] ?? variants[.light] else { throw SceneError.invalid("no variant to render") }
+        let loader = themes.appendingPathComponent(EmacsRenderer.loaderName)
+        var ops: [Operation] = []
+        for slot in Appearance.allCases {
+            ops.append(.writeManagedFile(path: themes.appendingPathComponent("\(EmacsRenderer.names[slot]!)-theme.el").path,
+                                         contents: Data(EmacsRenderer.themeFile(variants[slot] ?? fallback, slot: slot).utf8)))
+        }
+        ops.append(.writeManagedFile(path: loader.path, contents: Data(try EmacsRenderer.loader(folder: themes.path, forced: request.forcedAppearance).utf8)))
+        // Doom loads `doom-theme` after config.el, so this block runs last and then names the theme Doom loads.
+        let lines = ["(load \"\(loader.path)\" nil t)", "(when (fboundp 'scene-theme-name) (setq doom-theme (scene-theme-name)))"]
+        ops.append(.ensureAnchor(path: detection.context["config"]!, block: Anchor.block(lines: lines, comment: ";;"), placement: .end))
+        return IntegrationPlan(operations: ops, conflicts: detection.conflicts,
+                               notes: ["Scene adds one marked block at the end of config.el. It never edits the rest of your config."])
+    }
+
+    /// A running Emacs with a server loads the theme through `emacsclient`. Without a server, the next start shows it.
+    public func reload(_ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> ReloadResult {
+        guard let client = detection.context["emacsclient"], let folder = detection.context["folder"] else { return .notNeeded }
+        let themes = Self.themeFolder(URL(fileURLWithPath: folder))
+        let loader = themes.appendingPathComponent(EmacsRenderer.loaderName)
+        let expression: String
+        if FileOps.exists(loader) {
+            guard !themes.path.contains("\""), !themes.path.contains("\\") else { return .failed("unsupported theme folder") }
+            expression = EmacsRenderer.reloadExpression(folder: themes.path)
+        } else {
+            expression = EmacsRenderer.restoreExpression
+        }
+        guard let result = try? await services.run(client, ["--eval", expression], environment: nil) else { return .failed("could not run emacsclient") }
+        if result.status == 0 { return .reloaded }
+        let output = result.stderr + result.stdout
+        return output.contains("No such file") || output.contains("can't find socket") || output.contains("connect") ? .notRunning : .failed(output)
+    }
+}
