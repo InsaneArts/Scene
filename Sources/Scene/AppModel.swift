@@ -149,7 +149,7 @@ final class AppModel {
                              policy: TweakPolicy(enabled: defaults.bool(forKey: "experimentalEnabled"), allowUntested: defaults.bool(forKey: "allowUntested")))
         let integrations: [Integration] = [WallpaperIntegration(), AppearanceIntegration(), BordersIntegration(), AccentColorIntegration(),
                                            IconStyleIntegration(), GhosttyIntegration(), ITermIntegration(), KittyIntegration(),
-                                           AlacrittyIntegration(), WarpIntegration(), RioIntegration(), RexIntegration(), BateriIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
+                                           AlacrittyIntegration(), WarpIntegration(), RioIntegration(), RexIntegration(), BateriIntegration(), HerdrAppIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
             + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(), DoomEmacsIntegration(),
                HerdrIntegration(), LazygitIntegration(), K9sIntegration(), ZapFastIntegration(), ScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "scripts") ?? [] })]
         engine = Engine(env: env, services: LiveSystemServices(tweaks: tweaks), integrations: integrations)
@@ -263,14 +263,21 @@ final class AppModel {
         }
     }
 
+    /// Nothing cancels a follow: one cut short would leave apps halfway, and the observation also fires when the look
+    /// stays the same, as when System Settings broadcasts it again after Scene changes the accent. A follow reads the
+    /// appearance when it applies, and follows again when macOS switched in the meantime.
     private func appearanceChanged() {
-        followTask?.cancel()
+        guard followTask == nil else { return }
         followTask = Task { @MainActor in
+            defer { followTask = nil }
             // Wait until macOS has finished switching, and until Scene is idle.
             try? await Task.sleep(for: .seconds(1))
-            while isWorking, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(500)) }
-            guard !Task.isCancelled else { return }
-            await followAppearance()
+            while isWorking { try? await Task.sleep(for: .milliseconds(500)) }
+            var dark: Bool
+            repeat {
+                dark = systemIsDark
+                await followAppearance()
+            } while systemIsDark != dark
         }
     }
 

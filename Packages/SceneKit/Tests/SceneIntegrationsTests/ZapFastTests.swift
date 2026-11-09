@@ -54,6 +54,30 @@ struct ZapFastTests {
         #expect(services.calls.isEmpty) // no control commands or launches
     }
 
+    @Test func reloadsLiveWhenScenesPaletteIsAlreadySelected() async throws {
+        let home = try FixtureHome()
+        let app = try home.fakeApp("ZapFast", version: "0.21.1")
+        let env = SceneEnvironment(home: home.url, locateApp: { $0 == ZapFastIntegration.bundleID ? app : nil }, locateExecutable: { _ in nil })
+        try home.write(Self.folder + "/settings.json", "{\"custom_theme\":\"scene.json\"}")
+        let services = FakeServices()
+        let engine = Engine(env: env, services: services, integrations: [ZapFastIntegration()])
+        let request = ApplyRequest(theme: try Fixtures.theme("catppuccin"), mode: .dark, systemIsDark: true)
+        // Closed: nothing to reload, and nothing is started.
+        var report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["zapfast"])
+        #expect(report.results.first?.outcome == .applied)
+        #expect(services.calls.isEmpty)
+        // Running with scene.json selected: reload-themes, no restart.
+        services.running = [ZapFastIntegration.bundleID: [1234]]
+        report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["zapfast"])
+        #expect(report.results.first?.outcome == .applied)
+        #expect(services.calls == ["run zapfast reload-themes"])
+        // Running with another palette selected: reload-themes would keep it, so ZapFast needs a restart.
+        try home.write(Self.folder + "/settings.json", "{\"custom_theme\":\"Nord.json\"}")
+        report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["zapfast"])
+        guard case .appliedRestartNeeded? = report.results.first?.outcome else { Issue.record("expected a restart"); return }
+        #expect(services.calls == ["run zapfast reload-themes"])
+    }
+
     @Test func malformedSettingsAreBlocked() async throws {
         let home = try FixtureHome()
         let app = try home.fakeApp("ZapFast", version: "0.21.1")

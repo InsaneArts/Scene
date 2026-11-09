@@ -14,7 +14,6 @@
   "license": "MIT",
   "homepage": "https://stephango.com/flexoki",
   "tags": [
-    "light",
     "ink",
     "omarchy"
   ],
@@ -22,6 +21,99 @@
     "scene": ">=1.0"
   },
   "variants": {
+    "dark": {
+      "palette": {
+        "background": "#100f0f",
+        "surface": "#1c1b1a",
+        "overlay": "#282726",
+        "border": "#575653",
+        "foreground": "#cecdc3",
+        "muted": "#878580",
+        "accent": "#4385be",
+        "selection": "#403e3c",
+        "cursor": "#e6e4d9",
+        "currentLine": "#1c1b1a",
+        "search": "#4a3b11",
+        "error": "#d14d41",
+        "warning": "#d0a215",
+        "success": "#879a39",
+        "info": "#4385be"
+      },
+      "terminal": {
+        "background": "@background",
+        "foreground": "@foreground",
+        "cursor": "@cursor",
+        "cursorText": "@background",
+        "selectionBackground": "@selection",
+        "selectionForeground": "#e6e4d9",
+        "ansi": {
+          "black": "#100f0f",
+          "red": "#d14d41",
+          "green": "#879a39",
+          "yellow": "#d0a215",
+          "blue": "#4385be",
+          "magenta": "#ce5d97",
+          "cyan": "#3aa99f",
+          "white": "#cecdc3",
+          "brightBlack": "#575653",
+          "brightRed": "#d14d41",
+          "brightGreen": "#879a39",
+          "brightYellow": "#d0a215",
+          "brightBlue": "#4385be",
+          "brightMagenta": "#ce5d97",
+          "brightCyan": "#3aa99f",
+          "brightWhite": "#e6e4d9"
+        }
+      },
+      "syntax": {
+        "comment": {
+          "color": "#878580",
+          "italic": true
+        },
+        "keyword": "#ce5d97",
+        "operator": "#4385be",
+        "punctuation": "#878580",
+        "string": "#879a39",
+        "escape": "#ce5d97",
+        "number": "#da702c",
+        "constant": "#da702c",
+        "function": "#4385be",
+        "type": "#d0a215",
+        "builtin": "#3aa99f",
+        "variable": "#cecdc3",
+        "parameter": {
+          "color": "#3aa99f",
+          "italic": true
+        },
+        "property": "#3aa99f",
+        "tag": "#d14d41",
+        "attribute": {
+          "color": "#3aa99f",
+          "italic": true
+        },
+        "added": "#879a39",
+        "removed": "#d14d41",
+        "changed": "#d0a215"
+      },
+      "system": {
+        "accentColor": "auto",
+        "iconStyle": "dark"
+      },
+      "wallpapers": [
+        {
+          "file": "wallpapers/dark-flow.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-topo.heic",
+          "fit": "fill"
+        },
+        {
+          "file": "wallpapers/dark-aura.heic",
+          "fit": "fill"
+        }
+      ]
+    },
     "light": {
       "palette": {
         "background": "#fffcf0",
@@ -119,11 +211,26 @@
   "apps": {
     "neovim": {
       "preferInstalled": {
-        "colorscheme": "flexoki-light"
+        "colorscheme": "flexoki"
       }
     }
   },
   "assets": [
+    {
+      "file": "wallpapers/dark-flow.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-topo.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
+    {
+      "file": "wallpapers/dark-aura.heic",
+      "license": "LicenseRef-Scene",
+      "attribution": "Drawn for Scene with code"
+    },
     {
       "file": "wallpapers/light-orb.png",
       "license": "NOASSERTION",

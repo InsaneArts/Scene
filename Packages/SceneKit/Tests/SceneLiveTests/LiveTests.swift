@@ -105,4 +105,25 @@ struct LiveTests {
         let restored = try #require(services.wallpaperStore().flatMap { WallpaperStore.images($0, displays: uuids) })
         #expect(restored == before)
     }
+
+    /// ZapFast only, while it runs with Scene's palette selected: the new palette shows through `zapfast reload-themes`,
+    /// without a restart. The ledger stays in a temporary folder.
+    @Test func applyAndRestoreZapFast() async throws {
+        let live = SceneEnvironment.live()
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("scene-live-zapfast-\(UUID().uuidString.prefix(6))")
+        let env = SceneEnvironment(home: live.home, appSupport: folder, xdgConfigHome: live.xdgConfigHome,
+                                   locateApp: live.locateApp, locateExecutable: live.locateExecutable)
+        let services = LiveSystemServices(tweaks: TweakRunner(helper: nil, policy: TweakPolicy(enabled: false, allowUntested: false)))
+        guard !services.processes(bundleID: ZapFastIntegration.bundleID).isEmpty else { return }
+        let palette = live.home.appendingPathComponent("Library/Application Support/me.paolino.zapfast/themes/scene.json")
+        let before = FileOps.read(palette)
+        let engine = Engine(env: env, services: services, integrations: [ZapFastIntegration()], store: EngineStore(root: folder))
+        let request = ApplyRequest(theme: try Fixtures.theme("catppuccin"), mode: .dark, systemIsDark: true)
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["zapfast"])
+        for result in report.results { print("LIVE apply \(result.name): \(result.outcome)") }
+        #expect(report.results.first?.outcome == .applied)
+        try await Task.sleep(for: .seconds(5))   // time to look at ZapFast
+        for item in await engine.restoreOriginal() { print("LIVE restore \(item.resource): \(item.result)") }
+        #expect(FileOps.read(palette) == before)
+    }
 }
