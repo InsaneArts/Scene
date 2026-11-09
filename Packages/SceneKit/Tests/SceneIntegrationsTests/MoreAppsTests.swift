@@ -25,6 +25,7 @@ struct MoreAppsTests {
     static let alacrittyConfig = "[general]\nlive_config_reload = true\nimport = [\"~/.config/alacritty/themes/gruvbox.toml\"]\n\n[font]\nsize = 13\n"
     static let helixConfig = "theme = \"onedark\" # mine\n\n[editor]\nline-number = \"relative\"\n"
     static let herdrConfig = "# herdr\n[theme]\nname = \"catppuccin-latte\" # mine\nauto_switch = false\n\n[ui]\nshow_agent_labels_on_pane_borders = true\n"
+    static let bateriSettings = "[shell]\nintegration = true\n\n[appearance]\n# the theme\ntheme = \"ultraviolet\" # mine\nlight_theme = \"bateri-light\"\ndark_theme = \"bateri\"\n\n[window]\nscrollbar = \"auto\"\n"
     static var myXcodeTheme: [String: Any] { [
         "DVTFontAndColorVersion": 1, "DVTLineSpacing": 1.3, "DVTSourceTextBackground": "0 0 0 1",
         "DVTSourceTextSyntaxFonts": ["xcode.syntax.plain": "Menlo-Regular - 14.0"], "DVTMarkupTextNormalFont": ".AppleSystemUIFont - 11.0",
@@ -44,6 +45,7 @@ struct MoreAppsTests {
             KittyIntegration.bundleID: try home.fakeApp("kitty", version: "0.44.0"),
             TerminalAppIntegration.bundleID: try home.fakeApp("Terminal", version: "2.15"),
             AlacrittyIntegration.bundleID: try home.fakeApp("Alacritty", version: "0.16.1"),
+            BateriIntegration.bundleID: try home.fakeApp("bateri", version: "0.25.0"),
         ]
         var found: [String: URL] = [:]
         for name in ["tmux", "bat", "delta", "hx", "btop", "herdr"] { found[name] = try home.write("bin/\(name)", "#!/bin/sh\n") }
@@ -57,6 +59,7 @@ struct MoreAppsTests {
         try home.write(".config/alacritty/alacritty.toml", Self.alacrittyConfig)
         try home.write(".config/helix/config.toml", Self.helixConfig)
         try home.write(".config/herdr/config.toml", Self.herdrConfig)
+        try home.write(".config/bateri/settings.toml", Self.bateriSettings)
         let theme = try PropertyListSerialization.data(fromPropertyList: Self.myXcodeTheme, format: .xml, options: 0)
         try theme.write(to: home.path("Library/Developer/Xcode/UserData/FontAndColorThemes/Mine.xccolortheme").creatingFolder())
         let env = SceneEnvironment(home: home.url, locateApp: { apps[$0] }, locateExecutable: { tools[$0] })
@@ -75,7 +78,7 @@ struct MoreAppsTests {
         services.responses["herdr --version"] = CLIResult(status: 0, stdout: "herdr 0.9.0\n", stderr: "")
         services.responses["btop --version"] = CLIResult(status: 0, stdout: "btop version: \u{1b}[1m1.4.5\u{1b}[0m\n", stderr: "")
         let integrations: [Integration] = [ZedIntegration(), XcodeIntegration(), KittyIntegration(), TerminalAppIntegration(), TmuxIntegration(),
-                                           BatIntegration(), AlacrittyIntegration(), HelixIntegration(), BtopIntegration(), HerdrIntegration()]
+                                           BatIntegration(), AlacrittyIntegration(), HelixIntegration(), BtopIntegration(), HerdrIntegration(), BateriIntegration()]
         return Setup(home: home, services: services, engine: Engine(env: env, services: services, integrations: integrations))
     }
 
@@ -252,6 +255,42 @@ struct MoreAppsTests {
         #expect(s.home.read(".config/herdr/config.toml") == Self.herdrConfig)
     }
 
+    @Test func bateriGetsBothLooksAndRestoreGivesBackItsSettings() async throws {
+        let s = try setup()
+        let report = try await apply(s, "catppuccin", mode: .system)
+        #expect(report.results.first { $0.id == "bateri" }?.outcome.isSuccess == true)
+        let settings = try #require(s.home.read(".config/bateri/settings.toml"))
+        #expect(settings.contains("# the theme\ntheme = \"system\" # mine\nlight_theme = \"scene-light\"\ndark_theme = \"scene-dark\"\n"))
+        #expect(settings.hasPrefix("[shell]\nintegration = true\n") && settings.hasSuffix("[window]\nscrollbar = \"auto\"\n"))
+
+        let colors = try #require(try Fixtures.theme("catppuccin").variants[.dark]).terminal
+        let dark = try #require(s.home.read(".config/bateri/themes/scene-dark.toml"))
+        #expect(dark.contains("background = \"\(colors.background.hex)\"\n"))
+        #expect(dark.contains("[ansi]\nblack = \"\(colors.ansi[0].hex)\"\n") && dark.hasSuffix("bright_white = \"\(colors.ansi[15].hex)\"\n"))
+        #expect(s.home.read(".config/bateri/themes/scene-light.toml") != nil)
+
+        _ = await s.engine.restoreOriginal()
+        #expect(s.home.read(".config/bateri/settings.toml") == Self.bateriSettings)
+        #expect(s.home.read(".config/bateri/themes/scene-dark.toml") == nil)
+        #expect(s.home.read(".config/bateri/themes/scene-light.toml") == nil)
+    }
+
+    @Test func bateriWithOneLookSetsOnlyTheTheme() async throws {
+        let s = try setup()
+        _ = try await apply(s, "catppuccin", mode: .dark)
+        let settings = try #require(s.home.read(".config/bateri/settings.toml"))
+        #expect(settings.contains("theme = \"scene-dark\" # mine\nlight_theme = \"bateri-light\"\ndark_theme = \"bateri\"\n"))
+        #expect(s.home.read(".config/bateri/themes/scene-light.toml") == nil)
+    }
+
+    @Test(arguments: ["appearance = { theme = \"nord\" }\n", "[[appearance]]\ntheme = \"nord\"\n", "[appearance.theme]\nname = \"nord\"\n"])
+    func bateriIsBlockedWithoutAPlainAppearanceSection(_ text: String) async throws {
+        let s = try setup()
+        try s.home.write(".config/bateri/settings.toml", text)
+        let detection = await BateriIntegration().detect(s.engine.env, s.services)
+        guard case .blocked = detection.setup else { Issue.record("\(detection.setup)"); return }
+    }
+
     @Test func afterXcodeQuitsSceneSetsItsThemeAgainButKeepsAThemeTheUserPicked() async throws {
         let s = try setup()
         _ = try await apply(s, "catppuccin", mode: .system)
@@ -416,6 +455,20 @@ struct MoreAppsTests {
         #expect(services.prefs["com.superlogical.rex#Workspace.lightThemeID"] == .string("merino-light"))
         #expect(!FileManager.default.fileExists(atPath: home.path("Library/Application Support/Scene/Rex/scene-dark").path))
         #expect(services.calls.contains("run rex do client.theme.change name=velvet-dusk --autostart=false"))
+    }
+
+    /// Rex on two Macs shares one server (#12). A client action then needs `-C`, and Scene names this Mac's Rex.
+    @Test func rexNamesThisMacsAppWhenSeveralAreConnected() async throws {
+        let (home, services, engine) = try rexSetup(running: true)
+        defer { withExtendedLifetime(home) {} }
+        services.rexAppClients = [("client:other-mac", 7001, "tcp"), ("client:old", 999, "unix"), ("client:this-mac", 1506, "unix")]
+        let request = ApplyRequest(theme: try Fixtures.theme("tokyo-night"), mode: .system, systemIsDark: true)
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["rex"])
+        #expect(report.results.first?.outcome == .applied, "\(String(describing: report.results.first?.outcome))")
+        #expect(services.calls.contains { $0.hasPrefix("run rex -C client:this-mac do client.theme.import path=") })
+        _ = await engine.restoreOriginal()
+        #expect(services.calls.contains("run rex -C client:this-mac do client.theme.change name=velvet-dusk --autostart=false"))
+        #expect(services.prefs["com.superlogical.rex#Workspace.darkThemeID"] == .string("velvet-dusk"))
     }
 
     @Test func rexIsLeftAloneWhileItIsClosed() async throws {

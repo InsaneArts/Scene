@@ -149,9 +149,9 @@ final class AppModel {
                              policy: TweakPolicy(enabled: defaults.bool(forKey: "experimentalEnabled"), allowUntested: defaults.bool(forKey: "allowUntested")))
         let integrations: [Integration] = [WallpaperIntegration(), AppearanceIntegration(), BordersIntegration(), AccentColorIntegration(),
                                            IconStyleIntegration(), GhosttyIntegration(), ITermIntegration(), KittyIntegration(),
-                                           AlacrittyIntegration(), WarpIntegration(), RexIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
+                                           AlacrittyIntegration(), WarpIntegration(), RioIntegration(), RexIntegration(), BateriIntegration(), TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
             + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(),
-               HerdrIntegration(), ZapFastIntegration(), ScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "scripts") ?? [] })]
+               HerdrIntegration(), LazygitIntegration(), ZapFastIntegration(), ScriptsIntegration(scripts: { UserDefaults.standard.stringArray(forKey: "scripts") ?? [] })]
         engine = Engine(env: env, services: LiveSystemServices(tweaks: tweaks), integrations: integrations)
     }
 

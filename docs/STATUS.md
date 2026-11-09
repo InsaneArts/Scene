@@ -4,6 +4,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 ## Verified
 
+- Rio 0.5.29 (2026-11-08): detected under Terminals, with its real app icon, version, and config path in a background snapshot. The warnings-as-errors app build passes with ad hoc signing. Fixture tests cover dark/light/system and single-look themes, adaptive selection, preserving an existing force-theme override, byte-for-byte Restore, preserving later user edits, existing theme files, missing files, and a custom RIO_CONFIG_HOME. Python’s tomllib accepts the generated config and theme files. The full test script has one unrelated failure, `RendererTests.ghosttyAcceptsRenderedFiles`: Ghostty reads the real Application Support config despite the fixture HOME and reports a forced light theme instead of the expected dual-look setting.
 - ZapFast 0.21.1 (2026-11-08): detected under Tools in a background snapshot. Its JSON palette covers the 21 documented interface and chat colors. Fixture tests cover dark, light, system mode, apply and byte-for-byte Restore, existing palette files, missing settings, malformed settings, and keeping later user edits. The app builds with warnings as errors using ad hoc signing because the development certificate is unavailable. The full test script hits an unrelated Ghostty parser assertion: the installed Ghostty also reads the real Application Support config despite its fixture HOME, yielding `theme = scene-light` instead of the expected dual-look selection.
 
 - 191 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
@@ -31,14 +32,18 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 
 - herdr 0.9.0: apply and restore against a fixture home give back its config byte for byte, comments included, and herdr's own `herdr config check` accepts Scene's file for one look and for two.
 
+- bateri 0.25.0 on the test Mac (2026-11-08): themes applied from the Apply sheet repainted the open windows without a restart. bateri's own parser read the theme files of Catppuccin, Tokyo Night, and Aetheria and a real `settings.toml` after Scene's edit with no warnings, and gave the same colors over two different base themes, so every key comes from Scene's file. Apply and restore against a fixture home give back `settings.toml` byte for byte; Undo was not tried on the real app.
+
 - Releases 0.2.0 (build 5), 0.2.1 (build 6), 0.2.2 (build 7, Rex) and 0.3.0 (build 8: your scripts, Set as Wallpaper, the wallpaper on every Space): `Scripts/release.sh` built, signed, and notarized them from the agent session, and they are published on GitHub with their appcasts. The live feed lists build 8, and the published 0.3.0 zip matches the build's SHA-256 and passes `codesign`, Gatekeeper (Notarized Developer ID) and `stapler validate`. 0.2.1 installed through `install.sh` has `SceneThemeCommands` 2 and answers `--install-theme`. `curl … install.sh | sh` against the published release installed 0.2.0, and Gatekeeper accepts it as Notarized Developer ID.
 - `Scene --install-theme` from a Debug build installed row-huh/omarchy-ghost-pastel-theme from GitHub into a scratch library with its three backgrounds, and answered a missing repository with one `error` line (exit 1) and a wrong address with the usage (exit 2).
+- lazygit (#20): lazygit 0.57.0's own parser reads Scene's `config.yml` (it reaches the terminal, with no parse error and no migration), and PyYAML reads `YAMLDocument`'s edits as the same data with Scene's keys added. Apply and restore against a fixture home give back `config.yml` byte for byte, or remove a file Scene created.
 - The wallpaper of every Space (experimental `wallpaperSpaces`, from PR #1) on macOS 27.2 (26B123): `LiveTests.applyAndRestoreEverySpace` set the wallpaper in all 60 Space entries of the test Mac's display, and Restore put every entry back, compared with a copy of the store taken before. `launchctl kickstart` of WallpaperAgent is refused there under SIP, so Scene quits the agent instead.
 
 - Your scripts (Settings → Scripts): the theme file, the `SCENE_…` variables, which files Scene refuses to run, apply, restore, a failing script, and a user's own `theme.json` given back by Restore are covered by tests with fake processes. `Processes.run` keeps its timeout while a process runs and returns within a second when a background child keeps the pipe open, with real processes. The Scripts tab of Settings and the Apps page render in snapshot mode, with one script that runs and one that is not executable.
 
 ## Not verified
 
+- Rio applying, reloading, following a real macOS Light/Dark change, and restoring in the running app. Reload behavior and palette fields were checked against Rio v0.5.29 source; no live Rio config was changed.
 - ZapFast applying and restoring in the real app. Quit it before either action, then reopen it: `reload-themes` refreshes the in-memory selection without reading settings. Scene writes the current look; it does not configure native switching between two palettes.
 
 - herdr's running server and clients switching colors on the real Mac after `herdr server reload-config`. herdr's own tests say a reload also reloads its clients.
@@ -60,6 +65,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Warp, Alacritty, and Helix are not installed on the test Mac. Warp's order (theme files, a 1-second pause, then the setting) comes from reading Warp's source, not from running it.
 - Xcode: whether a running Xcode keeps Scene's theme settings when it quits. Scene asks for a restart.
 - Terminal: a running Terminal can write its own profiles back when you edit a profile in its settings. Scene then reports the change outside Scene.
+- lazygit in a running terminal after a real theme change. Its config was not changed on the test Mac.
 - Following macOS Light/Dark on a real switch, and the switcher's search on the real screen.
 - The wallpaper of every Space on screen, Space by Space. The live test checks the store and the restarted agent, not what each Space shows.
 - In the running app: dragging the Theme Maker's sliders, Shuffle, From Wallpaper, Undo, setting a color by hand, Save to Scene, Export Folder…, and dropping images on the wallpaper slots. `--install` with the real library (a test covers it with a fake library).

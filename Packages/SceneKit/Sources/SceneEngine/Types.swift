@@ -47,6 +47,8 @@ public enum Operation: Codable, Sendable, Equatable {
     case setPreferenceEntry(domain: String, key: String, entry: String, value: PlistValue?)
     /// One key in a TOML-style file. `value` is raw TOML text that Scene renders.
     case setConfigValue(path: String, table: String?, key: String, value: String?)
+    /// One key in a block-style YAML file, such as lazygit's `config.yml`. `value` is raw YAML text after the colon.
+    case setYAMLValue(path: String, keyPath: [String], value: String?)
     case setWallpaper(displayID: UInt32, imagePath: String, fit: WallpaperFit)
     /// Sets the wallpaper of every Space of the displays (experimental): the Space on screen as `setWallpaper` does, then
     /// the others in macOS's wallpaper store, which is keyed by the displays' `uuids`.
@@ -70,6 +72,7 @@ public enum Operation: Codable, Sendable, Equatable {
         case .setPreference(let domain, let key, _): "pref:\(domain)#\(key)"
         case .setPreferenceEntry(let domain, let key, let entry, _): "pref:\(domain)#\(key)/\(entry)"
         case .setConfigValue(let path, let table, let key, _): "conf:\(path)#\(table.map { $0 + "." } ?? "")\(key)"
+        case .setYAMLValue(let path, let keyPath, _): "yaml:\(path)#\(keyPath.joined(separator: "."))"
         case .setWallpaper(let id, _, _): "wallpaper:\(id)"
         case .setWallpaperOnAllSpaces: "wallpaper:spaces"
         case .setAppearance: "appearance"
@@ -89,6 +92,8 @@ public enum Operation: Codable, Sendable, Equatable {
         case .setPreference(let domain, let key, _): "Set \(key) in \(domain)"
         case .setPreferenceEntry(let domain, let key, let entry, let value): value == nil ? "Remove “\(entry)” from \(key) in \(domain)" : "Set “\(entry)” in \(key) in \(domain)"
         case .setConfigValue(let path, _, let key, let value): value == nil ? "Remove \(key) from \(Self.tilde(path))" : "Set \(key) in \(Self.tilde(path))"
+        case .setYAMLValue(let path, let keyPath, let value):
+            value == nil ? "Remove \(keyPath.joined(separator: ".")) from \(Self.tilde(path))" : "Set \(keyPath.joined(separator: ".")) in \(Self.tilde(path))"
         case .setWallpaper(let id, let path, _): "Set wallpaper of display \(id) to \((path as NSString).lastPathComponent)"
         case .setWallpaperOnAllSpaces(_, _, let path, _): "Set the wallpaper of every Space to \((path as NSString).lastPathComponent) in macOS's wallpaper store, and restart WallpaperAgent (experimental)"
         case .setAppearance(let dark): "Switch macOS to \(dark ? "Dark" : "Light")"

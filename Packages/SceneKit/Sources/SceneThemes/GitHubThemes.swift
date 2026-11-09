@@ -19,7 +19,8 @@ public struct GitHubRepository: Sendable, Equatable {
         if rest.lowercased().hasPrefix("github.com/") { rest = String(rest.dropFirst("github.com/".count)) }
         else if rest.contains(".") && rest.split(separator: "/").first?.contains(".") == true { return nil }
         let parts = rest.split(separator: "/", omittingEmptySubsequences: true).map(String.init)
-        guard parts.count >= 2 else { return nil }
+        // Only the owner and the name are used, but a path that climbs is never a link to a repository.
+        guard parts.count >= 2, !parts.contains("..") else { return nil }
         var repo = parts[1]
         if repo.lowercased().hasSuffix(".git") { repo = String(repo.dropLast(4)) }
         // GitHub names: letters, digits, "-", "_", and "."; an owner has no "." or "_".
@@ -46,6 +47,8 @@ public struct GitHubRepository: Sendable, Equatable {
 
     /// Downloads the archive. Stops at `maxDownloadBytes`.
     public func download(session: URLSession = .shared) async throws -> Data {
+        // `init(owner:name:)` takes any strings, so check them again before they become a download address.
+        guard GitHubRepository("\(owner)/\(name)") == self else { throw SceneError.invalid("\(owner)/\(name) is not a GitHub repository name") }
         var request = URLRequest(url: archiveURL)
         request.timeoutInterval = 60
         let (bytes, response) = try await session.bytes(for: request)
