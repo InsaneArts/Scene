@@ -60,4 +60,30 @@ struct BbTests {
         for index in 0..<16 { #expect(blocks[1].contains("--ansi-\(index): ") && blocks[1].contains("--ansi-bg-fg-\(index): ")) }
         #expect(!css.contains("undefined") && !css.contains("nil"))
     }
+
+    /// Undo goes back to the previous theme, and an app that theme did not change goes back to how it was before Scene.
+    @Test func undoPutsBackAnAppThePreviousThemeDidNotChange() async throws {
+        let home = try FixtureHome()
+        let bb = try home.write("bin/bb", "#!/bin/sh\n"), k9s = try home.write("bin/k9s", "#!/bin/sh\n")
+        let env = SceneEnvironment(home: home.url, locateApp: { _ in nil }, locateExecutable: { $0 == "bb" ? bb : $0 == "k9s" ? k9s : nil })
+        let services = FakeServices()
+        services.bbTheme = "nord"
+        services.bbThemeFolder = home.path("data/theme").path
+        let engine = Engine(env: env, services: services, integrations: [K9sIntegration(), BbIntegration()], store: EngineStore(root: env.appSupport))
+        func apply(_ folder: String, _ apps: Set<String>) async throws {
+            let request = ApplyRequest(theme: try Fixtures.theme(folder), mode: .system, systemIsDark: true)
+            _ = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: apps)
+        }
+        try await apply("tokyo-night", ["k9s"])
+        try await apply("catppuccin", ["k9s", "bb"])
+        #expect(services.bbTheme == "scene")
+        let themes = [try Fixtures.theme("tokyo-night"), try Fixtures.theme("catppuccin")]
+        _ = await engine.undo(resolveTheme: { id, _ in themes.first { $0.id == id } }, systemIsDark: true)
+        #expect(services.bbTheme == "nord")
+        #expect(!FileManager.default.fileExists(atPath: home.path("data/theme/scene/theme.css").path))
+        let ui = try #require(themes[0].variants[.dark]).interface
+        #expect(home.read("Library/Application Support/k9s/skins/scene.yaml")?.contains("focusColor: \"\(ui.accent.hex)\"") == true)
+        let remaining = await engine.history().map(\.themeID)
+        #expect(remaining == [themes[0].id])
+    }
 }
