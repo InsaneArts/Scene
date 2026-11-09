@@ -71,6 +71,14 @@ curl -fsSL https://raw.githubusercontent.com/InsaneArts/Scene/main/install.sh | 
 
 It downloads the latest release, checks that Apple notarized it and that Scene's developer signed it, and puts Scene in Applications. Later updates come through Scene itself.
 
+To read the script before it runs, download it first:
+
+```sh
+curl -fsSL -o install-scene.sh https://raw.githubusercontent.com/InsaneArts/Scene/main/install.sh
+less install-scene.sh
+sh install-scene.sh
+```
+
 Or build Scene from a clone:
 
 ```sh
@@ -147,4 +155,4 @@ Palettes: [Omarchy](https://github.com/omacom/omarchy) v4.0.4 (MIT), [rose-pine/
 
 ## License
 
-Scene's code is under the [MIT License](LICENSE). The wallpapers are not: each one keeps the license listed next to it in its theme's `theme.json`.
+Scene's code is under the [MIT License](LICENSE). To report a security problem, see [SECURITY.md](SECURITY.md). The wallpapers are not: each one keeps the license listed next to it in its theme's `theme.json`.
