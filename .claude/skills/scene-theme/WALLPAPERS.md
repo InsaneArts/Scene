@@ -103,3 +103,5 @@ The `--license` text starts with the license name, and `make-bundled-themes.py` 
 | `CC0` | `CC0-1.0` |
 | `CC BY 4.0` | `CC-BY-4.0` (put the required credit in `--attribution`) |
 | anything else | `NOASSERTION`: `add-wallpaper.py` refuses it |
+
+`--unknown-license` lets one through, as a warning, only when the image is derived from a wallpaper that already ships with an unknown license, such as Flexoki's dark backgrounds, which are its light ones with their lightness inverted. It adds no new picture to the rights question in STATUS.

@@ -45,6 +45,8 @@ def main():
     ap.add_argument("--notes")
     ap.add_argument("--format", choices=["heic", "png", "jpg"], default="heic")
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--unknown-license", action="store_true",
+                    help="only for an image derived from a wallpaper that already ships with an unknown license: warn instead of refusing")
     a = ap.parse_args()
 
     image = Image.open(a.image)
@@ -53,7 +55,7 @@ def main():
     if any(b in f"{a.source} {a.license} {a.page_url} {a.image_url}".lower() for b in BANNED_SOURCES):
         errors.append("Unsplash, Pexels, and Pixabay ban wallpaper apps in their terms; find the picture elsewhere")
     if spdx(a.license) == "NOASSERTION":
-        errors.append(f"license '{a.license}' is unknown; start it with a known name (see WALLPAPERS.md, Licenses)")
+        (warnings if a.unknown_license else errors).append(f"license '{a.license}' is unknown; start it with a known name (see WALLPAPERS.md, Licenses)")
     long_side = max(width, height)
     if not 1024 <= long_side <= 8192:
         errors.append(f"long side {long_side}px is outside 1024 to 8192, the theme loader's limits")
