@@ -10,6 +10,23 @@ import Testing
 /// It uses its own ledger folder, so the app's history is untouched. Private calls stay off unless SCENE_LIVE_TWEAKS=1.
 @Suite("Live on this Mac (opt-in)", .enabled(if: ProcessInfo.processInfo.environment["SCENE_LIVE"] == "1"), .serialized)
 struct LiveTests {
+    /// Scene's own VS Code extension and Rex themes keep the colors a test imported, which Restore can't undo when
+    /// they already held Scene's theme. This applies the app's current theme to those apps again, through the app's
+    /// own store, replacing its newest history entry, so a live test leaves the Mac as it found it.
+    static func applyTheAppsThemeAgain(services: LiveSystemServices) async {
+        let env = SceneEnvironment.live()
+        let appStore = EngineStore(root: env.appSupport)
+        let library = ThemeLibrary(bundledFolder: Repo.themes, installedFolder: env.appSupport.appendingPathComponent("Themes"))
+        guard let current = appStore.loadHistory().last, let theme = library.find(id: current.themeID) else { return }
+        let engine = Engine(env: env, services: services, integrations: AllIntegrations.make(scripts: { [] }), store: appStore)
+        var request = ApplyRequest(theme: theme, mode: current.mode, systemIsDark: await services.appearance().dark)
+        request.wallpaperName = current.wallpaper
+        let own = Set(current.integrations).intersection(["vscode", "cursor", "vscodium", "windsurf", "rex"])
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()),
+                                        selected: own, replacing: current.id)
+        for result in report.results { print("LIVE \(theme.manifest.name) again, \(result.id): \(result.outcome)") }
+    }
+
     @Test func applyAndRestoreCatppuccin() async throws {
         let env = SceneEnvironment.live()
         let watched = [".config/ghostty/config", "Library/Application Support/Code/User/settings.json",
@@ -50,6 +67,7 @@ struct LiveTests {
         for (id, path) in wallpapersBefore { #expect(await services.wallpaper(displayID: id) == path, "wallpaper \(id) not restored") }
         #expect(report.results.allSatisfy { if case .failed = $0.outcome { false } else { true } }, "a live apply failed")
         #expect(elapsed < 3, "apply took \(elapsed) s")
+        await Self.applyTheAppsThemeAgain(services: services)
     }
 
     /// Rex only, while the Rex app is open. Its theme files and the ledger stay in a temporary folder.
@@ -76,6 +94,90 @@ struct LiveTests {
 
         for item in await engine.restoreOriginal() { print("LIVE restore \(item.resource): \(item.result)") }
         #expect(Appearance.allCases.map { services.preference(domain: domain, key: "Workspace.\($0.rawValue)ThemeID") } == before)
+        await Self.applyTheAppsThemeAgain(services: services)
+    }
+
+    /// A full switch with every integration the app runs, as the app's default settings allow it: Catppuccin, then
+    /// Gruvbox, both in the look on screen, then Restore. Every file Scene touches must come back byte for byte, and
+    /// every other resource to its state before. A copy of the files and preferences goes to a temporary folder first.
+    /// Scene's own VS Code extension and Rex themes keep the colors last imported, which Restore cannot undo when they
+    /// already held Scene's theme, so the test then applies the app's current theme to those apps again, through the
+    /// app's own store, and checks the extension versions. Run it alone: `--filter applyAndRestoreEveryApp`.
+    @Test func applyAndRestoreEveryApp() async throws {
+        let env = SceneEnvironment.live()
+        let services = LiveSystemServices(tweaks: TweakRunner(helper: Repo.tweakHelper, policy: TweakPolicy()))
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("scene-live-all-\(UUID().uuidString.prefix(6))")
+        let integrations = AllIntegrations.make(scripts: { [] })
+        let engine = Engine(env: env, services: services, integrations: integrations, store: EngineStore(root: folder.appendingPathComponent("store")))
+        let dark = await services.appearance().dark
+        let requests = try ["catppuccin", "gruvbox"].map { ApplyRequest(theme: try Fixtures.theme($0), mode: .system, systemIsDark: dark) }
+        func filePath(_ op: SceneEngine.Operation) -> String? {
+            switch op {
+            case .writeManagedFile(let path, _), .ensureAnchor(let path, _, _), .setJSONValue(let path, _, _),
+                 .setConfigValue(let path, _, _, _), .setYAMLValue(let path, _, _): path
+            default: nil
+            }
+        }
+        func read(_ path: String) -> Data? { FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))) }
+
+        // Everything either switch would touch, as it is now.
+        var detections = await engine.detectAll()
+        var preplans: [[PlannedIntegration]] = []
+        for request in requests { preplans.append(await engine.plan(request, detections: detections)) }
+        let operations = preplans.flatMap { $0.compactMap(\.plan).flatMap(\.operations) }
+        var files: [String: Data?] = [:]
+        var states: [String: (SceneEngine.Operation, ResourceState)] = [:]
+        for op in operations {
+            if let path = filePath(op) { if files[path] == nil { files[path] = .some(read(path)) } }
+            else if case .pause = op {} else if states[op.resource] == nil { states[op.resource] = (op, await engine.state(of: op)) }
+        }
+        for (path, data) in files {
+            guard let data else { continue }
+            let copy = folder.appendingPathComponent("before" + FileOps.resolvedTarget(URL(fileURLWithPath: path)).path)
+            try FileManager.default.createDirectory(at: copy.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try data.write(to: copy)
+        }
+        for domain in ["com.apple.Terminal", "com.superlogical.rex", "com.apple.dt.Xcode", "com.googlecode.iterm2"] {
+            _ = try? Processes.run("/usr/bin/defaults", ["export", domain, folder.appendingPathComponent("before/\(domain).plist").path])
+        }
+        let installed = preplans[0].filter { $0.plan != nil }.map(\.id)
+        print("LIVE copy of \(files.count) files and \(states.count) other resources in \(folder.path)")
+        print("LIVE switching \(installed.count) apps: \(installed.joined(separator: ", "))")
+        for item in preplans[0] where item.plan == nil && item.detection.installed { print("LIVE skipped \(item.id): \(item.error ?? "no plan")") }
+
+        for request in requests {
+            detections = await engine.detectAll()
+            let planned = await engine.plan(request, detections: detections)
+            for item in planned { for op in item.plan?.operations ?? [] where filePath(op) == nil && states[op.resource] == nil && op.resource != "pause" {
+                Issue.record("\(op.resource) was not recorded before the first switch")
+            } }
+            let started = Date()
+            let report = await engine.apply(request, planned: planned, selected: Set(planned.filter { $0.plan != nil }.map(\.id)))
+            print("LIVE \(request.theme.manifest.name) applied in \(String(format: "%.1f", Date().timeIntervalSince(started))) s")
+            for result in report.results { print("LIVE   \(result.id): \(result.outcome)") }
+            for result in report.results { if case .failed(let why) = result.outcome { Issue.record("\(request.theme.manifest.name) failed for \(result.id): \(why)") } }
+        }
+
+        for item in await engine.restoreOriginal() where !item.result.hasPrefix("Restored") && item.result != "Already as before" {
+            print("LIVE restore \(item.resource): \(item.result)")
+        }
+        for (path, before) in files.sorted(by: { $0.key < $1.key }) where read(path) != before {
+            Issue.record("\(SceneEngine.Operation.tilde(path)) differs after Restore: \(before?.count ?? -1) → \(read(path)?.count ?? -1) bytes")
+        }
+        var extensions: [String] = []
+        for (resource, (op, before)) in states.sorted(by: { $0.key < $1.key }) {
+            let after = await engine.state(of: op)
+            guard !Engine.matches(after, before) else { continue }
+            if case .installEditorExtension = op { extensions.append(resource); continue }
+            Issue.record("\(resource) differs after Restore: \(before) → \(after)")
+        }
+        print("LIVE restore checked \(files.count) files and \(states.count) other resources; extensions to apply again: \(extensions)")
+
+        await Self.applyTheAppsThemeAgain(services: services)
+        for (resource, (op, before)) in states where extensions.contains(resource) {
+            let after = await engine.state(of: op)
+            #expect(Engine.matches(after, before), "\(resource): \(before) → \(after)")
+        }
     }
 
     /// The wallpaper of every Space, through macOS's wallpaper store. Needs SCENE_LIVE_TWEAKS=1 too, and restarts
