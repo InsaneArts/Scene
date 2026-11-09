@@ -6,7 +6,7 @@
   <img src=".github/assets/switcher.jpg" width="100%" alt="The Scene theme switcher over the desktop, with Cold Aisle selected" />
 </p>
 
-Scene gives your desktop, terminals, and code editors one theme in one step, the way [Omarchy](https://omarchy.org) does on Linux. It changes the wallpaper, Light/Dark, and the accent color, your terminal (Ghostty, iTerm2, kitty, Alacritty, Warp, Rex, or Terminal), your editor (VS Code, Cursor, Zed, Xcode, Neovim, Helix, Doom Emacs, and more), and tools like tmux and bat, all together. It can put your original setup back.
+Scene gives your desktop, terminals, and code editors one theme in one step, the way [Omarchy](https://omarchy.org) does on Linux. It changes the wallpaper, Light/Dark, and the accent color, your terminal (Ghostty, iTerm2, kitty, Alacritty, Warp, Rex, bateri, or Terminal), your editor (VS Code, Cursor, Zed, Xcode, Neovim, Helix, Doom Emacs, and more), and tools like tmux and bat, all together. It can put your original setup back.
 
 ## Switch from anywhere
 
@@ -42,9 +42,11 @@ Before a theme touches anything, Scene lists each app and every file and setting
 |---|---|---|
 | Desktop | Wallpaper, Light/Dark, JankyBorders | `NSWorkspace`, and macOS's wallpaper store for the other Spaces (experimental); System Events, or a private call; one marked line in `bordersrc` |
 | macOS look | Accent color, icon & widget style | Private calls in a helper, on tested macOS builds only (experimental) |
-| Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Rex, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one; for Rex, Scene's theme imported with Rex's own command while Rex is open |
+| Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Rio, Rex, bateri, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one; for Rio, light/dark TOML themes with adaptive selection; for Rex, Scene's theme imported with Rex's own command while Rex is open; for bateri, a theme file per look and the theme keys in its settings |
 | Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix, Doom Emacs | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file; Doom Emacs theme files and one block in `config.el` |
-| Command-line tools | tmux, bat and delta, btop, herdr | A theme file and one marked include line or config key; herdr's color tokens in its config |
+| Tools | tmux, bat and delta, btop, herdr, lazygit, ZapFast | A theme file and one marked include line or config key; herdr's color tokens in its config; lazygit's theme colors in its `config.yml`; ZapFast gets a JSON palette and theme selection |
+
+ZapFast uses Scene’s current look. Quit ZapFast before applying or restoring, then reopen it: its theme reload command refreshes palettes but does not re-read the selected theme from settings.
 
 Slack, Discord, Safari, Chrome, and Raycast cannot be themed by other apps. Set them to follow the system, and they switch with Light/Dark.
 
@@ -70,6 +72,14 @@ curl -fsSL https://raw.githubusercontent.com/InsaneArts/Scene/main/install.sh | 
 ```
 
 It downloads the latest release, checks that Apple notarized it and that Scene's developer signed it, and puts Scene in Applications. Later updates come through Scene itself.
+
+To read the script before it runs, download it first:
+
+```sh
+curl -fsSL -o install-scene.sh https://raw.githubusercontent.com/InsaneArts/Scene/main/install.sh
+less install-scene.sh
+sh install-scene.sh
+```
 
 Or build Scene from a clone:
 
@@ -147,4 +157,4 @@ Palettes: [Omarchy](https://github.com/omacom/omarchy) v4.0.4 (MIT), [rose-pine/
 
 ## License
 
-Scene's code is under the [MIT License](LICENSE). The wallpapers are not: each one keeps the license listed next to it in its theme's `theme.json`.
+Scene's code is under the [MIT License](LICENSE). To report a security problem, see [SECURITY.md](SECURITY.md). The wallpapers are not: each one keeps the license listed next to it in its theme's `theme.json`.
