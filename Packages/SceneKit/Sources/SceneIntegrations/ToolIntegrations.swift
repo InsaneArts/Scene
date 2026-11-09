@@ -285,3 +285,71 @@ public struct LazygitIntegration: Integration {
         return .matches
     }
 }
+
+// MARK: - k9s
+
+/// k9s reads `config.yaml` and a `skins` folder in its config folder: `$K9S_CONFIG_DIR`, then
+/// `$XDG_CONFIG_HOME/k9s`, then `~/Library/Application Support/k9s` on macOS. Scene does not see the shell's
+/// variables, so it takes the folder whose `config.yaml` was changed last, `~/.config/k9s` when they tie, and the macOS default when neither has one. Many setups
+/// link one folder, or its files, to the other; Scene writes through links and keeps them. Scene writes
+/// `skins/scene.yaml` and sets `k9s.ui.skin` to `scene`, so Restore puts the previous skin name back.
+public struct K9sIntegration: Integration {
+    public let id = "k9s"
+    public let displayName = "k9s"
+    public let kind = IntegrationKind.tool
+    public init() {}
+
+    static let skinKeyPath = ["k9s", "ui", "skin"]
+
+    static func folder(_ env: SceneEnvironment) -> URL {
+        let candidates = [env.xdgConfigHome.appendingPathComponent("k9s"), env.path("Library/Application Support/k9s")]
+        func modified(_ folder: URL) -> Date? {
+            let config = FileOps.resolvedTarget(folder.appendingPathComponent("config.yaml"))
+            return (try? FileManager.default.attributesOfItem(atPath: config.path))?[.modificationDate] as? Date
+        }
+        let used = candidates.compactMap { folder in modified(folder).map { (folder, $0) } }
+        if let newest = used.reduce(nil, { best, next in best.map { next.1 > $0.1 ? next : $0 } ?? next }) { return newest.0 }
+        return candidates.first { FileOps.exists($0) } ?? candidates[1]
+    }
+
+    public func detect(_ env: SceneEnvironment, _ services: SystemServices) async -> Detection {
+        guard let k9s = env.locateExecutable("k9s") else { return .notInstalled() }
+        let folder = Self.folder(env)
+        let config = folder.appendingPathComponent("config.yaml")
+        var version: String?
+        if let result = try? await services.run(k9s.path, ["version", "-s"], environment: nil), result.status == 0,
+           let range = result.stdout.range(of: #"[0-9]+\.[0-9]+\.[0-9]+"#, options: .regularExpression) {
+            version = String(result.stdout[range])
+        }
+        var setup = SetupState.ready
+        if FileOps.exists(config) && !FileOps.isWritable(config) {
+            setup = .blocked("\(Operation.tilde(config.path)) is read-only.")
+        } else if let data = FileOps.read(FileOps.resolvedTarget(config)) {
+            do { try YAMLDocument(text: String(decoding: data, as: UTF8.self)).check(Self.skinKeyPath) }
+            catch { setup = .blocked("Scene can't edit \(Operation.tilde(config.path)), because \(error). Put k9s and ui in plain blocks of keys, then apply again.") }
+        }
+        return Detection(installed: true, version: version, detail: Operation.tilde(config.path), setup: setup,
+                         context: ["config": config.path, "skin": folder.appendingPathComponent("skins/scene.yaml").path])
+    }
+
+    public func plan(_ request: ApplyRequest, _ detection: Detection, _ env: SceneEnvironment) throws -> IntegrationPlan {
+        IntegrationPlan(operations: [
+            .writeManagedFile(path: detection.context["skin"]!, contents: Data(K9sRenderer.skin(request.current).utf8)),
+            .setYAMLValue(path: detection.context["config"]!, keyPath: Self.skinKeyPath, value: " scene"),
+        ], notes: ["k9s has one skin, so it gets the look on screen. A skin set for one cluster in its own config, or the K9S_SKIN variable, takes priority."])
+    }
+
+    /// k9s reads its skin when it starts.
+    public func reload(_ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> ReloadResult {
+        services.processes(named: "k9s").isEmpty ? .notRunning : .needsRestart("Open k9s sessions show the skin after a restart.")
+    }
+
+    public func verify(_ plan: IntegrationPlan, _ detection: Detection, _ env: SceneEnvironment, _ services: SystemServices) async -> Verification {
+        for case let .setYAMLValue(path, keyPath, value) in plan.operations {
+            guard let data = FileOps.read(FileOps.resolvedTarget(URL(fileURLWithPath: path))),
+                  let document = try? YAMLDocument(text: String(decoding: data, as: UTF8.self)),
+                  (try? document.value(at: keyPath)) == value else { return .mismatch("\(keyPath.last ?? "a key") was not saved") }
+        }
+        return Self.verifyFiles(plan)
+    }
+}
