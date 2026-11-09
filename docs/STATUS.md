@@ -5,6 +5,8 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 ## Verified
 
 - Rio 0.5.29 (2026-11-08): detected under Terminals, with its real app icon, version, and config path in a background snapshot. The warnings-as-errors app build passes with ad hoc signing. Fixture tests cover dark/light/system and single-look themes, adaptive selection, preserving an existing force-theme override, byte-for-byte Restore, preserving later user edits, existing theme files, missing files, and a custom RIO_CONFIG_HOME. Python’s tomllib accepts the generated config and theme files. The full test script has one unrelated failure, `RendererTests.ghosttyAcceptsRenderedFiles`: Ghostty reads the real Application Support config despite the fixture HOME and reports a forced light theme instead of the expected dual-look setting.
+- ZapFast 0.21.1 without a restart (2026-11-09): with `scene.json` already selected, `LiveTests.applyAndRestoreZapFast` applied Catppuccin Dark to the running app through `zapfast reload-themes` and restored the previous palette byte for byte, in one process. ZapFast cached the restored palette in its settings, so it read the file again. The first switch to `scene.json` still needs a restart.
+
 - ZapFast 0.21.1 (2026-11-08): detected under Tools in a background snapshot. Its JSON palette covers the 21 documented interface and chat colors. Fixture tests cover dark, light, system mode, apply and byte-for-byte Restore, existing palette files, missing settings, malformed settings, and keeping later user edits. The app builds with warnings as errors using ad hoc signing because the development certificate is unavailable. The full test script hits an unrelated Ghostty parser assertion: the installed Ghostty also reads the real Application Support config despite its fixture HOME, yielding `theme = scene-light` instead of the expected dual-look selection.
 
 - 191 tests pass through the Scene scheme (`./Scripts/test.sh`). The app builds with warnings as errors.
@@ -44,7 +46,6 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 ## Not verified
 
 - Rio applying, reloading, following a real macOS Light/Dark change, and restoring in the running app. Reload behavior and palette fields were checked against Rio v0.5.29 source; no live Rio config was changed.
-- ZapFast applying and restoring in the real app. Quit it before either action, then reopen it: `reload-themes` refreshes the in-memory selection without reading settings. Scene writes the current look; it does not configure native switching between two palettes.
 
 - herdr's running server and clients switching colors on the real Mac after `herdr server reload-config`. herdr's own tests say a reload also reloads its clients.
 
