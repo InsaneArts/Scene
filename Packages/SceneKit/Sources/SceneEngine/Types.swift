@@ -58,6 +58,8 @@ public enum Operation: Codable, Sendable, Equatable {
     /// Imports a Ghostty theme file into the running Rex app with its `rex` command. Rex names the theme after the
     /// file, replaces a theme of the same name, and selects it for the look that matches its background.
     case importRexTheme(cli: String, path: String, appearance: Appearance)
+    /// Selects bb's app theme with its `bb theme set`. The theme's files are already in bb's theme folder.
+    case setBbTheme(cli: String, id: String)
     case setTweak(id: String, value: JSONValue)
     /// Waits between two changes, so an app that watches files loads the first before it reads the second.
     /// It changes nothing, so the engine records nothing for it.
@@ -78,6 +80,7 @@ public enum Operation: Codable, Sendable, Equatable {
         case .setAppearance: "appearance"
         case .installEditorExtension(let cli, _, let id, _): "extension:\(cli)#\(id)"
         case .importRexTheme(_, _, let appearance): "rex:\(appearance.rawValue)"
+        case .setBbTheme: "bb:theme"
         case .setTweak(let id, _): "tweak:\(id)"
         case .pause: "pause"
         }
@@ -99,6 +102,7 @@ public enum Operation: Codable, Sendable, Equatable {
         case .setAppearance(let dark): "Switch macOS to \(dark ? "Dark" : "Light")"
         case .installEditorExtension(let cli, _, _, let version): "Install Scene Themes \(version) with \((cli as NSString).lastPathComponent)"
         case .importRexTheme(_, let path, let appearance): "Import \((path as NSString).lastPathComponent) into Rex as its \(appearance.rawValue) theme"
+        case .setBbTheme(_, let id): "Select the bb theme “\(id)”"
         case .setTweak(let id, _): "Set \(id) (experimental)"
         case .pause(let milliseconds): "Wait \(milliseconds) ms, so the app loads the new files first"
         }

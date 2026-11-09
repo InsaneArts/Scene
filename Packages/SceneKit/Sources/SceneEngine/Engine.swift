@@ -270,11 +270,12 @@ public actor Engine {
     }
 
     /// Goes back to the previous theme in the history, or to the original setup if there is none.
+    /// An app the undone theme changed but the previous entry did not (one added to Scene since, or switched off then)
+    /// goes back to the last earlier entry that had it, or to how it was before Scene.
     public func undo(resolveTheme: @Sendable (String, String) -> Theme?, systemIsDark: Bool,
                      progress: @escaping @Sendable (String) -> Void = { _ in }) async -> ApplyReport? {
         var history = store.loadHistory()
-        guard !history.isEmpty else { return nil }
-        history.removeLast()
+        guard let undone = history.popLast() else { return nil }
         try? store.saveHistory(history)
         guard let previous = history.last, let theme = resolveTheme(previous.themeID, previous.themeVersion) else {
             let restored = await restoreOriginal(progress: progress)
@@ -282,13 +283,34 @@ public actor Engine {
                 IntegrationResult(id: $0.resource, name: $0.integration, outcome: $0.keptUserChange ? .skipped($0.result) : .applied, operations: [$0.resource], notes: [])
             }, date: Date())
         }
+        var extra: [IntegrationResult] = []
+        var untouched = Set(undone.integrations).subtracting(previous.integrations)
+        for entry in history.dropLast().reversed() where !untouched.isEmpty {
+            let ids = untouched.intersection(entry.integrations)
+            guard !ids.isEmpty, let earlier = resolveTheme(entry.themeID, entry.themeVersion) else { continue }
+            var request = ApplyRequest(theme: earlier, mode: entry.mode, systemIsDark: systemIsDark)
+            request.wallpaperName = entry.wallpaper
+            let report = await apply(request, planned: plan(request, detections: await detectAll()), selected: ids, progress: progress)
+            // This apply goes back in time, so it adds no history entry.
+            try? store.saveHistory(history)
+            extra += report.results
+            untouched.subtract(ids)
+        }
+        if !untouched.isEmpty {
+            let restored = await restoreOriginal(only: untouched, progress: progress)
+            extra += restored.map {
+                IntegrationResult(id: $0.integration, name: $0.integration, outcome: $0.keptUserChange ? .skipped($0.result) : .applied, operations: [$0.resource], notes: [])
+            }
+        }
         var request = ApplyRequest(theme: theme, mode: previous.mode, systemIsDark: systemIsDark)
         request.wallpaperName = previous.wallpaper
         let detections = await detectAll()
         let planned = plan(request, detections: detections)
         history.removeLast()
         try? store.saveHistory(history)
-        return await apply(request, planned: planned, selected: Set(previous.integrations), progress: progress)
+        var report = await apply(request, planned: planned, selected: Set(previous.integrations), progress: progress)
+        report.results += extra
+        return report
     }
 
     // MARK: Queries
@@ -349,6 +371,9 @@ public actor Engine {
             return .extensionVersion(await installedExtensionVersion(cli: cli, id: id))
         case .importRexTheme(_, _, let appearance):
             return .plist(services.preference(domain: Self.rexDomain, key: Self.rexKey(appearance)))
+        case .setBbTheme(let cli, _):
+            // A theme id or nil, which is an unreadable answer: bb is not running, or its answer changed.
+            return .configValue(await bbThemeID(cli: cli) ?? "<unreadable>")
         case .setTweak(let id, _):
             return .tweak((try? await services.tweakGet(id)) ?? .null)
         case .pause:
@@ -463,6 +488,9 @@ public actor Engine {
                 try await Task.sleep(for: .milliseconds(100))
             }
             throw SceneError.failed("Rex did not select \(name) as its \(appearance.rawValue) theme")
+        case .setBbTheme(let cli, let id):
+            try await setBbTheme(cli: cli, id: id)
+            return .configValue(id)
         case .setTweak(let id, let value):
             let readBack = try await services.tweakSet(id, value)
             return .tweak(readBack)
@@ -559,6 +587,9 @@ public actor Engine {
                 try await Task.sleep(for: .milliseconds(100))
             }
             throw SceneError.failed("Rex did not switch back to \(id)")
+        case (.setBbTheme(let cli, _), .configValue(let value)):
+            guard let value, value != "<unreadable>" else { throw SceneError.failed("Scene could not read bb's theme before it changed it. Pick one with bb theme set.") }
+            try await setBbTheme(cli: cli, id: value)
         case (.setTweak(let id, _), .tweak(let value)):
             _ = try await services.tweakSet(id, value)
         default:
@@ -598,6 +629,22 @@ public actor Engine {
         try document.set(value, at: keyPath)
         if deleteWhenEmpty, document.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try FileOps.delete(url) }
         else if document.text != text { try FileOps.write(document.text, to: url) }
+    }
+
+    /// The id of the theme bb shows, from `bb theme show --json`, or nil when bb does not answer.
+    func bbThemeID(cli: String) async -> String? {
+        guard let result = try? await services.run(cli, ["theme", "show", "--json"], environment: nil), result.status == 0,
+              let root = try? JSONSerialization.jsonObject(with: Data(result.stdout.utf8)) as? [String: Any] else { return nil }
+        return root["themeId"] as? String
+    }
+
+    /// Selects a bb theme and reads it back. bb applies the theme live in every open window.
+    func setBbTheme(cli: String, id: String) async throws {
+        let result = try await services.run(cli, ["theme", "set", id], environment: nil)
+        guard result.status == 0 else {
+            throw SceneError.failed("bb theme set \(id) failed: \((result.stderr + result.stdout).trimmingCharacters(in: .whitespacesAndNewlines).prefix(300))")
+        }
+        guard await bbThemeID(cli: cli) == id else { throw SceneError.failed("bb did not report \(id) as its theme") }
     }
 
     func installedExtensionVersion(cli: String, id: String) async -> String? {

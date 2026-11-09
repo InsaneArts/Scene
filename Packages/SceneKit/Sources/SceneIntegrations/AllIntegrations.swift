@@ -11,6 +11,6 @@ public enum AllIntegrations {
          AlacrittyIntegration(), WarpIntegration(), RioIntegration(), RexIntegration(), BateriIntegration(), HerdrAppIntegration(),
          TerminalAppIntegration(), NeovimIntegration()] + VSCodeFamilyIntegration.all
             + [ZedIntegration(), XcodeIntegration(), HelixIntegration(), TmuxIntegration(), BatIntegration(), BtopIntegration(), DoomEmacsIntegration(),
-               HerdrIntegration(), LazygitIntegration(), K9sIntegration(), ZapFastIntegration(), ScriptsIntegration(scripts: scripts)]
+               HerdrIntegration(), LazygitIntegration(), K9sIntegration(), BbIntegration(), ZapFastIntegration(), ScriptsIntegration(scripts: scripts)]
     }
 }

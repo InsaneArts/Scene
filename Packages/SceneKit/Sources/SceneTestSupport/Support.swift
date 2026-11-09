@@ -141,6 +141,7 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
         lock.withLock { environments[(executable as NSString).lastPathComponent] = environment }
         if let response = lock.withLock({ responses[command] }) { return response }
         if (executable as NSString).lastPathComponent == "rex" { return rex(arguments) }
+        if (executable as NSString).lastPathComponent == "bb" { return bb(arguments) }
         if arguments.first == "--install-extension", let vsix = arguments.dropFirst().first {
             let name = (vsix as NSString).lastPathComponent   // scene-themes-<version>.vsix
             let version = name.replacingOccurrences(of: "scene-themes-", with: "").replacingOccurrences(of: ".vsix", with: "")
@@ -159,6 +160,34 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
         }
         if arguments.first == "--version" { return CLIResult(status: 0, stdout: "NVIM v0.11.5\n", stderr: "") }
         return CLIResult(status: 0, stdout: "", stderr: "")
+    }
+
+    /// The theme bb shows, its theme folder, and whether its server answers.
+    public var bbTheme = "default"
+    public var bbThemeFolder = "/tmp/bb/theme"
+    public var bbDown = false
+    static let bbBuiltIn: Set<String> = ["default", "nord", "dracula", "solarized", "gruvbox", "catppuccin"]
+
+    /// bb's theme commands: `theme dir`, `theme show --json`, and `theme set`, which wants a built-in theme or a
+    /// `theme.css` in the theme folder.
+    func bb(_ arguments: [String]) -> CLIResult {
+        if arguments == ["--version"] { return CLIResult(status: 0, stdout: "0.48.0\n", stderr: "") }
+        guard arguments.first == "theme" else { return CLIResult(status: 0, stdout: "", stderr: "") }
+        if lock.withLock({ bbDown }) { return CLIResult(status: 1, stdout: "", stderr: "connect ECONNREFUSED 127.0.0.1:38886") }
+        switch arguments.dropFirst().first {
+        case "dir": return CLIResult(status: 0, stdout: lock.withLock { bbThemeFolder } + "\n", stderr: "")
+        case "show":
+            return CLIResult(status: 0, stdout: "{\"themeId\": \"\(lock.withLock { bbTheme })\", \"customCss\": null}\n", stderr: "")
+        case "set":
+            guard let id = arguments.dropFirst(2).first else { return CLIResult(status: 1, stdout: "", stderr: "missing id") }
+            let folder = lock.withLock { bbThemeFolder }
+            guard Self.bbBuiltIn.contains(id) || FileManager.default.fileExists(atPath: "\(folder)/\(id)/theme.css") else {
+                return CLIResult(status: 1, stdout: "", stderr: "Unknown theme \(id)")
+            }
+            lock.withLock { bbTheme = id }
+            return CLIResult(status: 0, stdout: "", stderr: "")
+        default: return CLIResult(status: 0, stdout: "", stderr: "")
+        }
     }
 
     /// Rex's built-in themes, by id, with their look.
