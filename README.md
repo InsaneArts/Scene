@@ -155,4 +155,4 @@ Palettes: [Omarchy](https://github.com/omacom/omarchy) v4.0.4 (MIT), [rose-pine/
 
 ## License
 
-Scene's code is under the [MIT License](LICENSE). The wallpapers are not: each one keeps the license listed next to it in its theme's `theme.json`.
+Scene's code is under the [MIT License](LICENSE). To report a security problem, see [SECURITY.md](SECURITY.md). The wallpapers are not: each one keeps the license listed next to it in its theme's `theme.json`.
