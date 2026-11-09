@@ -6,7 +6,7 @@ import Testing
 
 @Suite("GitHub themes")
 struct GitHubTests {
-    @Test func parsesTheWaysPeopleWriteARepository() {
+    @Test func parsesTheWaysPeopleWriteARepository() async {
         let expected = GitHubRepository(owner: "bjarneo", name: "omarchy-aura-theme")
         for text in ["https://github.com/bjarneo/omarchy-aura-theme", "https://github.com/bjarneo/omarchy-aura-theme.git",
                      "github.com/bjarneo/omarchy-aura-theme/", "  bjarneo/omarchy-aura-theme\n",
@@ -16,7 +16,16 @@ struct GitHubTests {
         for text in ["https://gitlab.com/a/b", "bjarneo", "https://github.com/bjarneo", "../../etc/passwd", "a b/c", "https://github.com/-x/y"] {
             #expect(GitHubRepository(text) == nil, "\(text)")
         }
+        // Shell characters, control characters, encoded or climbing paths, and names that are not ASCII or too long (#10).
+        for text in ["owner/repo;rm -rf ~", "owner/repo$(whoami)", "owner/repo`id`", "owner/repo|sh", "owner/re&po", "owner/re\npo",
+                     "owner/re\u{0}po", "owner/repo%2F..%2F", "owner/repo/../../etc/passwd", "owner/..", "owner\\repo/x", "οwner/repo",
+                     "o_wner/repo", "o.wner/repo", String(repeating: "a", count: 40) + "/repo", "owner/" + String(repeating: "r", count: 101),
+                     "https://github.com.evil.com/owner/repo", "https://evil.com/github.com/owner/repo"] {
+            #expect(GitHubRepository(text) == nil, "\(text.debugDescription)")
+        }
         #expect(expected.themeName == "aura")
+        // A repository made from unchecked parts is refused before anything is downloaded.
+        await #expect(throws: SceneError.self) { _ = try await GitHubRepository(owner: "a", name: "b/../../x").download() }
         #expect(GitHubRepository(owner: "a", name: "Kanagawa").themeName == "kanagawa")
         #expect(expected.archiveURL.absoluteString == "https://github.com/bjarneo/omarchy-aura-theme/archive/HEAD.zip")
     }
