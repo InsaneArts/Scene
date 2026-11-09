@@ -163,11 +163,31 @@ public final class FakeServices: SystemServices, @unchecked Sendable {
 
     /// Rex's built-in themes, by id, with their look.
     public var rexBuiltInThemes = ["velvet-dusk": "dark", "merino-light": "light"]
+    /// The Rex app clients connected to Rex's server, as `rex client list --json` shows them. With more than one, a
+    /// client action needs `-C`, as in Rex.
+    public var rexAppClients: [(id: String, pid: pid_t, transport: String)] = []
 
     /// Rex's theme actions as the open Rex app runs them. It keeps custom themes as JSON in its preferences, names an
     /// import after its file, replaces a theme of the same name, and picks the look from the background.
     func rex(_ arguments: [String]) -> CLIResult {
         let domain = "com.superlogical.rex"
+        var arguments = arguments
+        var target: String?
+        if arguments.first == "-C", arguments.count > 1 { target = arguments[1]; arguments.removeFirst(2) }
+        if arguments.starts(with: ["client", "list", "--json"]) {
+            let clients = lock.withLock { rexAppClients }.map { client -> [String: Any] in
+                ["client_id": client.id, "info": ["kind": "app", "name": "Rex Beta"],
+                 "principal": ["kind": "peer", "transport": client.transport, "pid": Int(client.pid)], "connection_state": "connected"]
+            }
+            return CLIResult(status: 0, stdout: String(decoding: try! JSONSerialization.data(withJSONObject: ["clients": clients]), as: UTF8.self), stderr: "")
+        }
+        let clients = lock.withLock { rexAppClients }
+        if let target, !clients.contains(where: { $0.id == target }) {
+            return CLIResult(status: 1, stdout: "", stderr: "Error: client target \"\(target)\" not found")
+        }
+        if target == nil, clients.count > 1 {
+            return CLIResult(status: 1, stdout: "", stderr: "Error: client target default is ambiguous: multiple app clients are connected")
+        }
         guard !processes(bundleID: domain).isEmpty else { return CLIResult(status: 1, stdout: "", stderr: "Error: no app client is connected") }
         let args = Dictionary(arguments.compactMap { argument -> (String, String)? in
             guard !argument.hasPrefix("--"), let eq = argument.firstIndex(of: "=") else { return nil }

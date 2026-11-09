@@ -418,6 +418,20 @@ struct MoreAppsTests {
         #expect(services.calls.contains("run rex do client.theme.change name=velvet-dusk --autostart=false"))
     }
 
+    /// Rex on two Macs shares one server (#12). A client action then needs `-C`, and Scene names this Mac's Rex.
+    @Test func rexNamesThisMacsAppWhenSeveralAreConnected() async throws {
+        let (home, services, engine) = try rexSetup(running: true)
+        defer { withExtendedLifetime(home) {} }
+        services.rexAppClients = [("client:other-mac", 7001, "tcp"), ("client:old", 999, "unix"), ("client:this-mac", 1506, "unix")]
+        let request = ApplyRequest(theme: try Fixtures.theme("tokyo-night"), mode: .system, systemIsDark: true)
+        let report = await engine.apply(request, planned: await engine.plan(request, detections: await engine.detectAll()), selected: ["rex"])
+        #expect(report.results.first?.outcome == .applied, "\(String(describing: report.results.first?.outcome))")
+        #expect(services.calls.contains { $0.hasPrefix("run rex -C client:this-mac do client.theme.import path=") })
+        _ = await engine.restoreOriginal()
+        #expect(services.calls.contains("run rex -C client:this-mac do client.theme.change name=velvet-dusk --autostart=false"))
+        #expect(services.prefs["com.superlogical.rex#Workspace.darkThemeID"] == .string("velvet-dusk"))
+    }
+
     @Test func rexIsLeftAloneWhileItIsClosed() async throws {
         let (home, services, engine) = try rexSetup(running: false)
         let request = ApplyRequest(theme: try Fixtures.theme("nord"), mode: .system, systemIsDark: true)

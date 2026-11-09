@@ -589,11 +589,29 @@ public actor Engine {
     static func rexKey(_ appearance: Appearance) -> String { "Workspace.\(appearance.rawValue)ThemeID" }
 
     /// Runs an action in the Rex app. It fails when Rex is not open, and never starts a Rex server.
+    /// Rex refuses a client action when more than one app is connected to its server, so Scene names this Mac's.
     func runRex(_ cli: String, _ arguments: [String]) async throws {
-        let result = try await services.run(cli, arguments + ["--autostart=false"], environment: nil)
+        let target = await rexAppClient(cli).map { ["-C", $0] } ?? []
+        let result = try await services.run(cli, target + arguments + ["--autostart=false"], environment: nil)
         guard result.status == 0 else {
             throw SceneError.failed("rex \(arguments[1]) failed: \(result.stderr.trimmingCharacters(in: .whitespacesAndNewlines).prefix(300))")
         }
+    }
+
+    /// The client id of the Rex app on this Mac, when more than one app is connected to the server: an app client on
+    /// the local socket whose process is the running Rex, the newest one if it connected more than once. Nil otherwise.
+    func rexAppClient(_ cli: String) async -> String? {
+        guard let result = try? await services.run(cli, ["client", "list", "--json", "--autostart=false"], environment: nil), result.status == 0,
+              let root = try? JSONSerialization.jsonObject(with: Data(result.stdout.utf8)) as? [String: Any],
+              let clients = root["clients"] as? [[String: Any]] else { return nil }
+        let apps = clients.filter { ($0["info"] as? [String: Any])?["kind"] as? String == "app" }
+        guard apps.count > 1 else { return nil }
+        let running = Set(services.processes(bundleID: Self.rexDomain))
+        let here = apps.filter { client in
+            guard let principal = client["principal"] as? [String: Any], let pid = principal["pid"] as? Int else { return false }
+            return principal["transport"] as? String == "unix" && running.contains(pid_t(pid))
+        }
+        return here.max { ($0["connected_at"] as? String ?? "") < ($1["connected_at"] as? String ?? "") }?["client_id"] as? String
     }
 
     /// The custom theme Rex shows for a look, from Rex's preferences, with its background as #rrggbb.
