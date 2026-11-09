@@ -70,6 +70,7 @@ Last updated: 2026-09-30. Version 0.1.0, build 4 (`version.env`).
 - Xcode: whether a running Xcode keeps Scene's theme settings when it quits. Scene asks for a restart.
 - Terminal: a running Terminal can write its own profiles back when you edit a profile in its settings. Scene then reports the change outside Scene.
 - lazygit in a running terminal after a real theme change. Its config was not changed on the test Mac.
+- k9s: unit tests cover the skin, linked `config.yaml` and `skins`, and Restore. On a real Mac, k9s showed Scene's skin after a theme change. Restore on a real config was not checked.
 - Following macOS Light/Dark on a real switch, and the switcher's search on the real screen.
 - The wallpaper of every Space on screen, Space by Space. The live test checks the store and the restarted agent, not what each Space shows.
 - In the running app: dragging the Theme Maker's sliders, Shuffle, From Wallpaper, Undo, setting a color by hand, Save to Scene, Export Folder…, and dropping images on the wallpaper slots. `--install` with the real library (a test covers it with a fake library).

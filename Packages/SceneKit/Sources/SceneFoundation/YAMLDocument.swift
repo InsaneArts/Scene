@@ -36,7 +36,7 @@ public struct YAMLDocument: Sendable {
         self.lines = lines
         start = (lines.first?.hasPrefix("---") ?? false) ? 1 : 0
         for (index, line) in lines.enumerated() {
-            if line.prefix { $0 == " " || $0 == "\t" }.contains("\t") { throw Problem.tabs }
+            if line.prefix(while: { $0 == " " || $0 == "\t" }).contains("\t") { throw Problem.tabs }
             if index >= start, line.hasPrefix("---") || line.hasPrefix("...") { throw Problem.severalDocuments }
         }
     }

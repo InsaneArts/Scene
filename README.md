@@ -44,7 +44,7 @@ Before a theme touches anything, Scene lists each app and every file and setting
 | macOS look | Accent color, icon & widget style | Private calls in a helper, on tested macOS builds only (experimental) |
 | Terminals | Ghostty, iTerm2, kitty, Alacritty, Warp, Rio, Rex, bateri, Herdr app, Terminal | A Scene theme file and one marked include or import line; an iTerm2 Dynamic Profile; a Terminal profile copied from your default one; for Rio, light/dark TOML themes with adaptive selection; for Rex, Scene's theme imported with Rex's own command while Rex is open; for bateri, a theme file per look and the theme keys in its settings; for the Herdr app, a theme file per look and the `theme` key in its `settings.json` |
 | Editors | VS Code, Cursor, VSCodium, Windsurf, Zed, Xcode, Neovim, Helix, Doom Emacs | A generated theme extension or theme file and one settings key; Xcode themes keep your fonts; a Neovim plugin file and a JSON data file; Doom Emacs theme files and one block in `config.el` |
-| Tools | tmux, bat and delta, btop, herdr, lazygit, ZapFast | A theme file and one marked include line or config key; herdr's color tokens in its config; lazygit's theme colors in its `config.yml`; ZapFast gets a JSON palette and theme selection |
+| Tools | tmux, bat and delta, btop, herdr, lazygit, k9s, ZapFast | A theme file and one marked include line or config key; herdr's color tokens in its config; lazygit's theme colors in its `config.yml`; a k9s skin file and the `ui.skin` key; ZapFast gets a JSON palette and theme selection |
 
 ZapFast uses Scene’s current look. Quit ZapFast before applying or restoring, then reopen it: its theme reload command refreshes palettes but does not re-read the selected theme from settings.
 
